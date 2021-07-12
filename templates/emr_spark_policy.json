@@ -1,0 +1,11 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AccessTectonScopedSecrets",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "arn:aws:secretsmanager:*:${ACCOUNT_ID}:secret:tecton-${DEPLOYMENT_NAME}/*"
+        }
+    ]
+}

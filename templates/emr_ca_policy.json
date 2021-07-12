@@ -1,0 +1,110 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CreateEmrServiceLinkedRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole"
+            ],
+            "Resource": "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEMRCleanup*",
+            "Condition": {
+                "StringLike": {
+                    "iam:AWSServiceName": [
+                        "elasticmapreduce.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "EmrPutRolePolicyForServiceLinkedRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy"
+            ],
+            "Resource": "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEMRCleanup*"
+        },
+        {
+            "Sid": "Ec2Global",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeInstanceTypeOfferings",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeInstances",
+                "ec2:DescribeSecurityGroups"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "EmrGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "elasticmapreduce:ListClusters",
+                "elasticmapreduce:ListInstances"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "EmrResourceTag",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "elasticmapreduce:DescribeCluster",
+                "elasticmapreduce:ListSteps",
+                "elasticmapreduce:ListBootstrapActions",
+                "elasticmapreduce:TerminateJobFlows",
+                "ssm:StartSession"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                }
+            }
+        },
+        {
+            "Sid": "EmrRequestTag",
+            "Effect": "Allow",
+            "Action": "elasticmapreduce:RunJobFlow",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                }
+            }
+        },
+        {
+            "Sid": "PassRoleForEMR",
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${EMR_MASTER_ROLE}",
+            "Condition": {
+                "StringEquals": {
+                    "iam:PassedToService": [
+                        "elasticmapreduce.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "PassRoleForEC2",
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${EMR_WORKER_ROLE}",
+            "Condition": {
+                "StringEquals": {
+                    "iam:PassedToService": [
+                        "ec2.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Sid": "SSMForControlPlaneToConnectToTectonEMRCluster",
+            "Effect": "Allow",
+            "Action": "ssm:StartSession",
+            "Resource": "arn:aws:ssm:${REGION}::document/AWS-StartPortForwardingSession"
+        }
+    ]
+}
