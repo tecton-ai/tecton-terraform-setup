@@ -15,7 +15,7 @@ locals {
 
   databricks_workspace = "mycompany.cloud.databricks.com"
   
-  # Get from your account rep
+  # Get from your Tecton rep
   tecton_assuming_account_id = "123456789"
 }
 
@@ -34,6 +34,5 @@ module "tecton" {
   region  = local.region
   cross_account_external_id = resource.random_id.external_id.id
 
-  # Name of role used by Databricks
-  databricks_spark_role_name = "my-spark-role-name"
+  databricks_spark_role_name = local.spark_role_name
 }
