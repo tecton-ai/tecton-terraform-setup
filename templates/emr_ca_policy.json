@@ -91,7 +91,7 @@
             "Sid": "PassRoleForEC2",
             "Effect": "Allow",
             "Action": "iam:PassRole",
-            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${EMR_WORKER_ROLE}",
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${SPARK_ROLE}",
             "Condition": {
                 "StringEquals": {
                     "iam:PassedToService": [

@@ -19,3 +19,7 @@ variable "databricks_spark_role_name" {
   type = string
   default = null
 }
+variable "create_emr_roles" {
+  type = bool
+  default = false
+}

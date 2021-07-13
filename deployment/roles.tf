@@ -1,6 +1,6 @@
 locals {
   tags = { "tecton-accessible:${var.deployment_name}": "true" }
-  spark_role_name = var.databricks_spark_role_name != null ? var.databricks_spark_role_name : "emr-TODO"
+  spark_role_name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
 data "template_file" "cross_account_policy_json" {
@@ -9,6 +9,7 @@ data "template_file" "cross_account_policy_json" {
     ACCOUNT_ID = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION = var.region
+    SPARK_ROLE = local.spark_role_name
   }
 }
 
@@ -21,7 +22,7 @@ data "template_file" "spark_policy_json" {
   }
 }
 
-# CROSS ACCOUNT ROLES
+# CROSS ACCOUNT ROLE
 resource "aws_iam_role" "cross_account_role" {
   name                 = "tecton-${var.deployment_name}-cross-account-role"
   max_session_duration = 43200
@@ -57,7 +58,7 @@ resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
   role = aws_iam_role.cross_account_role.name
 }
 
-# SPARK ROLES
+# SPARK ROLE
 resource "aws_iam_policy" "common_spark_policy" {
   name = "tecton-${var.deployment_name}-common-spark-policy"
   policy = data.template_file.spark_policy_json.rendered 
