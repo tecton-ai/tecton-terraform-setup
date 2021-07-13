@@ -28,3 +28,11 @@ module "tecton" {
 
   create_emr_roles = true
 }
+module "networking" {
+  providers = {
+    aws = aws
+  }
+  source     = "../networking"
+  deployment_name = local.deployment_name
+  emr_vpc_id = "vpc-123"
+}
