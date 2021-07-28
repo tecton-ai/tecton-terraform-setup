@@ -1,1 +1,1 @@
-Run either the databricks_template or emr_template through terraform to set up your AWS environment to deploy Tecton.
+Run either the databricks_sample or emr_sample through terraform to set up your AWS environment to deploy Tecton.
