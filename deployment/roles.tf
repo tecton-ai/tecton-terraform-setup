@@ -1,24 +1,24 @@
 locals {
-  tags = { "tecton-accessible:${var.deployment_name}": "true" }
+  tags            = { "tecton-accessible:${var.deployment_name}" : "true" }
   spark_role_name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
 data "template_file" "cross_account_policy_json" {
   template = file("${path.module}/../templates/ca_policy.json")
   vars = {
-    ACCOUNT_ID = var.account_id
+    ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
-    REGION = var.region
-    SPARK_ROLE = local.spark_role_name
+    REGION          = var.region
+    SPARK_ROLE      = local.spark_role_name
   }
 }
 
 data "template_file" "spark_policy_json" {
   template = file("${path.module}/../templates/spark_policy.json")
   vars = {
-    ACCOUNT_ID = var.account_id
+    ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
-    REGION = var.region
+    REGION          = var.region
   }
 }
 
@@ -48,23 +48,23 @@ resource "aws_iam_role" "cross_account_role" {
 POLICY
 }
 resource "aws_iam_policy" "cross_account_policy" {
-  name = "tecton-${var.deployment_name}-cross-account-policy"
-  policy = data.template_file.cross_account_policy_json.rendered 
-  tags                 = local.tags
+  name   = "tecton-${var.deployment_name}-cross-account-policy"
+  policy = data.template_file.cross_account_policy_json.rendered
+  tags   = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
   policy_arn = aws_iam_policy.cross_account_policy.arn
-  role = aws_iam_role.cross_account_role.name
+  role       = aws_iam_role.cross_account_role.name
 }
 
 # SPARK ROLE
 resource "aws_iam_policy" "common_spark_policy" {
-  name = "tecton-${var.deployment_name}-common-spark-policy"
-  policy = data.template_file.spark_policy_json.rendered 
-  tags                 = local.tags
+  name   = "tecton-${var.deployment_name}-common-spark-policy"
+  policy = data.template_file.spark_policy_json.rendered
+  tags   = local.tags
 }
 resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
   policy_arn = aws_iam_policy.common_spark_policy.arn
-  role = local.spark_role_name
+  role       = local.spark_role_name
 }
