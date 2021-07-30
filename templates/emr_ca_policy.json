@@ -78,7 +78,7 @@
             "Sid": "PassRoleForEMR",
             "Effect": "Allow",
             "Action": "iam:PassRole",
-            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${EMR_MASTER_ROLE}",
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${EMR_MANAGER_ROLE}",
             "Condition": {
                 "StringEquals": {
                     "iam:PassedToService": [

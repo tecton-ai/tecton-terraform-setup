@@ -36,3 +36,23 @@ module "tecton" {
 
   databricks_spark_role_name = local.spark_role_name
 }
+
+module "security_groups" {
+  providers = {
+    aws = aws
+  }
+  source          = "../emr/security_groups"
+  deployment_name = local.deployment_name
+  region          = local.region
+  emr_vpc_id      = module.subnets.vpc_id
+}
+
+# optionally, use a Tecton default vpc/subnet configuration
+module "subnets" {
+  providers = {
+    aws = aws
+  }
+  source          = "../emr/vpc_subnets"
+  deployment_name = local.deployment_name
+  region          = local.region
+}
