@@ -1,12 +1,12 @@
 # this example assumes that Databricks and Tecton are deployed to the same account
 
 provider "aws" {
-  region = "us-west-2"
+  region = "my-region"
 }
 
 locals {
   deployment_name = "my-deployment-name"
-  region          = "us-west-2"
+  region          = "my-region"
   account_id      = "123456789"
 
   # Name of role and instance profile used by Databricks
