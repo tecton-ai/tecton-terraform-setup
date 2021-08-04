@@ -79,6 +79,7 @@ resource "aws_iam_role_policy_attachment" "emr_ssm_policy_attachment" {
   role       = aws_iam_role.emr_spark_role[0].name
 }
 resource "aws_iam_instance_profile" "emr_spark_instance_profile" {
+  count = var.create_emr_roles ? 1 : 0
   name = "tecton-${var.deployment_name}-emr-spark-role"
   role = aws_iam_role.emr_spark_role[0].name
 }
