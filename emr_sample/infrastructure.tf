@@ -1,4 +1,11 @@
-# this example assumes that Databricks and Tecton are deployed to the same account
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 2.7.0"
+    }
+  }
+}
 
 provider "aws" {
   region = "my-region"
@@ -9,13 +16,8 @@ locals {
   region          = "my-region"
   account_id      = "123456789"
 
-  # Name of role and instance profile used by Databricks
-  spark_role_name             = "my-spark-role-name"
-  spark_instance_profile_name = "my-spark-instance-profile-name"
 
-  databricks_workspace = "mycompany.cloud.databricks.com"
-
-  # Get from your Tecton rep
+  # Get these values from your Tecton rep
   tecton_assuming_account_id = "123456789"
 }
 
@@ -34,7 +36,7 @@ module "tecton" {
   region                     = local.region
   cross_account_external_id  = random_id.external_id.id
 
-  databricks_spark_role_name = local.spark_role_name
+  create_emr_roles = true
 }
 
 module "security_groups" {
@@ -55,4 +57,26 @@ module "subnets" {
   source          = "../emr/vpc_subnets"
   deployment_name = local.deployment_name
   region          = local.region
+}
+
+module "notebook_cluster" {
+  source = "../emr/notebook_cluster"
+  # See https://docs.tecton.ai/v2/setting-up-tecton/04b-connecting-emr.html#prerequisites
+  # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
+
+  # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
+  count = 0
+
+  region          = local.region
+  deployment_name = local.deployment_name
+  instance_type   = "m5.xlarge"
+
+  subnet_id            = module.subnets.emr_subnet_id
+  instance_profile_arn = module.tecton.spark_role_name
+  emr_service_role_id  = module.tecton.emr_master_role_name
+
+  emr_security_group_id         = module.security_groups.emr_security_group_id
+  emr_service_security_group_id = module.security_groups.emr_service_security_group_id
+
+  has_glue = true
 }
