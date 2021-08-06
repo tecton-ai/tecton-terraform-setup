@@ -1,0 +1,47 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CreateNotebookRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole",
+                "iam:CreateRole",
+                "iam:AttachRolePolicy",
+                "iam:PutRolePolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/EMR_Notebooks_DefaultRole"
+            ]
+        },
+        {
+            "Sid": "ManageTectonSecrets",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:DeleteSecret",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:DescribeSecret"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:*:*:secret:tecton-${DEPLOYMENT_NAME}/*"
+            ]
+        },
+        {
+            "Sid": "DebugUsingAWSConsole",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "iam:ListPolicies",
+                "iam:ListRolePolicies",
+                "iam:ListRoles",
+                "iam:ListInstanceProfiles",
+                "elasticmapreduce:ListEditors",
+                "secretsmanager:ListSecrets"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

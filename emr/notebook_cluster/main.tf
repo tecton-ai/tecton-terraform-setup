@@ -1,4 +1,6 @@
 locals {
+  tags = { "tecton-accessible:${var.deployment_name}" : "true" }
+
   hive_config = [
     {
       Classification : "hive-site",
@@ -42,8 +44,7 @@ locals {
           Classification : "export",
           Properties : {
             "CLUSTER_REGION" : var.region,
-            "TECTON_CLUSTER_NAME" : var.deployment_name
-          }
+          "TECTON_CLUSTER_NAME" : var.deployment_name }
         }
       ]
     }
@@ -109,12 +110,10 @@ resource "aws_emr_cluster" "cluster" {
 resource "aws_secretsmanager_secret" "api_service" {
   name = "tecton-${var.deployment_name}/API_SERVICE"
 }
-
 resource "aws_secretsmanager_secret_version" "api_service" {
   secret_id     = aws_secretsmanager_secret.api_service.id
   secret_string = "https://https://${var.deployment_name}.tecton.ai/api"
 }
-
 resource "aws_secretsmanager_secret" "tecton_api_key" {
   name = "tecton-${var.deployment_name}/TECTON_API_KEY"
 }

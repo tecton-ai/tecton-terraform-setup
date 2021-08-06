@@ -80,3 +80,17 @@ module "notebook_cluster" {
 
   has_glue = true
 }
+
+# This module adds some IAM privileges to enable your Tecton technical support
+# reps to open and execute EMR notebooks in your account to help troubleshoot
+# or test code you are developing.
+#
+# Enable this module by setting count = 1
+module "emr_debugging" {
+  source = "../emr/debugging"
+
+  count                   = 0
+  deployment_name         = local.deployment_name
+  cross_account_role_name = module.tecton.cross_account_role_name
+
+}
