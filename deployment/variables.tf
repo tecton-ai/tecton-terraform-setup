@@ -23,3 +23,7 @@ variable "create_emr_roles" {
   type    = bool
   default = false
 }
+variable "additional_s3_read_only_principals" {
+  type = list(string)
+  default = []
+}

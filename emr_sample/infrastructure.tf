@@ -11,10 +11,21 @@ provider "aws" {
   region = "my-region"
 }
 
+provider "aws" {
+  region = "my-region"
+  assume_role {
+    role_arn = "another-account-role-arn"
+    external_id = "externalID"
+  }
+  alias = "cross-account"
+}
+
 locals {
   deployment_name = "my-deployment-name"
   region          = "my-region"
   account_id      = "123456789"
+  # additional ARN to access s3 (for notebook access)
+  cross_account_arn = "arn:aws:iam::987654321:root"
 
 
   # Get these values from your Tecton rep
@@ -93,4 +104,46 @@ module "emr_debugging" {
   deployment_name         = local.deployment_name
   cross_account_role_name = module.tecton.cross_account_role_name
 
+}
+
+# OPTIONAL
+# creates subnets and notebook cluster for EMR on another account
+# note that for full functionality, you must also give this account access to the underlying
+# data sources tecton uses
+module "cross-account-notebook" {
+  providers = {
+    aws = aws.cross-account
+  }
+  source = "../emr/cross_account"
+  cidr_block = "10.0.0.0/16"
+  deployment_name = local.deployment_name
+  enable_notebook_cluster = true
+  region = local.region
+  # roles below created by `aws emr create-default-roles`
+  # note that this role also needs access to S3 and Secretsmanager
+  emr_instance_profile_name = "EMR_EC2_DefaultRole"
+  emr_service_role_name = "EMR_DefaultRole"
+}
+
+# gives the cross-account permissions to read the materialized data bucket
+resource "aws_s3_bucket_policy" "read-only-access" {
+  bucket = module.tecton.s3_bucket.bucket
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowReadOnly"
+        Effect    = "Allow"
+        Principal = {
+          "AWS": local.cross_account_arn
+        }
+        Action    = ["s3:Get*", "s3:List*"]
+        Resource = [
+          module.tecton.s3_bucket.arn,
+          # you may want to scope down the paths allowed further
+          "${module.tecton.s3_bucket.arn}/*"
+        ]
+      }
+    ]
+  })
 }
