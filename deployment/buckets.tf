@@ -22,7 +22,7 @@ resource "aws_s3_bucket_policy" "read-only-access" {
         Sid       = "AllowReadOnly"
         Effect    = "Allow"
         Principal = var.additional_s3_read_only_principals
-        Action    = "s3:Get*"
+        Action    = ["s3:Get*", "s3:List*"]
         Resource = [
           aws_s3_bucket.tecton.arn,
           "${aws_s3_bucket.tecton.arn}/*",

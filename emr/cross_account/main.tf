@@ -38,8 +38,8 @@ module "notebook_cluster" {
   instance_type   = "m5.xlarge"
 
   subnet_id            = module.subnets.emr_subnet_id
-  instance_profile_arn = "EMR_EC2_DefaultRole"
-  emr_service_role_id  = "EMR_DefaultRole"
+  instance_profile_arn = var.emr_instance_profile_name
+  emr_service_role_id  = var.emr_service_role_name
 
   emr_security_group_id         = module.security_groups.emr_security_group_id
   emr_service_security_group_id = module.security_groups.emr_service_security_group_id
