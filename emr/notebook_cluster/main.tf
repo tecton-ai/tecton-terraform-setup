@@ -5,19 +5,22 @@ locals {
     {
       Classification : "hive-site",
       Properties : {
-        "hive.metastore.client.factory.class" : "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+        "hive.metastore.client.factory.class" : "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory",
+        "hive.metastore.glue.catalogid" : var.glue_account_id
       }
     },
     {
       Classification : "spark-defaults",
       Properties : {
-        "hive.metastore.client.factory.class" : "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+        "hive.metastore.client.factory.class" : "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory",
+        "hive.metastore.glue.catalogid" : var.glue_account_id
       }
     },
     {
       Classification : "spark-hive-site",
       Properties : {
-        "hive.metastore.client.factory.class" : "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory"
+        "hive.metastore.client.factory.class" : "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory",
+        "hive.metastore.glue.catalogid" : var.glue_account_id
       }
     }
   ]
@@ -112,7 +115,7 @@ resource "aws_secretsmanager_secret" "api_service" {
 }
 resource "aws_secretsmanager_secret_version" "api_service" {
   secret_id     = aws_secretsmanager_secret.api_service.id
-  secret_string = "https://${var.deployment_name}.tecton.ai/api"
+  secret_string = "https://https://${var.deployment_name}.tecton.ai/api"
 }
 resource "aws_secretsmanager_secret" "tecton_api_key" {
   name = "tecton-${var.deployment_name}/TECTON_API_KEY"

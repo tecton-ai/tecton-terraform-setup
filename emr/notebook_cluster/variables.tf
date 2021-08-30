@@ -38,3 +38,7 @@ variable "has_glue" {
   type        = bool
   description = "Set to true if AWS Glue Catalog is set up and should be used to load Hive tables"
 }
+variable "glue_account_id" {
+  type        = string
+  description = "AWS account id containing the AWS Glue Catalog for cross-account access"
+}
