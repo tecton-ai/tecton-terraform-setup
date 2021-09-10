@@ -9,7 +9,3 @@ output "emr_subnet_id" {
 output "emr_subnet_route_table_ids" {
   value = aws_route_table.emr_subnet_route_table[*].id
 }
-
-output "public_subnet_route_table_ids" {
-  value = aws_route_table.public_subnet_route_table[*].id
-}

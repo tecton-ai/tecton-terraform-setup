@@ -23,8 +23,7 @@ variable "create_emr_roles" {
   type    = bool
   default = false
 }
-variable "block_all_s3_public_access" {
-  type        = bool
-  description = "Apply a public access block to the s3 bucket used by Tecton. If this is set, you will be unable to fetch feature values using the Tecton SDK from outside of this account."
-  default     = false
+variable "additional_s3_read_only_principals" {
+  type    = list(string)
+  default = []
 }

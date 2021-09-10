@@ -115,7 +115,7 @@ resource "aws_secretsmanager_secret" "api_service" {
 }
 resource "aws_secretsmanager_secret_version" "api_service" {
   secret_id     = aws_secretsmanager_secret.api_service.id
-  secret_string = "https://https://${var.deployment_name}.tecton.ai/api"
+  secret_string = "https://${var.deployment_name}.tecton.ai/api"
 }
 resource "aws_secretsmanager_secret" "tecton_api_key" {
   name = "tecton-${var.deployment_name}/TECTON_API_KEY"
