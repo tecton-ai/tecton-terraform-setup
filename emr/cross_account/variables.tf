@@ -26,3 +26,7 @@ variable "emr_service_role_name" {
   type    = string
   default = "EMR_DefaultRole"
 }
+
+variable "glue_account_id" {
+  type = string
+}
