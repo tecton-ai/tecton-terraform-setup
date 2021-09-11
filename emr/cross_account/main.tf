@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 3.0.0"
+    }
+  }
+}
+
 data "aws_availability_zones" "this" {
 }
 
@@ -44,6 +53,7 @@ module "notebook_cluster" {
   emr_security_group_id         = module.security_groups.emr_security_group_id
   emr_service_security_group_id = module.security_groups.emr_service_security_group_id
 
-  has_glue   = true
-  depends_on = [aws_iam_service_linked_role.spot]
+  has_glue        = true
+  glue_account_id = var.glue_account_id
+  depends_on      = [aws_iam_service_linked_role.spot]
 }

@@ -1,23 +1,26 @@
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = ">= 2.7.0"
+      source                = "hashicorp/aws"
+      version               = ">= 3.0.0"
+      configuration_aliases = [aws.cross_account]
     }
   }
 }
 
 provider "aws" {
-  region = "my-region"
+  region = "this-accounts-region"
 }
 
 provider "aws" {
-  region = "my-region"
+  region = "this-accounts-region"
   assume_role {
-    role_arn    = "another-account-role-arn"
-    external_id = "externalID"
+    role_arn = "another-account-role-arn"
+    # Once you run terraform for the first time, type `terraform output`
+    # and copy the external_id below
+    external_id = "my_external_id"
   }
-  alias = "cross-account"
+  alias = "cross_account"
 }
 
 locals {
@@ -39,9 +42,6 @@ resource "random_id" "external_id" {
 }
 
 module "tecton" {
-  providers = {
-    aws = aws
-  }
   source                     = "../deployment"
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
@@ -53,9 +53,6 @@ module "tecton" {
 }
 
 module "security_groups" {
-  providers = {
-    aws = aws
-  }
   source          = "../emr/security_groups"
   deployment_name = local.deployment_name
   region          = local.region
@@ -64,9 +61,6 @@ module "security_groups" {
 
 # optionally, use a Tecton default vpc/subnet configuration
 module "subnets" {
-  providers = {
-    aws = aws
-  }
   source          = "../emr/vpc_subnets"
   deployment_name = local.deployment_name
   region          = local.region
@@ -106,7 +100,6 @@ module "emr_debugging" {
   count                   = 0
   deployment_name         = local.deployment_name
   cross_account_role_name = module.tecton.cross_account_role_name
-
 }
 
 # OPTIONAL
@@ -115,9 +108,11 @@ module "emr_debugging" {
 # data sources tecton uses
 module "cross-account-notebook" {
   providers = {
-    aws = aws.cross-account
+    aws = aws.cross_account
   }
-  source                  = "../emr/cross_account"
+  count  = 0
+  source = "../emr/cross_account"
+
   cidr_block              = "10.0.0.0/16"
   deployment_name         = local.deployment_name
   enable_notebook_cluster = true
@@ -126,6 +121,7 @@ module "cross-account-notebook" {
   # note that this role also needs access to S3 and Secretsmanager
   emr_instance_profile_name = "EMR_EC2_DefaultRole"
   emr_service_role_name     = "EMR_DefaultRole"
+  glue_account_id           = local.account_id
 }
 
 # gives the cross-account permissions to read the materialized data bucket
