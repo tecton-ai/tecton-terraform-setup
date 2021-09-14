@@ -34,6 +34,11 @@ variable "emr_service_security_group_id" {
   type        = string
   description = "EMR service security group"
 }
+variable "extra_bootstrap_actions" {
+  type        = list(any)
+  description = "Additional bootstrap actions to perform upon EMR creation"
+  default     = []
+}
 variable "has_glue" {
   type        = bool
   description = "Set to true if AWS Glue Catalog is set up and should be used to load Hive tables"
