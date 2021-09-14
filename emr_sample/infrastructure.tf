@@ -85,6 +85,16 @@ module "notebook_cluster" {
   emr_security_group_id         = module.security_groups.emr_security_group_id
   emr_service_security_group_id = module.security_groups.emr_service_security_group_id
 
+  # OPTIONAL
+  # You can provide custom bootstrap action(s)
+  # to be performed upon notebook cluster creation
+  # extra_bootstrap_actions = [
+  #   {
+  #     name = "name_of_the_step"
+  #     path = "s3://path/to/script.sh"
+  #   }
+  # ]
+
   has_glue        = true
   glue_account_id = local.account_id
 }

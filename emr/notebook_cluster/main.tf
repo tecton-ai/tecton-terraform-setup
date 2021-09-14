@@ -52,6 +52,13 @@ locals {
       ]
     }
   ]
+
+  bootstrap_action = [
+    {
+      name = "tecton_emr_setup"
+      path = "s3://tecton.ai.public/install_scripts/setup_emr_notebook_cluster.sh"
+    }
+  ]
 }
 
 resource "aws_emr_cluster" "cluster" {
@@ -83,9 +90,14 @@ resource "aws_emr_cluster" "cluster" {
     }
   }
 
-  bootstrap_action {
-    name = "tecton_emr_setup"
-    path = "s3://tecton.ai.public/install_scripts/setup_emr_notebook_cluster.sh"
+  dynamic "bootstrap_action" {
+    iterator = bootstrap_action
+    for_each = concat(local.bootstrap_action, var.extra_bootstrap_actions)
+    content {
+      name = lookup(bootstrap_action.value, "name", null)
+      path = lookup(bootstrap_action.value, "path", null)
+      args = lookup(bootstrap_action.value, "args", null)
+    }
   }
 
   service_role = var.emr_service_role_id
