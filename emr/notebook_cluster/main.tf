@@ -47,7 +47,8 @@ locals {
           Classification : "export",
           Properties : {
             "CLUSTER_REGION" : var.region,
-          "TECTON_CLUSTER_NAME" : var.deployment_name }
+            "TECTON_CLUSTER_NAME" : var.deployment_name
+          }
         }
       ]
     }
@@ -81,12 +82,12 @@ resource "aws_emr_cluster" "cluster" {
 
   core_instance_group {
     instance_type  = var.instance_type
-    instance_count = 1
+    instance_count = var.instance_count
 
     ebs_config {
-      size                 = "40"
-      type                 = "gp2"
-      volumes_per_instance = 1
+      size                 = var.ebs_size
+      type                 = var.ebs_type
+      volumes_per_instance = var.ebs_count
     }
   }
 
