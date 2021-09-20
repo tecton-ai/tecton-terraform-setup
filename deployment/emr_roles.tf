@@ -45,7 +45,7 @@ resource "aws_iam_role_policy_attachment" "emr_cross_account_policy_attachment" 
 # SPARK ROLE
 resource "aws_iam_role" "emr_spark_role" {
   count              = var.create_emr_roles ? 1 : 0
-  name               = "tecton-${var.deployment_name}-emr-spark-role"
+  name               = var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role"
   tags               = local.tags
   assume_role_policy = <<POLICY
 {
