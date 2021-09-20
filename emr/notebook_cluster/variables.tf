@@ -14,6 +14,30 @@ variable "instance_type" {
   description = "EMR EC2 instance type"
 }
 
+variable "instance_count" {
+  type        = number
+  default     = 1
+  description = "Number of EMR EC2 CORE instances to launch"
+}
+
+variable "ebs_size" {
+  type        = string
+  default     = "40"
+  description = "Size of EBS volumes attached to EMR instances"
+}
+
+variable "ebs_type" {
+  type        = string
+  default     = "gp2"
+  description = "Type of EBS volumes attached to EMR instances"
+}
+
+variable "ebs_count" {
+  type        = number
+  default     = 1
+  description = "Number of EBS volumes attached to EMR instances"
+}
+
 variable "subnet_id" {
   type        = string
   description = "Subnet to install EMR into"
