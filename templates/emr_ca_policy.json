@@ -7,7 +7,10 @@
             "Action": [
                 "iam:CreateServiceLinkedRole"
             ],
-            "Resource": "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEMRCleanup*",
+            "Resource": [
+                "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEMRCleanup*",
+                "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEC2Spot*"
+            ],
             "Condition": {
                 "StringLike": {
                     "iam:AWSServiceName": [
@@ -23,7 +26,10 @@
                 "iam:AttachRolePolicy",
                 "iam:PutRolePolicy"
             ],
-            "Resource": "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEMRCleanup*"
+            "Resource": [
+                "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEMRCleanup*",
+                "arn:aws:iam::*:role/aws-service-role/elasticmapreduce.amazonaws.com/AWSServiceRoleForEC2Spot*"
+            ]
         },
         {
             "Sid": "Ec2Global",
