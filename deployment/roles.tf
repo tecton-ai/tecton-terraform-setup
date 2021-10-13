@@ -3,6 +3,10 @@ locals {
   spark_role_name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
+data "aws_iam_role" "spark_role" {
+  name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
+}
+
 data "template_file" "cross_account_policy_json" {
   template = file("${path.module}/../templates/ca_policy.json")
   vars = {

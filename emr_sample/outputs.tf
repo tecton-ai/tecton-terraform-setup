@@ -10,6 +10,9 @@ output "cross_account_role_arn" {
 output "cross_account_external_id" {
   value = resource.random_id.external_id.id
 }
-output "spark_role_name" {
-  value = module.tecton.spark_role_name
+output "spark_role_arn" {
+  value = module.tecton.spark_role_arn
+}
+output "spark_instance_profile_arn" {
+  value = module.tecton.emr_spark_instance_profile_arn
 }
