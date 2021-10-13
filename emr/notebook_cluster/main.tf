@@ -103,7 +103,10 @@ resource "aws_emr_cluster" "cluster" {
 
   service_role = var.emr_service_role_id
 
-  configurations_json = var.has_glue ? jsonencode(concat(local.hive_config, local.base_config)) : jsonencode(local.base_config)
+  configurations_json = (var.has_glue ?
+    jsonencode(concat(local.hive_config, local.base_config, var.extra_cluster_config)) :
+    jsonencode(concat(local.base_config, var.extra_cluster_config))
+  )
 
   step {
     action_on_failure = "TERMINATE_CLUSTER"

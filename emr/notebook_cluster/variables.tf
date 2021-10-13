@@ -63,6 +63,11 @@ variable "extra_bootstrap_actions" {
   description = "Additional bootstrap actions to perform upon EMR creation"
   default     = []
 }
+variable "extra_cluster_config" {
+  type        = list(any)
+  description = "Additional EMR cluster configurations"
+  default     = []
+}
 variable "has_glue" {
   type        = bool
   description = "Set to true if AWS Glue Catalog is set up and should be used to load Hive tables"
