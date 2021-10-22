@@ -57,16 +57,16 @@ locals {
   bootstrap_action = [
     {
       name = "tecton_emr_setup"
-      path = "s3://tecton.ai.public/install_scripts/setup_emr_notebook_cluster.sh"
+      path = "s3://tecton.ai.public/install_scripts/setup_emr_notebook_cluster_v2.sh"
     }
   ]
 }
 
 resource "aws_emr_cluster" "cluster" {
   name          = "tecton-${var.deployment_name}-notebook-cluster"
-  release_label = "emr-5.30.0"
+  release_label = "emr-6.4.0"
 
-  applications = ["Spark", "Livy", "Hive"]
+  applications = ["Spark", "Livy", "Hive", "JupyterEnterpriseGateway"]
 
   ec2_attributes {
     subnet_id                         = var.subnet_id
