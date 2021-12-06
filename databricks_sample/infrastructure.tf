@@ -1,22 +1,68 @@
-# this example assumes that Databricks and Tecton are deployed to the same account
+# this example assumes that Databricks and Tecton are deployed to the same account in the SaaS model and separate accounts in the VPC model for illustrative purposes
 
-provider "aws" {
-  region = "my-region"
+# Fill these in
+variable "deployment_name" {
+  type = string
 }
 
-locals {
-  deployment_name = "my-deployment-name"
-  region          = "my-region"
-  account_id      = "123456789"
+variable "region" {
+  type = string
+}
 
-  # Name of role and instance profile used by Databricks
-  spark_role_name             = "my-spark-role-name"
-  spark_instance_profile_name = "my-spark-instance-profile-name"
+variable "account_id" {
+  type = string
+}
 
-  databricks_workspace = "mycompany.cloud.databricks.com"
+variable "spark_role_name" {
+  type = string
+}
 
-  # Get from your Tecton rep
-  tecton_assuming_account_id = "123456789"
+variable "tecton_dataplane_account_role_arn" {
+  type = string
+}
+
+variable "external_databricks_account_id" {
+  type = string
+  default = ""
+}
+
+variable "external_databricks_account_role_arn" {
+  type = string
+  default = ""
+}
+
+variable "is_vpc_deployment" {
+  type = bool
+  default = false
+}
+
+variable "elasticache_enabled" {
+  type = bool
+  default = false
+}
+
+variable "ip_whitelist" {
+  default = []
+}
+
+variable "tecton_assuming_account_id" {
+  type = string
+  description = "Get this from your Tecton rep"
+}
+
+provider "aws" {
+  region = var.region
+  assume_role {
+    role_arn = var.tecton_dataplane_account_role_arn
+  }
+}
+
+provider "aws" {
+  alias = "databricks-account"
+  region = var.region
+  assume_role {
+    role_arn = var.external_databricks_account_role_arn
+  }
 }
 
 resource "random_id" "external_id" {
@@ -27,12 +73,51 @@ module "tecton" {
   providers = {
     aws = aws
   }
+  count                      = var.is_vpc_deployment ? 0 : 1
   source                     = "../deployment"
-  deployment_name            = local.deployment_name
-  account_id                 = local.account_id
-  tecton_assuming_account_id = local.tecton_assuming_account_id
-  region                     = local.region
-  cross_account_external_id  = resource.random_id.external_id.id
+  deployment_name            = var.deployment_name
+  account_id                 = var.account_id
+  tecton_assuming_account_id = var.tecton_assuming_account_id
+  region                     = var.region
+  cross_account_external_id  = random_id.external_id.id
+  databricks_spark_role_name = var.spark_role_name
+}
 
-  databricks_spark_role_name = local.spark_role_name
+module "tecton_vpc" {
+  providers = {
+    aws = aws
+    aws.databricks-account = aws.databricks-account
+  }
+  count                      = var.is_vpc_deployment ? 1 : 0
+  source                     = "../vpc_deployment"
+  deployment_name            = var.deployment_name
+  account_id                 = var.account_id
+  region                     = var.region
+  spark_role_name            = var.spark_role_name
+  databricks_account_id      = var.external_databricks_account_id
+  tecton_assuming_account_id = var.tecton_assuming_account_id
+  elasticache_enabled        = var.elasticache_enabled
+}
+
+# optionally, use a Tecton default vpc/subnet configuration
+module "subnets" {
+  providers = {
+    aws = aws
+  }
+  count           = var.is_vpc_deployment ? 1 : 0
+  source          = "../eks/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = var.region
+}
+
+module "security_groups" {
+  providers = {
+    aws = aws
+  }
+  count           = var.is_vpc_deployment ? 1 : 0
+  source          = "../eks/security_groups"
+  deployment_name = var.deployment_name
+  cluster_vpc_id      = module.subnets[0].vpc_id
+  ip_whitelist = concat([for ip in module.subnets[0].eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
+  tags = {"tecton-accessible:${var.deployment_name}": "true"}
 }

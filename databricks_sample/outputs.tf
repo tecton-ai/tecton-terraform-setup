@@ -1,21 +1,15 @@
-output "deployment_name" {
-  value = local.deployment_name
+output "vpc_id" {
+  value = var.is_vpc_deployment ? module.subnets[0].vpc_id : ""
 }
-output "region" {
-  value = local.region
+
+output "eks_subnet_ids" {
+  value = var.is_vpc_deployment ? module.subnets[0].eks_subnet_ids : []
 }
-output "cross_account_role_arn" {
-  value = module.tecton.aws_iam_role.cross_account_role.arn
+
+output "public_subnet_ids" {
+  value = var.is_vpc_deployment ? module.subnets[0].public_subnet_ids : []
 }
-output "cross_account_external_id" {
-  value = resource.random_id.external_id.id
-}
-output "spark_role_name" {
-  value = local.spark_role_name
-}
-output "spark_instance_profile_name" {
-  value = local.spark_instance_profile_name
-}
-output "databricks_workspace" {
-  value = local.databricks_workspace
+
+output "security_group_ids" {
+  value = var.is_vpc_deployment ? [module.security_groups[0].eks_security_group_id, module.security_groups[0].eks_worker_security_group_id, module.security_groups[0].rds_security_group_id] : []
 }
