@@ -15,7 +15,7 @@ provider "aws" {
 locals {
   deployment_name = "my-deployment-name"
 
-  # The region and account_id of your production AWS account
+  # The region and account_id of this Tecton account you just created
   region     = "my-region"
   account_id = "1234567890"
 
