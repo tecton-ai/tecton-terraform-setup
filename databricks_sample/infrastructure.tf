@@ -6,8 +6,10 @@ provider "aws" {
 
 locals {
   deployment_name = "my-deployment-name"
-  region          = "my-region"
-  account_id      = "123456789"
+
+  # The region and account_id of this Tecton account you just created
+  region     = "my-region"
+  account_id = "123456789"
 
   # Name of role and instance profile used by Databricks
   spark_role_name             = "my-spark-role-name"
