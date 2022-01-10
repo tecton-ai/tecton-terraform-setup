@@ -231,7 +231,7 @@ provider "aws" {
 resource "aws_iam_policy" "common_spark_policy" {
   provider = aws.databricks-account
   name   = "tecton-${var.deployment_name}-common-spark-policy"
-  policy = data.template_file.spark_policy_json.rendered
+  policy = var.create_emr_roles ? data.template_file.emr_spark_policy_json.rendered : data.template_file.spark_policy_json.rendered
   tags   = local.tags
 }
 
@@ -244,7 +244,7 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
 resource "aws_iam_role" "spark_cross_account_role" {
-  count  = var.create_emr_roles ? 0 : 1
+  count                = var.create_emr_roles ? 0 : 1
   name                 = "tecton-${var.deployment_name}-cross-account-spark-access"
   max_session_duration = 43200
   tags                 = local.tags
