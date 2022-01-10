@@ -95,6 +95,7 @@ module "eks_security_groups" {
 }
 
 module "tecton" {
+  count                      = var.is_vpc_deployment ? 0 : 1
   source                     = "../deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
