@@ -88,7 +88,7 @@ data "template_file" "emr_master_policy_json" {
 }
 
 # Spark Cross Account Policy : EMR
-data "template_file" "emr_cross_account_policy_json" {
+data "template_file" "emr_access_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_ca_policy.json")
   vars = {
@@ -239,7 +239,7 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
 # EKS NODE : EMR Only attachment
 resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment_emr" {
   count      = var.create_emr_roles ? 0 : 1
-  policy     = data.template_file.emr_cross_account_policy_json[0].rendered
+  policy     = data.template_file.emr_access_policy_json[0].rendered
   role       = aws_iam_role.eks_node_role.name
 }
 
