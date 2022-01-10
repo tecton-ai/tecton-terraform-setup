@@ -64,7 +64,7 @@ data "template_file" "cross_account_databricks_json" {
   }
 }
 
-# Spark : EMR
+# Spark Policy : EMR
 data "template_file" "emr_spark_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_spark_policy.json")
@@ -75,7 +75,7 @@ data "template_file" "emr_spark_policy_json" {
   }
 }
 
-# Spark : EMR
+# Spark Master Policy : EMR
 data "template_file" "emr_master_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_master_policy.json")
@@ -84,6 +84,19 @@ data "template_file" "emr_master_policy_json" {
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
     SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
+  }
+}
+
+# Spark Cross Account Policy : EMR
+data "template_file" "emr_cross_account_policy_json" {
+  count    = var.create_emr_roles ? 1 : 0
+  template = file("${path.module}/../templates/emr_ca_policy.json")
+  vars = {
+    ACCOUNT_ID       = var.account_id
+    DEPLOYMENT_NAME  = var.deployment_name
+    REGION           = var.region
+    EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
+    SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
   }
 }
 
@@ -223,6 +236,13 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
     role = aws_iam_role.eks_node_role.name
 }
 
+# EKS NODE : EMR Only attachment
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment_emr" {
+  count      = var.create_emr_roles ? 0 : 1
+  policy     = data.template_file.emr_cross_account_policy_json[0].rendered
+  role       = aws_iam_role.eks_node_role.name
+}
+
 provider "aws" {
   alias = "databricks-account"
 }
@@ -231,15 +251,15 @@ provider "aws" {
 resource "aws_iam_policy" "common_spark_policy" {
   provider = aws.databricks-account
   name   = "tecton-${var.deployment_name}-common-spark-policy"
-  policy = var.create_emr_roles ? data.template_file.emr_spark_policy_json.rendered : data.template_file.spark_policy_json.rendered
+  policy = var.create_emr_roles ? data.template_file.emr_spark_policy_json[0].rendered : data.template_file.spark_policy_json.rendered
   tags   = local.tags
 }
 
 # Spark Common : Databricks and EMR
 resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
-  provider = aws.databricks-account
-  policy_arn = aws_iam_policy.common_spark_policy.arn
-  role       = var.spark_role_name
+  provider    = aws.databricks-account
+  policy_arn  = aws_iam_policy.common_spark_policy.arn
+  role        = var.spark_role_name
 }
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
@@ -274,9 +294,9 @@ resource "aws_iam_policy" "cross_account_databricks_policy" {
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
 resource "aws_iam_role_policy_attachment" "cross_account_databricks_policy_attachment" {
-  count  = var.create_emr_roles ? 0 : 1
-  policy_arn = aws_iam_policy.cross_account_databricks_policy.arn
-  role       = aws_iam_role.spark_cross_account_role.name
+  count       = var.create_emr_roles ? 0 : 1
+  policy_arn  = aws_iam_policy.cross_account_databricks_policy.arn
+  role        = aws_iam_role.spark_cross_account_role.name
 }
 
 
