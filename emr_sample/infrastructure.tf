@@ -3,9 +3,11 @@ terraform {
     aws = {
       source                = "hashicorp/aws"
       version               = ">= 3.0.0"
-      configuration_aliases = [aws.cross_account]
     }
   }
+}
+provider "aws" {
+  region = "this-accounts-region"
 }
 
 # Fill these in
@@ -18,14 +20,6 @@ variable "region" {
 }
 
 variable "account_id" {
-  type = string
-}
-
-variable "spark_role_name" {
-  type = string
-}
-
-variable "tecton_dataplane_account_role_arn" {
   type = string
 }
 
@@ -46,10 +40,6 @@ variable "ip_whitelist" {
 variable "tecton_assuming_account_id" {
   type = string
   description = "Get this from your Tecton rep"
-}
-
-provider "aws" {
-  region = "this-accounts-region"
 }
 
 resource "random_id" "external_id" {
@@ -95,6 +85,9 @@ module "eks_security_groups" {
 }
 
 module "tecton" {
+  providers = {
+    aws = aws
+  }
   count                      = var.is_vpc_deployment ? 0 : 1
   source                     = "../deployment"
   deployment_name            = var.deployment_name
@@ -103,17 +96,19 @@ module "tecton" {
   region                     = var.region
   cross_account_external_id  = random_id.external_id.id
   create_emr_roles           = true
-  elasticache_enabled        = var.elasticache_enabled
 }
 
 module "tecton_vpc" {
+  providers = {
+    aws = aws
+    aws.databricks-account = aws
+  }
   count                      = var.is_vpc_deployment ? 1 : 0
   source                     = "../vpc_deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   tecton_assuming_account_id = var.tecton_assuming_account_id
   region                     = var.region
-  cross_account_external_id  = random_id.external_id.id
   create_emr_roles           = true
   elasticache_enabled        = var.elasticache_enabled
 }
