@@ -69,7 +69,9 @@ module "security_groups" {
   emr_vpc_id      = module.subnets.vpc_id
 }
 
-# optionally, use a Tecton default vpc/subnet configuration
+# Optionally, use a Tecton default vpc/subnet configuration
+# Make sure if using this that CIDR blocks do not conflict with EMR ones
+# above.
 module "eks_subnets" {
   providers = {
     aws = aws
