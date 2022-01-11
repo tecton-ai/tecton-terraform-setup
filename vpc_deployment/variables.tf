@@ -34,3 +34,9 @@ variable "create_emr_roles" {
   type    = bool
   default = false
 }
+
+variable "emr_spark_role_name" {
+  type        = string
+  description = "Override the default name Tecton uses for emr spark role"
+  default     = null
+}
