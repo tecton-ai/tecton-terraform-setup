@@ -8,6 +8,13 @@ resource "aws_vpc" "emr_vpc" {
   cidr_block = var.emr_subnet_cidr_prefix
 }
 
+# Add EMR CIDR Block to Existing VPC If any
+resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
+  count      = var.emr_vpc_id == null ? 0 : 1
+  vpc_id     = var.emr_vpc_id
+  cidr_block = var.emr_subnet_cidr_prefix
+}
+
 locals {
   vpc_id                 = var.emr_vpc_id == null ? aws_vpc.emr_vpc[0].id : var.emr_vpc_id
   emr_private_cidr_block = cidrsubnet(var.emr_subnet_cidr_prefix, 2, 0)
@@ -26,6 +33,7 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_internet_gateway" "internet_gateway" {
+  count  = var.emr_vpc_id == null ? 1 : 0
   vpc_id = local.vpc_id
 
   tags = {
@@ -34,6 +42,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_subnet_route_table" {
+  count  = var.emr_vpc_id == null ? 1 : 0
   vpc_id = local.vpc_id
 
   tags = {
@@ -42,14 +51,14 @@ resource "aws_route_table" "public_subnet_route_table" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway.id
+    gateway_id = aws_internet_gateway.internet_gateway[0].id
   }
 }
 
 resource "aws_route_table_association" "public_subnet_route_table_association" {
-  count          = var.availability_zone_count
+  count          = var.emr_vpc_id == null ? var.availability_zone_count : 0
   subnet_id      = aws_subnet.public_subnet[count.index].id
-  route_table_id = aws_route_table.public_subnet_route_table.id
+  route_table_id = aws_route_table.public_subnet_route_table[0].id
 }
 
 
