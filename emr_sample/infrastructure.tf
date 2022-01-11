@@ -53,19 +53,6 @@ variable "tecton_assuming_account_id" {
   description = "Get this from your Tecton rep"
 }
 
-module "subnets" {
-  source          = "../emr/vpc_subnets"
-  deployment_name = var.deployment_name
-  region          = var.region
-}
-
-module "security_groups" {
-  source          = "../emr/security_groups"
-  deployment_name = var.deployment_name
-  region          = var.region
-  emr_vpc_id      = module.subnets.vpc_id
-}
-
 # Optionally, use a Tecton default vpc/subnet configuration
 # Make sure if using this that CIDR blocks do not conflict with EMR ones
 # above.
@@ -89,6 +76,20 @@ module "eks_security_groups" {
   cluster_vpc_id    = module.eks_subnets[0].vpc_id
   ip_whitelist      = concat([for ip in module.eks_subnets[0].eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
   tags              = {"tecton-accessible:${var.deployment_name}": "true"}
+}
+
+# EMR Subnet and Security Group. Use same VPC as EKS
+module "subnets" {
+  source          = "../emr/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = var.region
+}
+
+module "security_groups" {
+  source          = "../emr/security_groups"
+  deployment_name = var.deployment_name
+  region          = var.region
+  emr_vpc_id      = module.eks_subnets[0].vpc_id
 }
 
 module "tecton" {
