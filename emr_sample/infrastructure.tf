@@ -8,6 +8,9 @@ terraform {
 }
 provider "aws" {
   region =  var.region
+  assume_role {
+    role_arn = var.tecton_dataplane_account_role_arn
+  }
 }
 
 resource "random_id" "external_id" {
@@ -35,6 +38,10 @@ variable "is_vpc_deployment" {
 variable "elasticache_enabled" {
   type = bool
   default = false
+}
+
+variable "tecton_dataplane_account_role_arn" {
+  type = string
 }
 
 variable "ip_whitelist" {

@@ -267,7 +267,7 @@ resource "aws_iam_policy" "common_spark_policy" {
 resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
   provider    = aws.databricks-account
   policy_arn  = aws_iam_policy.common_spark_policy.arn
-  role        = var.spark_role_name
+  role        = var.create_emr_roles ? (var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role") : var.spark_role_name
 }
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
