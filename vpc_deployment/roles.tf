@@ -13,8 +13,18 @@ data "template_file" "eks_policy_json" {
 }
 
 # EKS [Common : Databricks and EMR]
-data "template_file" "devops_policy_json" {
-  template = file("${path.module}/../templates/devops_policy.json")
+data "template_file" "devops_policy_json_1" {
+  template = file("${path.module}/../templates/devops_policy_1.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+  }
+}
+
+# EKS [Common : Databricks and EMR]
+data "template_file" "devops_policy_json_2" {
+  template = file("${path.module}/../templates/devops_policy_2.json")
   vars = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
@@ -121,9 +131,16 @@ POLICY
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_policy" {
-  name   = "tecton-${var.deployment_name}-devops-policy"
-  policy = data.template_file.devops_policy_json.rendered
+resource "aws_iam_policy" "devops_policy_1" {
+  name   = "tecton-${var.deployment_name}-devops-policy-1"
+  policy = data.template_file.devops_policy_json_1.rendered
+  tags   = local.tags
+}
+
+# DEVOPS [Common : Databricks and EMR]
+resource "aws_iam_policy" "devops_policy_2" {
+  name   = "tecton-${var.deployment_name}-devops-policy-2"
+  policy = data.template_file.devops_policy_json_2.rendered
   tags   = local.tags
 }
 
@@ -143,10 +160,17 @@ resource "aws_iam_policy" "devops_elasticache_policy" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_policy_attachment" {
-  policy_arn = aws_iam_policy.devops_policy.arn
+resource "aws_iam_role_policy_attachment" "devops_policy_attachment_1" {
+  policy_arn = aws_iam_policy.devops_policy_1.arn
   role       = aws_iam_role.devops_role.name
 }
+
+# DEVOPS [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
+  policy_arn = aws_iam_policy.devops_policy_2.arn
+  role       = aws_iam_role.devops_role.name
+}
+
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_policy_attachment" {
