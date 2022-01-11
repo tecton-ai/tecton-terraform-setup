@@ -15,11 +15,11 @@ output "cross_account_role_arn" {
 # }
 
 output "spark_role_arn" {
-  value = var.is_vpc_deployment ? module.tecton_vpc.spark_role_arn : module.tecton.spark_role_arn
+  value = var.is_vpc_deployment ? module.tecton_vpc[0].spark_role_arn : module.tecton.spark_role_arn
 }
 
 output "spark_instance_profile_arn" {
-  value = var.is_vpc_deployment ? module.tecton_vpc.emr_spark_instance_profile_arn : module.tecton.emr_spark_instance_profile_arn
+  value = var.is_vpc_deployment ? module.tecton_vpc[0].emr_spark_instance_profile_arn : module.tecton.emr_spark_instance_profile_arn
 }
 
 output "vpc_id" {
