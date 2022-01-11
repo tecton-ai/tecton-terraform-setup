@@ -262,7 +262,7 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
 
 # Spark Access Policy : EMR only
 resource "aws_iam_policy" "emr_access_policy" {
-  count  = var.create_emr_roles ? 0 : 1
+  count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-spark-access-policy-emr"
   policy = data.template_file.emr_access_policy_json[0].rendered
   tags   = local.tags
@@ -270,7 +270,7 @@ resource "aws_iam_policy" "emr_access_policy" {
 
 # EKS NODE : EMR Only attachment
 resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment_emr" {
-  count      = var.create_emr_roles ? 0 : 1
+  count      = var.create_emr_roles ? 1 : 0
   policy_arn = aws_iam_policy.emr_access_policy[0].arn
   role       = aws_iam_role.eks_node_role.name
 }
