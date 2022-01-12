@@ -42,25 +42,22 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_subnet_route_table" {
-  count  = var.emr_vpc_id == null ? 1 : 0
   vpc_id = local.vpc_id
-
   tags = {
     Name = "${var.deployment_name}-public-subnet-route-table",
   }
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.internet_gateway[0].id
+    gateway_id = var.gateway_id == null ? aws_internet_gateway.internet_gateway[0].id : var.gateway_id
   }
 }
 
 resource "aws_route_table_association" "public_subnet_route_table_association" {
-  count          = var.emr_vpc_id == null ? var.availability_zone_count : 0
+  count          = var.availability_zone_count
   subnet_id      = aws_subnet.public_subnet[count.index].id
-  route_table_id = aws_route_table.public_subnet_route_table[0].id
+  route_table_id = aws_route_table.public_subnet_route_table.id
 }
-
 
 resource "aws_eip" "nat_elastic_ip" {
   count = var.availability_zone_count

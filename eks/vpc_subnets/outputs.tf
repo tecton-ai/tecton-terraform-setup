@@ -2,6 +2,10 @@ output "vpc_id" {
   value = local.vpc_id
 }
 
+output "gateway_id" {
+  value = aws_internet_gateway.internet_gateway.id
+}
+
 output "eks_subnet_ids" {
   value = aws_subnet.eks_subnet[*].id
 }
