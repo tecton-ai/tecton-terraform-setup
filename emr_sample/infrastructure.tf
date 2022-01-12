@@ -84,6 +84,9 @@ module "subnets" {
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.eks_subnets[0].vpc_id
+  depends_on      = [
+    module.eks_subnets
+  ]
 }
 
 module "security_groups" {
@@ -91,6 +94,9 @@ module "security_groups" {
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.eks_subnets[0].vpc_id
+  depends_on      = [
+    module.eks_subnets
+  ]
 }
 
 module "tecton" {
