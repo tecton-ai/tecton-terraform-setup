@@ -417,3 +417,7 @@ resource "aws_iam_role_policy_attachment" "emr_master_policy_attachment" {
   policy_arn = aws_iam_policy.emr_master_policy[0].arn
   role       = aws_iam_role.emr_master_role[0].name
 }
+
+resource "aws_iam_service_linked_role" "spot" {
+  aws_service_name = "spot.amazonaws.com"
+}
