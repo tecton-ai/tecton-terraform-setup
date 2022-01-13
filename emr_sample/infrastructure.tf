@@ -45,7 +45,9 @@ variable "tecton_dataplane_account_role_arn" {
 }
 
 variable "ip_whitelist" {
-  default = []
+  type          = list(string)
+  description   = "Ip ranges that should be able to access Tecton endpoint"
+  default       = ["0.0.0.0/0"]
 }
 
 variable "tecton_assuming_account_id" {
