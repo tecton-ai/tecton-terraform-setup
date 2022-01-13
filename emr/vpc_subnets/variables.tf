@@ -17,6 +17,12 @@ variable "emr_vpc_id" {
   description = "Id of a pre-existing VPC."
 }
 
+variable "use_existing_vpc" {
+  type        = bool
+  default     = false
+  description = "Use pre existing VPC"
+}
+
 variable "gateway_id" {
   type        = string
   default     = null

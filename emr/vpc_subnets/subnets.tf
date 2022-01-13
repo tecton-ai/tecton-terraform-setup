@@ -4,13 +4,13 @@ data "aws_availability_zones" "available" {
 
 # create a default vpc if vpc_id is not passed in
 resource "aws_vpc" "emr_vpc" {
-  count      = var.emr_vpc_id == null ? 1 : 0
+  count      = var.use_existing_vpc == false ? 1 : 0
   cidr_block = var.emr_subnet_cidr_prefix
 }
 
 # Add EMR CIDR Block to Existing VPC If any
 resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
-  count      = var.emr_vpc_id == null ? 0 : 1
+  count      = var.use_existing_vpc == false ? 0 : 1
   vpc_id     = var.emr_vpc_id
   cidr_block = var.emr_subnet_cidr_prefix
 }
@@ -33,7 +33,7 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_internet_gateway" "internet_gateway" {
-  count  = var.emr_vpc_id == null ? 1 : 0
+  count  = var.use_existing_vpc == false ? 1 : 0
   vpc_id = local.vpc_id
 
   tags = {

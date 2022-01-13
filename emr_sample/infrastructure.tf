@@ -87,13 +87,14 @@ module "eks_security_groups" {
 
 # EMR Subnet and Security Group. Use same VPC as EKS
 module "subnets" {
-  count           = var.apply_layer > 0 ? 1 : 0
-  source          = "../emr/vpc_subnets"
-  deployment_name = var.deployment_name
-  region          = var.region
-  emr_vpc_id      = module.eks_subnets[0].vpc_id
-  gateway_id      = module.eks_subnets[0].gateway_id 
-  depends_on      = [
+  count             = var.apply_layer > 0 ? 1 : 0
+  source            = "../emr/vpc_subnets"
+  deployment_name   = var.deployment_name
+  region            = var.region
+  use_existing_vpc  = true
+  emr_vpc_id        = module.eks_subnets[0].vpc_id
+  gateway_id        = module.eks_subnets[0].gateway_id 
+  depends_on        = [
     module.eks_subnets
   ]
 }
@@ -139,38 +140,38 @@ module "tecton_vpc" {
   elasticache_enabled        = var.elasticache_enabled
 }
 
-# module "notebook_cluster" {
-#   source = "../emr/notebook_cluster"
-#   # See https://docs.tecton.ai/v2/setting-up-tecton/04b-connecting-emr.html#prerequisites
-#   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
+module "notebook_cluster" {
+  source = "../emr/notebook_cluster"
+  # See https://docs.tecton.ai/v2/setting-up-tecton/04b-connecting-emr.html#prerequisites
+  # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
-#   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-#   count           = 0
+  # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
+  count           = 0
 
-#   region          = var.region
-#   deployment_name = var.deployment_name
-#   instance_type   = "m5.xlarge"
+  region          = var.region
+  deployment_name = var.deployment_name
+  instance_type   = "m5.xlarge"
 
-#   subnet_id            = module.subnets.emr_subnet_id
-#   instance_profile_arn = module.tecton.spark_role_name
-#   emr_service_role_id  = module.tecton.emr_master_role_name
+  subnet_id            = module.subnets[0].emr_subnet_id
+  instance_profile_arn = module.tecton_vpc[0].spark_role_name
+  emr_service_role_id  = module.tecton_vpc[0].emr_master_role_name
 
-#   emr_security_group_id         = module.security_groups.emr_security_group_id
-#   emr_service_security_group_id = module.security_groups.emr_service_security_group_id
+  emr_security_group_id         = module.security_groups[0].emr_security_group_id
+  emr_service_security_group_id = module.security_groups[0].emr_service_security_group_id
 
-#   # OPTIONAL
-#   # You can provide custom bootstrap action(s)
-#   # to be performed upon notebook cluster creation
-#   # extra_bootstrap_actions = [
-#   #   {
-#   #     name = "name_of_the_step"
-#   #     path = "s3://path/to/script.sh"
-#   #   }
-#   # ]
+  # OPTIONAL
+  # You can provide custom bootstrap action(s)
+  # to be performed upon notebook cluster creation
+  # extra_bootstrap_actions = [
+  #   {
+  #     name = "name_of_the_step"
+  #     path = "s3://path/to/script.sh"
+  #   }
+  # ]
 
-#   has_glue        = true
-#   glue_account_id = var.account_id
-# }
+  has_glue        = true
+  glue_account_id = var.account_id
+}
 
 # This module adds some IAM privileges to enable your Tecton technical support
 # reps to open and execute EMR notebooks in your account to help troubleshoot
