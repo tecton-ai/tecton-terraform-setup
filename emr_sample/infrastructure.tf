@@ -53,6 +53,13 @@ variable "tecton_assuming_account_id" {
   description = "Get this from your Tecton rep"
 }
 
+
+variable "apply_layer" {
+  type        = number
+  default     = 2
+  description = "due to terraform issues with dynamic number of resources, we need to apply in layers. Layers start at 0 and should be incremented after each successful apply until the default value is reached"
+}
+
 # Optionally, use a Tecton default vpc/subnet configuration
 # Make sure if using this that CIDR blocks do not conflict with EMR ones
 # above.
@@ -80,6 +87,7 @@ module "eks_security_groups" {
 
 # EMR Subnet and Security Group. Use same VPC as EKS
 module "subnets" {
+  count           = var.apply_layer > 0 ? 1 : 0
   source          = "../emr/vpc_subnets"
   deployment_name = var.deployment_name
   region          = var.region
@@ -91,6 +99,7 @@ module "subnets" {
 }
 
 module "security_groups" {
+  count           = var.apply_layer > 0 ? 1 : 0
   source          = "../emr/security_groups"
   deployment_name = var.deployment_name
   region          = var.region
@@ -120,7 +129,7 @@ module "tecton_vpc" {
     aws = aws
     aws.databricks-account = aws
   }
-  count                      = var.is_vpc_deployment ? 1 : 0
+  count                      = var.is_vpc_deployment ? (var.apply_layer > 1 ? 1 : 0) : 0
   source                     = "../vpc_deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
