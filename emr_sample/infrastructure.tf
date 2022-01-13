@@ -95,6 +95,7 @@ module "security_groups" {
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.eks_subnets[0].vpc_id
+  vpc_subnet_prefix = module.eks_subnets[0].vpc_subnet_prefix
   depends_on      = [
     module.eks_subnets
   ]

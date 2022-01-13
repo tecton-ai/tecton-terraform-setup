@@ -25,3 +25,7 @@ output "eks_subnet_route_table_ids" {
 output "public_subnet_route_table_ids" {
   value = aws_route_table.public_subnet_route_table[*].id
 }
+
+output "vpc_subnet_prefix" {
+  value = var.eks_subnet_cidr_prefix
+}

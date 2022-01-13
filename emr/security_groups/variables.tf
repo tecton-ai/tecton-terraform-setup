@@ -14,3 +14,6 @@ variable "emr_vpc_id" {
   type        = string
   description = "Id of the vpc to create the security groups in."
 }
+variable "vpc_subnet_prefix" {
+  type = string
+}
