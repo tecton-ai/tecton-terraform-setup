@@ -2,7 +2,7 @@ output "vpc_id" {
   value = local.vpc_id
 }
 
-output "gateway_id" {
+output "internet_gateway_id" {
   value = aws_internet_gateway.internet_gateway.id
 }
 

@@ -16,4 +16,5 @@ variable "emr_vpc_id" {
 }
 variable "vpc_subnet_prefix" {
   type = string
+  description = "CIDR block prefix to be used for the EMR VPC Subnet"
 }

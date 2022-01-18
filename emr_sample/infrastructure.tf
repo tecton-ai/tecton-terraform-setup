@@ -93,24 +93,24 @@ module "eks_security_groups" {
 
 # EMR Subnet and Security Group. Use same VPC as EKS
 module "subnets" {
-  count             = var.apply_layer > 0 ? 1 : 0
-  source            = "../emr/vpc_subnets"
-  deployment_name   = var.deployment_name
-  region            = var.region
-  use_existing_vpc  = true
-  emr_vpc_id        = module.eks_subnets[0].vpc_id
-  gateway_id        = module.eks_subnets[0].gateway_id 
-  depends_on        = [
+  count               = var.apply_layer > 0 ? 1 : 0
+  source              = "../emr/vpc_subnets"
+  deployment_name     = var.deployment_name
+  region              = var.region
+  use_existing_vpc    = true
+  emr_vpc_id          = module.eks_subnets[0].vpc_id
+  internet_gateway_id = module.eks_subnets[0].internet_gateway_id 
+  depends_on          = [
     module.eks_subnets
   ]
 }
 
 module "security_groups" {
-  count           = var.apply_layer > 0 ? 1 : 0
-  source          = "../emr/security_groups"
-  deployment_name = var.deployment_name
-  region          = var.region
-  emr_vpc_id      = module.eks_subnets[0].vpc_id
+  count             = var.apply_layer > 0 ? 1 : 0
+  source            = "../emr/security_groups"
+  deployment_name   = var.deployment_name
+  region            = var.region
+  emr_vpc_id        = module.eks_subnets[0].vpc_id
   vpc_subnet_prefix = module.eks_subnets[0].vpc_subnet_prefix
   depends_on      = [
     module.eks_subnets
@@ -136,7 +136,7 @@ module "tecton_vpc" {
     aws = aws
     aws.databricks-account = aws
   }
-  count                      = var.is_vpc_deployment ? (var.apply_layer > 1 ? 1 : 0) : 0
+  count                      = (var.is_vpc_deployment && (var.apply_layer > 1)) ? 1 : 0
   source                     = "../vpc_deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id

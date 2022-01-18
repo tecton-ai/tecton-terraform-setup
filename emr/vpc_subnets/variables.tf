@@ -23,10 +23,10 @@ variable "use_existing_vpc" {
   description = "Use pre existing VPC"
 }
 
-variable "gateway_id" {
+variable "internet_gateway_id" {
   type        = string
   default     = null
-  description = "Id of a pre-existing gateway."
+  description = "Id of a pre-existing internet gateway."
 }
 
 variable "emr_subnet_cidr_prefix" {
