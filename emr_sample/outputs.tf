@@ -10,10 +10,6 @@ output "cross_account_role_arn" {
   value = var.is_vpc_deployment ? null : module.tecton.cross_account_role_arn
 }
 
-# output "cross_account_external_id" {
-#   value = resource.random_id.external_id.id
-# }
-
 output "spark_role_arn" {
   value = var.is_vpc_deployment ? module.tecton_vpc[0].spark_role_arn : module.tecton.spark_role_arn
 }
