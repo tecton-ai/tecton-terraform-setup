@@ -30,16 +30,20 @@ variable "account_id" {
   type = string
 }
 
+# VPC deployment by default
 variable "is_vpc_deployment" {
   type = bool
-  default = false
+  default = true
 }
 
+# By default Redis is not enabled. You can re-run the terraform later
+# with this enabled if you want
 variable "elasticache_enabled" {
   type = bool
   default = false
 }
 
+# Role used to run terraform with. Usually the admin role in the account.
 variable "tecton_dataplane_account_role_arn" {
   type = string
 }
