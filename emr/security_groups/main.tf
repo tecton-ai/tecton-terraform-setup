@@ -67,3 +67,13 @@ resource "aws_security_group_rule" "emr_service_security_group_egress" {
   to_port                  = 8443
   type                     = "egress"
 }
+
+resource "aws_security_group_rule" "emr_security_group_livy_ingress" {
+  description       = "Allow Tecton to connect to emr on the livy port"
+  from_port         = 8998
+  protocol          = "tcp"
+  security_group_id = aws_security_group.emr_security_group.id
+  cidr_blocks       = [var.vpc_subnet_prefix]
+  to_port           = 8998
+  type              = "ingress"
+}

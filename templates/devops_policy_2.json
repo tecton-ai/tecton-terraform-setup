@@ -1,0 +1,140 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DynamoDB",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:CreateTable",
+                "dynamodb:DeleteTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource",
+                "dynamodb:UpdateTable",
+                "dynamodb:CreateBackup",
+                "dynamodb:DescribeBackup",
+                "dynamodb:DeleteBackup"
+            ],
+            "Resource": ["arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
+        },
+        {
+            "Sid": "DynamoDBGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:DescribeLimits"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "CreateServiceLinkedRoles",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:DeleteServiceLinkedRole",
+                "iam:GetRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService",
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
+            ]
+        },
+        {
+            "Sid": "ManageTectonScopedSecrets",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:DeleteSecret",
+                "secretsmanager:PutSecretValue",
+                "secretsmanager:DescribeSecret",
+                "secretsmanager:GetResourcePolicy",
+                "secretsmanager:TagResource",
+                "secretsmanager:UnTagResource"
+            ],
+            "Resource": "arn:aws:secretsmanager:*:*:secret:tecton-${DEPLOYMENT_NAME}/*"
+        },
+        {
+            "Sid": "ElasticSearch",
+            "Action": [
+                "es:CreateDomain",
+                "es:DescribeElasticsearchDomain",
+                "es:ListTags",
+                "es:DeleteElasticsearchDomain"
+            ],
+            "Effect": "Allow",
+            "Resource": ["arn:aws:es:${REGION}:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"]
+        },
+        {
+            "Sid": "CreateTectonHostedZoneForElasticSearch",
+            "Action": [
+                "route53:CreateHostedZone"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Sid": "ManageTectonHostedZoneForElasticSearch",
+            "Action": [
+                "route53:GetChange",
+                "route53:ChangeResourceRecordSets",
+                "route53:DeleteHostedZone",
+                "route53:ListResourceRecordSets",
+                "route53:ListTagsForResource",
+                "route53:GetHostedZone"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:route53:::change/*",
+                "arn:aws:route53:::hostedzone/*"
+            ]
+        },
+        {
+            "Sid": "RdsAccess",
+            "Action": [
+                "rds:CreateDBSubnetGroup",
+                "rds:DeleteDBSubnetGroup",
+                "rds:AddTagsToResource",
+                "rds:DescribeDBSubnetGroups",
+                "rds:DescribeDBInstances",
+                "rds:ModifyDBInstance",
+                "rds:CreateDBInstance",
+                "rds:ListTagsForResource"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:og:default*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:pg:default*"
+            ]
+        },
+        {
+            "Sid": "CreateCertificateForTectonAIDomain",
+            "Action": [
+                "acm:RequestCertificate"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+        },
+        {
+            "Sid": "ManageCertificateForTectonAIDomain",
+            "Action": [
+                "acm:DescribeCertificate",
+                "acm:ListTagsForCertificate",
+                "acm:DeleteCertificate"
+            ],
+            "Effect": "Allow",
+            "Resource": "*",
+            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+        }
+    ]
+}

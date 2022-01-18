@@ -6,6 +6,62 @@
             "Effect": "Allow",
             "Action": "secretsmanager:GetSecretValue",
             "Resource": "arn:aws:secretsmanager:*:${ACCOUNT_ID}:secret:tecton-${DEPLOYMENT_NAME}/*"
+        },
+        {
+            "Sid": "DynamoDB",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeTable",
+                "dynamodb:PutItem",
+                "dynamodb:Query"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "DynamoDBGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3Bucket",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:s3:::tecton.ai.databricks-init-scripts",
+                "arn:aws:s3:::tecton.ai.public",
+                "arn:aws:s3:::tecton-materialization-release"
+            ]
+        },
+        {
+            "Sid": "S3Object",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+        "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+            ]
+        },
+    {
+            "Sid": "TectonPublicS3",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton.ai.databricks-init-scripts/*",
+                "arn:aws:s3:::tecton.ai.public/*",
+                "arn:aws:s3:::tecton-materialization-release/*"
+            ]
         }
     ]
 }

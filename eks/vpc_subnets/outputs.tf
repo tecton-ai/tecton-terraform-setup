@@ -2,6 +2,10 @@ output "vpc_id" {
   value = local.vpc_id
 }
 
+output "internet_gateway_id" {
+  value = aws_internet_gateway.internet_gateway.id
+}
+
 output "eks_subnet_ids" {
   value = aws_subnet.eks_subnet[*].id
 }
@@ -20,4 +24,8 @@ output "eks_subnet_route_table_ids" {
 
 output "public_subnet_route_table_ids" {
   value = aws_route_table.public_subnet_route_table[*].id
+}
+
+output "vpc_subnet_prefix" {
+  value = var.eks_subnet_cidr_prefix
 }
