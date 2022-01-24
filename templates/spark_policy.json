@@ -5,6 +5,7 @@
             "Sid": "DynamoDB",
             "Effect": "Allow",
             "Action": [
+                "dynamodb:BatchWriteItem",
                 "dynamodb:ConditionCheckItem",
                 "dynamodb:DescribeTable",
                 "dynamodb:PutItem",
