@@ -5,6 +5,7 @@ provider "aws" {
 }
 
 locals {
+  # Deployment name must be less than 22 characters (AWS limitation)
   deployment_name = "my-deployment-name"
 
   # The region and account_id of this Tecton account you just created
