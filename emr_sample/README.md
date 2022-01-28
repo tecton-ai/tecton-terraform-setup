@@ -6,19 +6,20 @@ This repository contains terraform code that you can run as part of the Tecton c
 * Sets up cross account roles that Tecton can use to setup, monitor and debug your cluster.
 
 You can run the following terraform commands in this folder which will execute the `infrastructure.tf` file.
-Run Terraform plan which will output the objects that will be created
+Run Terraform init / plan which will output the objects that will be created
 
 ```
-aws-vault exec terraform -- terraform plan
+terraform init
+terraform plan
 ```
 If the plan output looks good to you you can then apply using
 ```
-aws-vault exec terraform -- terraform apply
+terraform apply
 ```
 
 The above commands will ask you for certain variable inputs. These can also be passes in with a file where the file contains the input variables. Example
 ```
-aws-vault exec terraform -- terraform apply -var-file=<your_file_name>.tfvars
+terraform apply -var-file=<your_file_name>.tfvars
 ```
 ### Input Variables : 
 
@@ -39,7 +40,7 @@ aws-vault exec terraform -- terraform apply -var-file=<your_file_name>.tfvars
     Whether this is a VPC deployment. Default is set to true.
 
 * `elasticache_enabled` :
-    Whether you want to optionall also create a Redis cluster that Tecton will use for an online store. This currently defaults to False.
+    Whether you want to optional also create a Redis cluster that Tecton will use for an online store. This currently defaults to False.
     **Note that Redis is currently in Beta and you should talk to Tecton before turning it on**
 
 * `tecton_dataplane_account_role_arn` :
@@ -49,7 +50,7 @@ aws-vault exec terraform -- terraform apply -var-file=<your_file_name>.tfvars
     IP ranges that should be able to access Tecton endpoint. Currently this defaults to `0.0.0.0/0` so everyone can access the Tecton endpoint
 
 * `tecton_assuming_account_id` :
-    This is the Tecton AWS account ID. Please get this from your Tecon rep.
+    This is the Tecton AWS account ID. Please get this from your Tecton rep.
 
 ### Output Variables :
 
