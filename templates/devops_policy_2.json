@@ -119,12 +119,19 @@
         {
             "Sid": "CreateCertificateForTectonAIDomain",
             "Action": [
-                "acm:RequestCertificate",
-                "acm:AddTagsToCertificate"
+                "acm:RequestCertificate"
             ],
             "Effect": "Allow",
             "Resource": "*",
             "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+        },
+        {
+            "Sid": "AddTagsToCertificateForTectonAIDomain",
+            "Action": [
+                "acm:AddTagsToCertificate"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
         },
         {
             "Sid": "ManageCertificateForTectonAIDomain",
