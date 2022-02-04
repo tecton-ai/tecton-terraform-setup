@@ -119,7 +119,8 @@
         {
             "Sid": "CreateCertificateForTectonAIDomain",
             "Action": [
-                "acm:RequestCertificate"
+                "acm:RequestCertificate",
+                "acm:AddTagsToCertificate"
             ],
             "Effect": "Allow",
             "Resource": "*",
