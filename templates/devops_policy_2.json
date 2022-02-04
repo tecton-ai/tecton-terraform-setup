@@ -126,6 +126,14 @@
             "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
         },
         {
+            "Sid": "AddTagsToCertificateForTectonAIDomain",
+            "Action": [
+                "acm:AddTagsToCertificate"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
             "Sid": "ManageCertificateForTectonAIDomain",
             "Action": [
                 "acm:DescribeCertificate",
