@@ -421,3 +421,7 @@ resource "aws_iam_role_policy_attachment" "emr_master_policy_attachment" {
 resource "aws_iam_service_linked_role" "spot" {
   aws_service_name = "spot.amazonaws.com"
 }
+
+resource "aws_iam_service_linked_role" "eks-nodegroup" {
+  aws_service_name = "eks-nodegroup.amazonaws.com"
+}
