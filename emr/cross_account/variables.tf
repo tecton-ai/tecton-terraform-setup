@@ -1,8 +1,3 @@
-variable "availability_zone_count" {
-  type    = number
-  default = 2
-}
-
 variable "cidr_block" {
   type = string
 }
