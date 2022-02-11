@@ -3,16 +3,12 @@ locals {
 }
 
 ## CROSS ACCOUNT DEBUGGING POLICIES
-data "template_file" "emr_debugging_policy_json" {
-  template = file("${path.module}/../../templates/emr_debugging_policy.json")
-  vars = {
-    DEPLOYMENT_NAME = var.deployment_name
-  }
-}
 
 resource "aws_iam_policy" "emr_debugging_policy" {
   name   = "tecton-${var.deployment_name}-cross-account-emr-debugging"
-  policy = data.template_file.emr_debugging_policy_json.rendered
+  policy = templatefile("${path.module}/../../templates/emr_debugging_policy.json", {
+    DEPLOYMENT_NAME = var.deployment_name
+  })
   tags   = local.tags
 }
 

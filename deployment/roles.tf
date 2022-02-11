@@ -7,24 +7,6 @@ data "aws_iam_role" "spark_role" {
   name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
-data "template_file" "cross_account_policy_json" {
-  template = file("${path.module}/../templates/ca_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-    SPARK_ROLE      = local.spark_role_name
-  }
-}
-
-data "template_file" "spark_policy_json" {
-  template = file("${path.module}/../templates/spark_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
 
 # CROSS ACCOUNT ROLE
 resource "aws_iam_role" "cross_account_role" {
@@ -53,7 +35,12 @@ POLICY
 }
 resource "aws_iam_policy" "cross_account_policy" {
   name   = "tecton-${var.deployment_name}-cross-account-policy"
-  policy = data.template_file.cross_account_policy_json.rendered
+  policy = templatefile("${path.module}/../templates/ca_policy.json", {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+    SPARK_ROLE      = local.spark_role_name
+  })
   tags   = local.tags
 }
 
@@ -65,7 +52,11 @@ resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
 # SPARK ROLE
 resource "aws_iam_policy" "common_spark_policy" {
   name   = "tecton-${var.deployment_name}-common-spark-policy"
-  policy = data.template_file.spark_policy_json.rendered
+  policy = templatefile("${path.module}/../templates/spark_policy.json", {
+    ACCOUNT_ID = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION = var.region
+  })
   tags   = local.tags
 }
 resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {

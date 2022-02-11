@@ -1,9 +1,4 @@
 # this example assumes that Databricks and Tecton are deployed to the same account
-
-provider "aws" {
-  region = "my-region"
-}
-
 locals {
   # Deployment name must be less than 22 characters (AWS limitation)
   deployment_name = "my-deployment-name"
@@ -27,9 +22,6 @@ resource "random_id" "external_id" {
 }
 
 module "tecton" {
-  providers = {
-    aws = aws
-  }
   source                     = "../deployment"
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
