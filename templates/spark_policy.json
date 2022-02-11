@@ -46,7 +46,7 @@
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
             ]
         },
-    {
+        {
             "Sid": "TectonPublicS3",
             "Effect": "Allow",
             "Action": [
@@ -56,6 +56,14 @@
                 "arn:aws:s3:::tecton.ai.databricks-init-scripts/*",
                 "arn:aws:s3:::tecton.ai.public/*",
                 "arn:aws:s3:::tecton-materialization-release/*"
+            ]
+        },
+        {
+            "Sid": "CrossAccountDynamoDBAccess",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-cross-account-spark-access"
             ]
         }
     ]
