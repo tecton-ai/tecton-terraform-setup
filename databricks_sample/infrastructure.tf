@@ -1,3 +1,18 @@
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      version               = "~> 3"
+      # configuration_aliases = [aws.cross_account]
+   
+    }
+  }
+}
+
+provider "aws" {
+  region = "my-region"
+} 
+
 # this example assumes that Databricks and Tecton are deployed to the same account
 locals {
   # Deployment name must be less than 22 characters (AWS limitation)
