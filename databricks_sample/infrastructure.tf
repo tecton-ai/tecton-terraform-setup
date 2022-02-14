@@ -42,7 +42,8 @@ variable "elasticache_enabled" {
 }
 
 variable "ip_whitelist" {
-  default = []
+  description   = "Ip ranges that should be able to access Tecton endpoint"
+  default       = ["0.0.0.0/0"]
 }
 
 variable "tecton_assuming_account_id" {
