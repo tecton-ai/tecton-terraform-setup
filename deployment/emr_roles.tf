@@ -1,40 +1,17 @@
-data "template_file" "emr_spark_policy_json" {
-  count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/emr_spark_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-data "template_file" "emr_master_policy_json" {
-  count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/emr_master_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-    SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
-  }
-}
-data "template_file" "emr_cross_account_policy_json" {
-  count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/emr_ca_policy.json")
-  vars = {
+
+
+# CROSS ACCOUNT ROLE
+resource "aws_iam_policy" "emr_cross_account_policy" {
+  count = var.create_emr_roles ? 1 : 0
+  name  = "tecton-${var.deployment_name}-cross-account-policy-emr"
+  policy = templatefile("${path.module}/../templates/emr_ca_policy.json", {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
     EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
     SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
-  }
-}
-
-# CROSS ACCOUNT ROLE
-resource "aws_iam_policy" "emr_cross_account_policy" {
-  count  = var.create_emr_roles ? 1 : 0
-  name   = "tecton-${var.deployment_name}-cross-account-policy-emr"
-  policy = data.template_file.emr_cross_account_policy_json[0].rendered
-  tags   = local.tags
+  })
+  tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "emr_cross_account_policy_attachment" {
   count      = var.create_emr_roles ? 1 : 0
@@ -63,10 +40,14 @@ resource "aws_iam_role" "emr_spark_role" {
 POLICY
 }
 resource "aws_iam_policy" "emr_spark_policy" {
-  count  = var.create_emr_roles ? 1 : 0
-  name   = "tecton-${var.deployment_name}-spark-policy-emr"
-  policy = data.template_file.emr_spark_policy_json[0].rendered
-  tags   = local.tags
+  count = var.create_emr_roles ? 1 : 0
+  name  = "tecton-${var.deployment_name}-spark-policy-emr"
+  policy = templatefile("${path.module}/../templates/emr_spark_policy.json", {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+  })
+  tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "emr_spark_policy_attachment" {
   count      = var.create_emr_roles ? 1 : 0
@@ -105,10 +86,15 @@ resource "aws_iam_role" "emr_master_role" {
 POLICY
 }
 resource "aws_iam_policy" "emr_master_policy" {
-  count  = var.create_emr_roles ? 1 : 0
-  name   = "tecton-${var.deployment_name}-master-policy-emr"
-  policy = data.template_file.emr_master_policy_json[0].rendered
-  tags   = local.tags
+  count = var.create_emr_roles ? 1 : 0
+  name  = "tecton-${var.deployment_name}-master-policy-emr"
+  policy = templatefile("${path.module}/../templates/emr_master_policy.json", {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+    SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
+  })
+  tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "emr_master_policy_attachment" {
   count      = var.create_emr_roles ? 1 : 0
