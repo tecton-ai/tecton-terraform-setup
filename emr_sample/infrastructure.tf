@@ -95,14 +95,14 @@ module "eks_security_groups" {
 
 # EMR Subnet and Security Group. Use same VPC as EKS
 module "subnets" {
-  count               = var.apply_layer > 0 ? 1 : 0
-  source              = "../emr/vpc_subnets"
-  deployment_name     = var.deployment_name
-  region              = var.region
-  availability_zone_count = 3
-  vpc_id     = module.eks_subnets[0].vpc_id
-  internet_gateway_id = module.eks_subnets[0].internet_gateway_id
-  depends_on          = [
+  count                     = var.apply_layer > 0 ? 1 : 0
+  source                    = "../emr/vpc_subnets"
+  deployment_name           = var.deployment_name
+  region                    = var.region
+  availability_zone_count   = 3
+  vpc_id                    = module.eks_subnets[0].vpc_id
+  az_name_to_nat_gateway_id = module.eks_subnets[0].az_name_to_nat_gateway_id
+  depends_on                = [
     module.eks_subnets
   ]
 }
