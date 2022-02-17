@@ -99,7 +99,7 @@ module "subnets" {
   region              = var.region
   use_existing_vpc    = true
   emr_vpc_id          = module.eks_subnets[0].vpc_id
-  internet_gateway_id = module.eks_subnets[0].internet_gateway_id 
+  internet_gateway_id = module.eks_subnets[0].internet_gateway_id
   depends_on          = [
     module.eks_subnets
   ]
@@ -189,7 +189,7 @@ module "emr_debugging" {
 
   count                   = 0
   deployment_name         = var.deployment_name
-  cross_account_role_name = var.is_vpc_deployment ? module.tecton_vpc.cross_account_role_name : module.tecton.cross_account_role_name
+  cross_account_role_name = var.is_vpc_deployment ? module.tecton_vpc[0].devops_role_name : module.tecton.cross_account_role_name
 }
 
 ##############################################################################################
