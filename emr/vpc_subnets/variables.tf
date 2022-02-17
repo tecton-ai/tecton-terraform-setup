@@ -12,9 +12,8 @@ variable "region" {
   description = "The region for Tecton to use EMR in."
 }
 
-variable "existing_vpc_id" {
+variable "vpc_id" {
   type        = string
-  default     = null
   description = "Id of a pre-existing VPC to be reused."
 }
 

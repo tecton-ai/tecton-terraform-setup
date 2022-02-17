@@ -2,21 +2,13 @@
 data "aws_availability_zones" "available" {
 }
 
-# create a default vpc if vpc_id is not passed in
-resource "aws_vpc" "emr_vpc" {
-  count      = var.existing_vpc_id == null ? 1 : 0
-  cidr_block = var.emr_subnet_cidr_prefix
-}
-
 # Add EMR CIDR Block to Existing VPC If any
 resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
-  count      = var.existing_vpc_id == null ? 0 : 1
-  vpc_id     = var.existing_vpc_id
+  vpc_id     = var.vpc_id
   cidr_block = var.emr_subnet_cidr_prefix
 }
 
 locals {
-  vpc_id                 = var.existing_vpc_id == null ? aws_vpc.emr_vpc[0].id : var.existing_vpc_id
   emr_private_cidr_block = cidrsubnet(var.emr_subnet_cidr_prefix, 2, 0)
   public_cidr_block      = cidrsubnet(var.emr_subnet_cidr_prefix, 2, 3)
 }
@@ -25,7 +17,7 @@ resource "aws_subnet" "public_subnet" {
   count             = var.availability_zone_count
   availability_zone = data.aws_availability_zones.available.names[count.index]
   cidr_block        = cidrsubnet(local.public_cidr_block, 10, count.index)
-  vpc_id            = local.vpc_id
+  vpc_id            = var.vpc_id
 
   tags = {
     Name = "${var.deployment_name}-public-subnet",
@@ -34,7 +26,7 @@ resource "aws_subnet" "public_subnet" {
 
 resource "aws_internet_gateway" "internet_gateway" {
   count  = var.internet_gateway_id == null ? 1 : 0
-  vpc_id = local.vpc_id
+  vpc_id = var.vpc_id
 
   tags = {
     Name = "${var.deployment_name}-internet-gateway",
@@ -42,7 +34,7 @@ resource "aws_internet_gateway" "internet_gateway" {
 }
 
 resource "aws_route_table" "public_subnet_route_table" {
-  vpc_id = local.vpc_id
+  vpc_id = var.vpc_id
   tags = {
     Name = "${var.deployment_name}-public-subnet-route-table",
   }
@@ -85,7 +77,7 @@ resource "aws_subnet" "emr_subnet" {
 
   availability_zone = data.aws_availability_zones.available.names[count.index]
   cidr_block        = cidrsubnet(local.emr_private_cidr_block, 3, count.index)
-  vpc_id            = local.vpc_id
+  vpc_id            = var.vpc_id
 
   tags = {
     "Name"                                     = "${var.deployment_name}-tecton-emr-subnet",
@@ -94,12 +86,12 @@ resource "aws_subnet" "emr_subnet" {
 }
 
 resource "aws_vpc_endpoint" "dynamodb" {
-  vpc_id       = local.vpc_id
+  vpc_id       = var.vpc_id
   service_name = "com.amazonaws.${var.region}.dynamodb"
 }
 
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = local.vpc_id
+  vpc_id       = var.vpc_id
   service_name = "com.amazonaws.${var.region}.s3"
 }
 
@@ -117,7 +109,7 @@ resource "aws_vpc_endpoint_route_table_association" "private_s3_vpce" {
 
 resource "aws_route_table" "emr_subnet_route_table" {
   count  = var.availability_zone_count
-  vpc_id = local.vpc_id
+  vpc_id = var.vpc_id
 
   tags = {
     "Name" = "${var.deployment_name}-emr-subnet-route-table",
