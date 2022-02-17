@@ -77,6 +77,8 @@ module "eks_subnets" {
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
   region          = var.region
+  # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+  availability_zone_count = 3
 }
 
 module "eks_security_groups" {
@@ -97,6 +99,7 @@ module "subnets" {
   source              = "../emr/vpc_subnets"
   deployment_name     = var.deployment_name
   region              = var.region
+  availability_zone_count = 3
   existing_vpc_id     = module.eks_subnets[0].vpc_id
   internet_gateway_id = module.eks_subnets[0].internet_gateway_id
   depends_on          = [
