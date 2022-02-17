@@ -4,8 +4,7 @@ variable "deployment_name" {
 
 variable "availability_zone_count" {
   type        = number
-  default     = 3
-  description = "The number of availability zones for Tecton to use EKS in."
+  description = "The number of availability zones for Tecton to use EKS in. Please set this to 3 unless the region you are deploying to only has 2 AZs."
 }
 
 variable "region" {
