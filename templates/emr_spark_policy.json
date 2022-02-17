@@ -35,7 +35,6 @@
             "Action": "s3:ListBucket",
             "Resource": [
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:s3:::tecton.ai.databricks-init-scripts",
                 "arn:aws:s3:::tecton.ai.public",
                 "arn:aws:s3:::tecton-materialization-release"
             ]
@@ -59,7 +58,6 @@
                 "s3:GetObject"
             ],
             "Resource": [
-                "arn:aws:s3:::tecton.ai.databricks-init-scripts/*",
                 "arn:aws:s3:::tecton.ai.public/*",
                 "arn:aws:s3:::tecton-materialization-release/*"
             ]
