@@ -105,10 +105,12 @@ module "subnets" {
   providers = {
     aws = aws
   }
-  count           = var.is_vpc_deployment ? 1 : 0
-  source          = "../eks/vpc_subnets"
-  deployment_name = var.deployment_name
-  region          = var.region
+  count                     = var.is_vpc_deployment ? 1 : 0
+  source                  = "../eks/vpc_subnets"
+  deployment_name         = var.deployment_name
+  region                  = var.region
+  # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+  availability_zone_count = 3
 }
 
 module "security_groups" {
