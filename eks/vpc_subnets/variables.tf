@@ -2,9 +2,9 @@ variable "deployment_name" {
   type = string
 }
 
+# Please set this to 3 unless the region you are deploying to only has 2 AZs for the customer account.
 variable "availability_zone_count" {
   type        = number
-  default     = 3
   description = "The number of availability zones for Tecton to use EKS in."
 }
 
