@@ -12,22 +12,16 @@ variable "region" {
   description = "The region for Tecton to use EMR in."
 }
 
-variable "emr_vpc_id" {
+variable "existing_vpc_id" {
   type        = string
   default     = null
-  description = "Id of a pre-existing VPC."
-}
-
-variable "use_existing_vpc" {
-  type        = bool
-  default     = false
-  description = "Use pre existing VPC"
+  description = "Id of a pre-existing VPC to be reused."
 }
 
 variable "internet_gateway_id" {
   type        = string
   default     = null
-  description = "Id of a pre-existing internet gateway."
+  description = "Id of a pre-existing internet gateway to be reused."
 }
 
 variable "emr_subnet_cidr_prefix" {

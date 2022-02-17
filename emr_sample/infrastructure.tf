@@ -97,8 +97,7 @@ module "subnets" {
   source              = "../emr/vpc_subnets"
   deployment_name     = var.deployment_name
   region              = var.region
-  use_existing_vpc    = true
-  emr_vpc_id          = module.eks_subnets[0].vpc_id
+  existing_vpc_id     = module.eks_subnets[0].vpc_id
   internet_gateway_id = module.eks_subnets[0].internet_gateway_id
   depends_on          = [
     module.eks_subnets
