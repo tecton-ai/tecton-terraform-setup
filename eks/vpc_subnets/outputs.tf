@@ -3,7 +3,7 @@ output "vpc_id" {
 }
 
 output "az_name_to_nat_gateway_id" {
-  value = zipmap(aws_availability_zones.available.names, aws_nat_gateway.nat_gateway[*].id)
+  value = zipmap(slice(data.aws_availability_zones.available.names, 0, var.availability_zone_count), aws_nat_gateway.nat_gateway[*].id)
 }
 
 output "eks_subnet_ids" {

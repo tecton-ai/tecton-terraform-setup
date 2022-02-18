@@ -62,7 +62,7 @@ resource "aws_route" "emr_subnet_route_to_nat_gateway" {
 
   route_table_id         = aws_route_table.emr_subnet_route_table[count.index].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = var.az_name_to_nat_gateway_id[aws_availability_zones.available.names[count.index]]
+  nat_gateway_id         = var.az_name_to_nat_gateway_id[data.aws_availability_zones.available.names[count.index]]
 }
 
 resource "aws_route_table_association" "emr_subnet_route_table_association" {
