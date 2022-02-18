@@ -7,11 +7,11 @@ output "region" {
 }
 
 output "spark_role_arn" {
-  value = module.tecton_vpc[0].spark_role_arn
+  value = (var.apply_layer > 1) ? module.tecton_vpc[0].spark_role_arn : ""
 }
 
 output "spark_instance_profile_arn" {
-  value = module.tecton_vpc[0].emr_spark_instance_profile_arn
+  value = (var.apply_layer > 1) ? module.tecton_vpc[0].emr_spark_instance_profile_arn : ""
 }
 
 output "vpc_id" {
