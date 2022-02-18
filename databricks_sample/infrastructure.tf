@@ -31,11 +31,6 @@ variable "external_databricks_account_role_arn" {
   default = ""
 }
 
-variable "is_vpc_deployment" {
-  type = bool
-  default = false
-}
-
 variable "elasticache_enabled" {
   type = bool
   default = false
@@ -70,26 +65,11 @@ resource "random_id" "external_id" {
   byte_length = 16
 }
 
-module "tecton" {
-  providers = {
-    aws = aws
-  }
-  count                      = var.is_vpc_deployment ? 0 : 1
-  source                     = "../deployment"
-  deployment_name            = var.deployment_name
-  account_id                 = var.account_id
-  tecton_assuming_account_id = var.tecton_assuming_account_id
-  region                     = var.region
-  cross_account_external_id  = random_id.external_id.id
-  databricks_spark_role_name = var.spark_role_name
-}
-
 module "tecton_vpc" {
   providers = {
     aws = aws
     aws.databricks-account = aws.databricks-account
   }
-  count                      = var.is_vpc_deployment ? 1 : 0
   source                     = "../vpc_deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
@@ -100,12 +80,10 @@ module "tecton_vpc" {
   elasticache_enabled        = var.elasticache_enabled
 }
 
-# optionally, use a Tecton default vpc/subnet configuration
 module "subnets" {
   providers = {
     aws = aws
   }
-  count                     = var.is_vpc_deployment ? 1 : 0
   source                  = "../eks/vpc_subnets"
   deployment_name         = var.deployment_name
   region                  = var.region
@@ -117,10 +95,9 @@ module "security_groups" {
   providers = {
     aws = aws
   }
-  count           = var.is_vpc_deployment ? 1 : 0
   source          = "../eks/security_groups"
   deployment_name = var.deployment_name
-  cluster_vpc_id      = module.subnets[0].vpc_id
-  ip_whitelist = concat([for ip in module.subnets[0].eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
+  cluster_vpc_id      = module.subnets.vpc_id
+  ip_whitelist = concat([for ip in module.subnets.eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
   tags = {"tecton-accessible:${var.deployment_name}": "true"}
 }
