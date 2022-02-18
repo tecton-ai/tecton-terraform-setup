@@ -21,23 +21,20 @@ The above commands will ask you for certain variable inputs. These can also be p
 ```
 terraform apply -var-file=<your_file_name>.tfvars
 ```
-### Input Variables : 
+### Input Variables :
 
-* `deployment_name` : 
+* `deployment_name` :
     This is the name of your deployment and also creates the domain name with `.tecton.ai` for you to login to your cluster. We suggest having the company name and the type of deployment in this. Additionally if you plan to have deployments in several regions and that can also be included.
 
     **Note that deployment name should be <= 22 characters.**
 
     Example : If your company name is drake and your region is us-west-2 and this is a staging cluster then your `deployment_name` can be drake-usw2-staging. Your cluster will be accessible at `drake-usw2-staging.tecton.ai`
 
-* `region` : 
+* `region` :
     This is AWS region where this cluster will be setup
 
 *  `account_id` :
     This is the AWS account ID for your (customer) AWS Account
-
-* `is_vpc_deployment` :
-    Whether this is a VPC deployment. Default is set to true.
 
 * `elasticache_enabled` :
     Whether you want to optional also create a Redis cluster that Tecton will use for an online store. This currently defaults to False.
@@ -56,33 +53,32 @@ terraform apply -var-file=<your_file_name>.tfvars
 
 *Please provide the values for these to Tecton so we can use it to setup a cluster for you*
 
-* `deployment_name` : 
+* `deployment_name` :
     Deployment Name. This comes directly from the input
 
-* `region` : 
+* `region` :
     Region. This comes directly from the input
 
-* `spark_role_arn` : 
+* `spark_role_arn` :
     Spark Role ARN which is used by Tecton for materialization.
 
-* `spark_instance_profile_arn` : 
+* `spark_instance_profile_arn` :
     Spark Instance Profile ARN which is used by Tecton for materialization.
 
-* `vpc_id` : 
+* `vpc_id` :
     VPC ID where all AWS Services will be deployed.
 
-* `eks_subnet_ids` : 
+* `eks_subnet_ids` :
     Subnets [Private] where the EKS cluster will be deployed
 
-* `public_subnet_ids` : 
+* `public_subnet_ids` :
     Subnets [External] where the EKS cluster will be deployed
 
-* `eks_manager_security_group_id` : 
+* `eks_manager_security_group_id` :
     Security Group ID for the EKS Manager needed by Tecton to deploy the EKS Cluster
 
-* `eks_worker_security_group_id` : 
+* `eks_worker_security_group_id` :
     Security Group ID for the EKS Worker needed by Tecton to deploy the EKS Cluster
 
-* `rds_security_group_id` : 
+* `rds_security_group_id` :
     Security Group ID for RDS Postgres Instance needed by Tecton for metadata
-

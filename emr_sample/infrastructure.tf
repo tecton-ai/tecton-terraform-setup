@@ -30,12 +30,6 @@ variable "account_id" {
   type = string
 }
 
-# VPC deployment by default
-variable "is_vpc_deployment" {
-  type = bool
-  default = true
-}
-
 # By default Redis is not enabled. You can re-run the terraform later
 # with this enabled if you want
 variable "elasticache_enabled" {
@@ -66,14 +60,10 @@ variable "apply_layer" {
   description = "due to terraform issues with dynamic number of resources, we need to apply in layers. Layers start at 0 and should be incremented after each successful apply until the default value is reached"
 }
 
-# Optionally, use a Tecton default vpc/subnet configuration
-# Make sure if using this that CIDR blocks do not conflict with EMR ones
-# above.
 module "eks_subnets" {
   providers = {
     aws = aws
   }
-  count           = var.is_vpc_deployment ? 1 : 0
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
   region          = var.region
@@ -85,23 +75,23 @@ module "eks_security_groups" {
   providers = {
     aws = aws
   }
-  count             = var.is_vpc_deployment ? 1 : 0
   source            = "../eks/security_groups"
   deployment_name   = var.deployment_name
-  cluster_vpc_id    = module.eks_subnets[0].vpc_id
-  ip_whitelist      = concat([for ip in module.eks_subnets[0].eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
+  cluster_vpc_id    = module.eks_subnets.vpc_id
+  ip_whitelist      = concat([for ip in module.eks_subnets.eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
   tags              = {"tecton-accessible:${var.deployment_name}": "true"}
 }
 
-# EMR Subnet and Security Group. Use same VPC as EKS
+# EMR Subnets and Security Groups; Uses same VPC as EKS.
+# Make sure that the EKS and EMR CIDR blocks do not conflict.
 module "subnets" {
   count                     = var.apply_layer > 0 ? 1 : 0
   source                    = "../emr/vpc_subnets"
   deployment_name           = var.deployment_name
   region                    = var.region
   availability_zone_count   = 3
-  vpc_id                    = module.eks_subnets[0].vpc_id
-  az_name_to_nat_gateway_id = module.eks_subnets[0].az_name_to_nat_gateway_id
+  vpc_id                    = module.eks_subnets.vpc_id
+  az_name_to_nat_gateway_id = module.eks_subnets.az_name_to_nat_gateway_id
   depends_on                = [
     module.eks_subnets
   ]
@@ -112,25 +102,11 @@ module "security_groups" {
   source            = "../emr/security_groups"
   deployment_name   = var.deployment_name
   region            = var.region
-  emr_vpc_id        = module.eks_subnets[0].vpc_id
-  vpc_subnet_prefix = module.eks_subnets[0].vpc_subnet_prefix
+  emr_vpc_id        = module.eks_subnets.vpc_id
+  vpc_subnet_prefix = module.eks_subnets.vpc_subnet_prefix
   depends_on      = [
     module.eks_subnets
   ]
-}
-
-module "tecton" {
-  providers = {
-    aws = aws
-  }
-  count                      = var.is_vpc_deployment ? 0 : 1
-  source                     = "../deployment"
-  deployment_name            = var.deployment_name
-  account_id                 = var.account_id
-  tecton_assuming_account_id = var.tecton_assuming_account_id
-  region                     = var.region
-  cross_account_external_id  = random_id.external_id.id
-  create_emr_roles           = true
 }
 
 module "tecton_vpc" {
@@ -138,7 +114,7 @@ module "tecton_vpc" {
     aws = aws
     aws.databricks-account = aws
   }
-  count                      = (var.is_vpc_deployment && (var.apply_layer > 1)) ? 1 : 0
+  count                      = (var.apply_layer > 1) ? 1 : 0
   source                     = "../vpc_deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
@@ -191,8 +167,9 @@ module "emr_debugging" {
 
   count                   = 0
   deployment_name         = var.deployment_name
-  cross_account_role_name = var.is_vpc_deployment ? module.tecton_vpc[0].devops_role_name : module.tecton.cross_account_role_name
+  cross_account_role_name = module.tecton_vpc[0].devops_role_name
 }
+
 
 ##############################################################################################
 # OPTIONAL
