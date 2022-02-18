@@ -17,10 +17,9 @@ variable "vpc_id" {
   description = "Id of a pre-existing VPC to be reused."
 }
 
-variable "internet_gateway_id" {
-  type        = string
-  default     = null
-  description = "Id of a pre-existing internet gateway to be reused."
+variable "az_name_to_nat_gateway_id" {
+  type        = map(string)
+  description = "A mapping from the AZ name to the NAT gateway ID from the public subnet in each AZ. NAT gateways should already be routing traffic to the existing internet gateway."
 }
 
 variable "emr_subnet_cidr_prefix" {

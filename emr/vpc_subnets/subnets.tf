@@ -9,68 +9,9 @@ resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
 }
 
 locals {
-  emr_private_cidr_block = cidrsubnet(var.emr_subnet_cidr_prefix, 2, 0)
-  public_cidr_block      = cidrsubnet(var.emr_subnet_cidr_prefix, 2, 3)
+  # Only use the half of the CIDR block to have a reserve for the future.
+  emr_private_cidr_block = cidrsubnet(var.emr_subnet_cidr_prefix, 1, 0)
 }
-
-resource "aws_subnet" "public_subnet" {
-  count             = var.availability_zone_count
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block        = cidrsubnet(local.public_cidr_block, 10, count.index)
-  vpc_id            = var.vpc_id
-
-  tags = {
-    Name = "${var.deployment_name}-public-subnet",
-  }
-}
-
-resource "aws_internet_gateway" "internet_gateway" {
-  count  = var.internet_gateway_id == null ? 1 : 0
-  vpc_id = var.vpc_id
-
-  tags = {
-    Name = "${var.deployment_name}-internet-gateway",
-  }
-}
-
-resource "aws_route_table" "public_subnet_route_table" {
-  vpc_id = var.vpc_id
-  tags = {
-    Name = "${var.deployment_name}-public-subnet-route-table",
-  }
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = var.internet_gateway_id == null ? aws_internet_gateway.internet_gateway[0].id : var.internet_gateway_id
-  }
-}
-
-resource "aws_route_table_association" "public_subnet_route_table_association" {
-  count          = var.availability_zone_count
-  subnet_id      = aws_subnet.public_subnet[count.index].id
-  route_table_id = aws_route_table.public_subnet_route_table.id
-}
-
-resource "aws_eip" "nat_elastic_ip" {
-  count = var.availability_zone_count
-  vpc   = true
-
-  tags = {
-    Name = "${var.deployment_name}-elastic-ip",
-  }
-}
-
-resource "aws_nat_gateway" "nat_gateway" {
-  count         = var.availability_zone_count
-  allocation_id = aws_eip.nat_elastic_ip[count.index].id
-  subnet_id     = aws_subnet.public_subnet[count.index].id
-  tags = {
-    "Name" = "${var.deployment_name}-nat-gateway",
-  }
-  depends_on = [aws_internet_gateway.internet_gateway]
-}
-
-
 
 resource "aws_subnet" "emr_subnet" {
   count = var.availability_zone_count
@@ -121,7 +62,7 @@ resource "aws_route" "emr_subnet_route_to_nat_gateway" {
 
   route_table_id         = aws_route_table.emr_subnet_route_table[count.index].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat_gateway[count.index].id
+  nat_gateway_id         = var.az_name_to_nat_gateway_id[data.aws_availability_zones.available.names[count.index]]
 }
 
 resource "aws_route_table_association" "emr_subnet_route_table_association" {

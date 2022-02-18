@@ -2,8 +2,8 @@ output "vpc_id" {
   value = local.vpc_id
 }
 
-output "internet_gateway_id" {
-  value = aws_internet_gateway.internet_gateway.id
+output "az_name_to_nat_gateway_id" {
+  value = zipmap(slice(data.aws_availability_zones.available.names, 0, var.availability_zone_count), aws_nat_gateway.nat_gateway[*].id)
 }
 
 output "eks_subnet_ids" {
