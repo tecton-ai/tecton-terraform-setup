@@ -8,6 +8,7 @@ resource "aws_security_group" "emr_security_group" {
     "Name"                                     = "tecton-emr-security-group"
   }
 }
+
 resource "aws_security_group_rule" "emr_security_group_full_egress" {
   description       = "Allow full egress for emr to pull pip packages and send metrics"
   from_port         = 0
@@ -17,6 +18,7 @@ resource "aws_security_group_rule" "emr_security_group_full_egress" {
   security_group_id = aws_security_group.emr_security_group.id
   type              = "egress"
 }
+
 resource "aws_security_group_rule" "emr_security_group_self_ingress" {
   description              = "Allow node to communicate with each other"
   from_port                = 0

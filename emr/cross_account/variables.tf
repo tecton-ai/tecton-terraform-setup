@@ -2,7 +2,9 @@ variable "cidr_block" {
   type = string
 }
 
-variable "region" {}
+variable "region" {
+  type = string
+}
 
 variable "deployment_name" {
   type = string
