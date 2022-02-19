@@ -84,7 +84,7 @@ module "eks_security_groups" {
 
 # EMR Subnets and Security Groups; Uses same VPC as EKS.
 # Make sure that the EKS and EMR CIDR blocks do not conflict.
-module "subnets" {
+module "emr_subnets" {
   count                     = var.apply_layer > 0 ? 1 : 0
   source                    = "../emr/vpc_subnets"
   deployment_name           = var.deployment_name
@@ -97,7 +97,7 @@ module "subnets" {
   ]
 }
 
-module "security_groups" {
+module "emr_security_groups" {
   count             = var.apply_layer > 0 ? 1 : 0
   source            = "../emr/security_groups"
   deployment_name   = var.deployment_name
@@ -109,13 +109,13 @@ module "security_groups" {
   ]
 }
 
-module "tecton_vpc" {
+module "roles" {
   providers = {
     aws = aws
     aws.databricks-account = aws
   }
   count                      = (var.apply_layer > 1) ? 1 : 0
-  source                     = "../vpc_deployment"
+  source                     = "../roles"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   tecton_assuming_account_id = var.tecton_assuming_account_id
@@ -136,12 +136,12 @@ module "notebook_cluster" {
   deployment_name = var.deployment_name
   instance_type   = "m5.xlarge"
 
-  subnet_id            = module.subnets[0].emr_subnet_id
-  instance_profile_arn = module.tecton_vpc[0].spark_role_name
-  emr_service_role_id  = module.tecton_vpc[0].emr_master_role_name
+  subnet_id            = module.emr_subnets[0].emr_subnet_id
+  instance_profile_arn = module.roles[0].spark_role_name
+  emr_service_role_id  = module.roles[0].emr_master_role_name
 
-  emr_security_group_id         = module.security_groups[0].emr_security_group_id
-  emr_service_security_group_id = module.security_groups[0].emr_service_security_group_id
+  emr_security_group_id         = module.emr_security_groups[0].emr_security_group_id
+  emr_service_security_group_id = module.emr_security_groups[0].emr_service_security_group_id
 
   # OPTIONAL
   # You can provide custom bootstrap action(s)
@@ -167,7 +167,7 @@ module "emr_debugging" {
 
   count                   = 0
   deployment_name         = var.deployment_name
-  cross_account_role_name = module.tecton_vpc[0].devops_role_name
+  cross_account_role_name = module.roles[0].devops_role_name
 }
 
 

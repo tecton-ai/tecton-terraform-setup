@@ -65,12 +65,12 @@ resource "random_id" "external_id" {
   byte_length = 16
 }
 
-module "tecton_vpc" {
+module "roles" {
   providers = {
     aws = aws
     aws.databricks-account = aws.databricks-account
   }
-  source                     = "../vpc_deployment"
+  source                     = "../roles"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
