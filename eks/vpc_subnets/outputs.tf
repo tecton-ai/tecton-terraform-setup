@@ -10,7 +10,7 @@ output "eks_subnet_ids" {
   value = aws_subnet.eks_subnet[*].id
 }
 
-output "eks_subnet_ips" {
+output "nat_gateway_ips" {
   value = aws_eip.nat_elastic_ip[*].public_ip
 }
 

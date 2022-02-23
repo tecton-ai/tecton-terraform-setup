@@ -13,6 +13,12 @@ variable "account_id" {
   type = string
 }
 
+variable "eks_subnet_cidr_prefix" {
+  type        = string
+  default     = "10.64.0.0/16"
+  description = "The CIDR block for the private and public subnets of the EKS module."
+}
+
 variable "spark_role_name" {
   type = string
 }
@@ -37,8 +43,8 @@ variable "elasticache_enabled" {
 }
 
 variable "ip_whitelist" {
-  description   = "Ip ranges that should be able to access Tecton endpoint"
-  default       = ["0.0.0.0/0"]
+  description   = "IP ranges that should be able to access Tecton endpoint"
+  default       = null
 }
 
 variable "tecton_assuming_account_id" {
@@ -87,6 +93,7 @@ module "subnets" {
   source                  = "../eks/vpc_subnets"
   deployment_name         = var.deployment_name
   region                  = var.region
+  eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
 }
@@ -97,7 +104,14 @@ module "security_groups" {
   }
   source          = "../eks/security_groups"
   deployment_name = var.deployment_name
-  cluster_vpc_id      = module.subnets.vpc_id
-  ip_whitelist = concat([for ip in module.subnets.eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
+  vpc_id          = module.subnets.vpc_id
+  ip_whitelist    = var.ip_whitelist
   tags = {"tecton-accessible:${var.deployment_name}": "true"}
+
+  # Allow Tecton NLB to be public.
+  eks_ingress_load_balancer_public = true
+  nat_gateway_ips                  = module.subnets.nat_gateway_ips
+  # Alternatively configure Tecton NLB to be private.
+  # eks_ingress_load_balancer_public = false
+  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
 }

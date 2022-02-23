@@ -30,6 +30,18 @@ variable "account_id" {
   type = string
 }
 
+variable "eks_subnet_cidr_prefix" {
+  type        = string
+  default     = "10.64.0.0/16"
+  description = "The CIDR block for the private and public subnets of the EKS module."
+}
+
+variable "emr_subnet_cidr_prefix" {
+  type        = string
+  default     = "10.38.0.0/16"
+  description = "The CIDR block for the private subnets of the EMR module."
+}
+
 # By default Redis is not enabled. You can re-run the terraform later
 # with this enabled if you want
 variable "elasticache_enabled" {
@@ -45,7 +57,7 @@ variable "tecton_dataplane_account_role_arn" {
 variable "ip_whitelist" {
   type          = list(string)
   description   = "Ip ranges that should be able to access Tecton endpoint"
-  default       = ["0.0.0.0/0"]
+  default       = null
 }
 
 variable "tecton_assuming_account_id" {
@@ -69,6 +81,7 @@ module "eks_subnets" {
   region          = var.region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
+  eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
 }
 
 module "eks_security_groups" {
@@ -77,9 +90,16 @@ module "eks_security_groups" {
   }
   source            = "../eks/security_groups"
   deployment_name   = var.deployment_name
-  cluster_vpc_id    = module.eks_subnets.vpc_id
-  ip_whitelist      = concat([for ip in module.eks_subnets.eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
+  vpc_id            = module.eks_subnets.vpc_id
+  ip_whitelist      = var.ip_whitelist
   tags              = {"tecton-accessible:${var.deployment_name}": "true"}
+
+  # Allow Tecton NLB to be public.
+  eks_ingress_load_balancer_public = true
+  nat_gateway_ips                  = module.eks_subnets.nat_gateway_ips
+  # Alternatively configure Tecton NLB to be private.
+  # eks_ingress_load_balancer_public = false
+  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
 }
 
 # EMR Subnets and Security Groups; Uses same VPC as EKS.
@@ -91,6 +111,7 @@ module "emr_subnets" {
   region                    = var.region
   availability_zone_count   = 3
   vpc_id                    = module.eks_subnets.vpc_id
+  emr_subnet_cidr_prefix    = var.emr_subnet_cidr_prefix
   az_name_to_nat_gateway_id = module.eks_subnets.az_name_to_nat_gateway_id
   depends_on                = [
     module.eks_subnets

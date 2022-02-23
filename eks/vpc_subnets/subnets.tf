@@ -1,7 +1,7 @@
 data "aws_availability_zones" "available" {
 }
 
-# create a default vpc if vpc_id is not passed in
+# Create a default VPC if the `vpc_id` is not passed in.
 resource "aws_vpc" "eks_vpc" {
   count      = var.eks_vpc_id == null ? 1 : 0
   cidr_block = var.eks_subnet_cidr_prefix
@@ -9,6 +9,7 @@ resource "aws_vpc" "eks_vpc" {
 
 locals {
   vpc_id                 = var.eks_vpc_id == null ? aws_vpc.eks_vpc[0].id : var.eks_vpc_id
+  # Only use the half of the CIDR block to have a reserve for the future.
   eks_private_cidr_block = cidrsubnet(var.eks_subnet_cidr_prefix, 2, 0)
   public_cidr_block      = cidrsubnet(var.eks_subnet_cidr_prefix, 2, 3)
 }
@@ -83,6 +84,15 @@ resource "aws_subnet" "eks_subnet" {
   }
 }
 
+resource "aws_route_table" "eks_subnet_route_table" {
+  count  = var.availability_zone_count
+  vpc_id = local.vpc_id
+
+  tags = {
+    "Name" = "${var.deployment_name}-eks-subnet-route-table",
+  }
+}
+
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = local.vpc_id
   service_name = "com.amazonaws.${var.region}.dynamodb"
@@ -103,15 +113,6 @@ resource "aws_vpc_endpoint_route_table_association" "private_s3_vpce" {
   count           = length(aws_route_table.eks_subnet_route_table)
   vpc_endpoint_id = aws_vpc_endpoint.s3.id
   route_table_id  = aws_route_table.eks_subnet_route_table[count.index].id
-}
-
-resource "aws_route_table" "eks_subnet_route_table" {
-  count  = var.availability_zone_count
-  vpc_id = local.vpc_id
-
-  tags = {
-    "Name" = "${var.deployment_name}-eks-subnet-route-table",
-  }
 }
 
 resource "aws_route" "eks_subnet_route_to_nat_gateway" {
