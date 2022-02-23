@@ -24,8 +24,7 @@ variable "az_name_to_nat_gateway_id" {
 
 variable "emr_subnet_cidr_prefix" {
   type        = string
-  default     = "10.38.0.0/16"
-  description = "The cidr block for the private and public subnets for this module to create."
+  description = "The CIDR block for the private and public subnets for this module to create."
   validation {
     condition     = tonumber(regex("/([0-9]+)", var.emr_subnet_cidr_prefix)[0]) <= 18
     error_message = "Subnet must have enough space: the smallest acceptable prefix is /18."

@@ -20,8 +20,7 @@ variable "eks_vpc_id" {
 
 variable "eks_subnet_cidr_prefix" {
   type        = string
-  default     = "10.64.0.0/16"
-  description = "The cidr block for the private and public subnets for this module to create."
+  description = "The CIDR block for the private and public subnets for this module to create."
   validation {
     condition     = tonumber(regex("/([0-9]+)", var.eks_subnet_cidr_prefix)[0]) <= 18
     error_message = "Subnet must have enough space: the smallest acceptable prefix is /18."

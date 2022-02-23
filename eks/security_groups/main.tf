@@ -1,9 +1,24 @@
+locals {
+  _listener_ports = {
+    # These must match the nodePorts of the Ingress service. They match Tecton's public ingress.
+    # The plaintext is just for redirection to https.
+    plaintext = {
+      port     = 31080
+      protocol = "TCP"
+    }
+    tls = {
+      port     = 31443
+      protocol = "TLS"
+    }
+  }
+}
+
 # RDS
 resource "aws_security_group" "postgres_metadata_db_security" {
   name = "${var.deployment_name}-postgres_metadata_db_security"
 
   description = "Tecton RDS postgres security group"
-  vpc_id      = var.cluster_vpc_id
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 5432
@@ -25,7 +40,7 @@ resource "aws_security_group" "postgres_metadata_db_security" {
 resource "aws_security_group" "tecton_eks_cluster" {
   name        = var.deployment_name
   description = "Cluster communication with worker nodes"
-  vpc_id      = var.cluster_vpc_id
+  vpc_id      = var.vpc_id
 
   egress {
     from_port   = 0
@@ -51,27 +66,11 @@ resource "aws_security_group_rule" "public-ingress-https" {
   type              = "ingress"
 }
 
-locals {
-  _listener_ports = {
-    # These must match the nodePorts of the Ingress service
-    # They match Tecton's public ingress
-    # plaintext is just for redirection to https
-    plaintext = {
-      port     = 31080
-      protocol = "TCP"
-    }
-    tls = {
-      port     = 31443
-      protocol = "TLS"
-    }
-  }
-}
-
 # Worker Nodes
 resource "aws_security_group" "worker_node" {
   name        = "${var.deployment_name}-worker-node"
   description = "Security group for all nodes in the cluster"
-  vpc_id      = var.cluster_vpc_id
+  vpc_id      = var.vpc_id
 
   egress {
     from_port   = 0
@@ -128,6 +127,16 @@ resource "aws_security_group_rule" "lb_to_eks_ingress_port" {
   from_port         = each.value.port
   to_port           = each.value.port
   protocol          = "TCP"
-  cidr_blocks       = var.ip_whitelist
+  # For the public NLB, we also whitelist the public NAT gateway IPs because Tecton requests from the VPC
+  # will go through the coresponding NAT gateway first.
+  # For the private NLB, we also whitelist the private CIDR block(s) of the VPC because
+  # the Tecton requests from the VPC will be routed directly to the NLB.
+  cidr_blocks       = var.allowed_CIDR_blocks == null ? ["0.0.0.0/0"] : (
+      var.eks_ingress_load_balancer_public ?
+      concat(var.allowed_CIDR_blocks, [for ip in var.nat_gateway_ips: format("%s/32", ip)]) :
+      concat(var.allowed_CIDR_blocks, var.vpc_cidr_blocks)
+  )
+
+
   description       = "Access from the NLB to the K8s Ingress port(s)"
 }

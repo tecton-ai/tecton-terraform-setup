@@ -9,7 +9,7 @@ resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
 }
 
 locals {
-  # Only use the half of the CIDR block to have a reserve for the future.
+  # Only use half of the CIDR block to have a reserve for the future.
   emr_private_cidr_block = cidrsubnet(var.emr_subnet_cidr_prefix, 1, 0)
 }
 
