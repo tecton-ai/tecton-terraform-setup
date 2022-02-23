@@ -42,8 +42,8 @@ variable "elasticache_enabled" {
   default = false
 }
 
-variable "ip_whitelist" {
-  description   = "IP ranges that should be able to access Tecton endpoint"
+variable "allowed_CIDR_blocks" {
+  description   = "CIDR blocks that should be able to access Tecton endpoint. Defaults to `0.0.0.0/0`."
   default       = null
 }
 
@@ -102,10 +102,10 @@ module "security_groups" {
   providers = {
     aws = aws
   }
-  source          = "../eks/security_groups"
-  deployment_name = var.deployment_name
-  vpc_id          = module.subnets.vpc_id
-  ip_whitelist    = var.ip_whitelist
+  source              = "../eks/security_groups"
+  deployment_name     = var.deployment_name
+  vpc_id              = module.subnets.vpc_id
+  allowed_CIDR_blocks = var.allowed_CIDR_blocks
   tags = {"tecton-accessible:${var.deployment_name}": "true"}
 
   # Allow Tecton NLB to be public.

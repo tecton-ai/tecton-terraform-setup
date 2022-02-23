@@ -131,10 +131,10 @@ resource "aws_security_group_rule" "lb_to_eks_ingress_port" {
   # will go through the coresponding NAT gateway first.
   # For the private NLB, we also whitelist the private CIDR block(s) of the VPC because
   # the Tecton requests from the VPC will be routed directly to the NLB.
-  cidr_blocks       = var.ip_whitelist == null ? ["0.0.0.0/0"] : (
+  cidr_blocks       = var.allowed_CIDR_blocks == null ? ["0.0.0.0/0"] : (
       var.eks_ingress_load_balancer_public ?
-      concat(var.ip_whitelist, [for ip in var.nat_gateway_ips: "${ip}/32"]) :
-      concat(var.ip_whitelist, var.vpc_cidr_blocks)
+      concat(var.allowed_CIDR_blocks, [for ip in var.nat_gateway_ips: format("%s/32", ip)]) :
+      concat(var.allowed_CIDR_blocks, var.vpc_cidr_blocks)
   )
 
 

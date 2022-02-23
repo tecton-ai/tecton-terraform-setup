@@ -9,7 +9,7 @@ resource "aws_vpc" "eks_vpc" {
 
 locals {
   vpc_id                 = var.eks_vpc_id == null ? aws_vpc.eks_vpc[0].id : var.eks_vpc_id
-  # Only use the half of the CIDR block to have a reserve for the future.
+  # Only use half of the CIDR block to have a reserve for the future.
   eks_private_cidr_block = cidrsubnet(var.eks_subnet_cidr_prefix, 2, 0)
   public_cidr_block      = cidrsubnet(var.eks_subnet_cidr_prefix, 2, 3)
 }

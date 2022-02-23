@@ -43,7 +43,7 @@ terraform apply -var-file=<your_file_name>.tfvars
 * `tecton_dataplane_account_role_arn` :
     Role used to run this terraform with. Usually the admin role in the account.
 
-* `ip_whitelist` :
+* `allowed_CIDR_blocks` :
     IP ranges that should be able to access Tecton endpoint. If it's not set, everyone can access the Tecton endpoint (i.e. ingress from `0.0.0.0/0`).
 
 * `tecton_assuming_account_id` :
