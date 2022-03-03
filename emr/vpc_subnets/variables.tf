@@ -17,16 +17,12 @@ variable "vpc_id" {
   description = "Id of a pre-existing VPC to be reused."
 }
 
-variable "az_name_to_nat_gateway_id" {
-  type        = map(string)
-  description = "A mapping from the AZ name to the NAT gateway ID from the public subnet in each AZ. NAT gateways should already be routing traffic to the existing internet gateway."
+variable "emr_subnet_ids" {
+  type        = list(string)
+  description = "IDs of empty private subnets for EMR (one in each AZ)."
 }
 
-variable "emr_subnet_cidr_prefix" {
-  type        = string
-  description = "The CIDR block for the private and public subnets for this module to create."
-  validation {
-    condition     = tonumber(regex("/([0-9]+)", var.emr_subnet_cidr_prefix)[0]) <= 18
-    error_message = "Subnet must have enough space: the smallest acceptable prefix is /18."
-  }
+variable "nat_gateway_ids" {
+  type        = list(string)
+  description = "NAT gateway IDs from the public subnet in each AZ. NAT gateways should already be routing traffic to the existing internet gateway."
 }

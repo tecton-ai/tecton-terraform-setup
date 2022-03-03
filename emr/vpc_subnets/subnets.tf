@@ -1,31 +1,3 @@
-
-data "aws_availability_zones" "available" {
-}
-
-# Add EMR CIDR Block to Existing VPC If any
-resource "aws_vpc_ipv4_cidr_block_association" "secondary_cidr" {
-  vpc_id     = var.vpc_id
-  cidr_block = var.emr_subnet_cidr_prefix
-}
-
-locals {
-  # Only use half of the CIDR block to have a reserve for the future.
-  emr_private_cidr_block = cidrsubnet(var.emr_subnet_cidr_prefix, 1, 0)
-}
-
-resource "aws_subnet" "emr_subnet" {
-  count = var.availability_zone_count
-
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-  cidr_block        = cidrsubnet(local.emr_private_cidr_block, 3, count.index)
-  vpc_id            = var.vpc_id
-
-  tags = {
-    "Name"                                     = "${var.deployment_name}-emr-subnet",
-    "tecton-accessible:${var.deployment_name}" = "true",
-  }
-}
-
 resource "aws_vpc_endpoint" "dynamodb" {
   vpc_id       = var.vpc_id
   service_name = "com.amazonaws.${var.region}.dynamodb"
@@ -62,12 +34,12 @@ resource "aws_route" "emr_subnet_route_to_nat_gateway" {
 
   route_table_id         = aws_route_table.emr_subnet_route_table[count.index].id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = var.az_name_to_nat_gateway_id[data.aws_availability_zones.available.names[count.index]]
+  nat_gateway_id         = var.nat_gateway_ids[count.index]
 }
 
 resource "aws_route_table_association" "emr_subnet_route_table_association" {
   count = var.availability_zone_count
 
-  subnet_id      = aws_subnet.emr_subnet[count.index].id
+  subnet_id      = var.emr_subnet_ids[count.index]
   route_table_id = aws_route_table.emr_subnet_route_table[count.index].id
 }

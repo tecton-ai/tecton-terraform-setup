@@ -30,16 +30,45 @@ variable "account_id" {
   type = string
 }
 
-variable "eks_subnet_cidr_prefix" {
-  type        = string
-  default     = "10.64.0.0/16"
-  description = "The CIDR block for the private and public subnets of the EKS module."
+# Role used to run terraform with. Usually the admin role in the account.
+variable "tecton_account_role_arn" {
+  type = string
 }
 
-variable "emr_subnet_cidr_prefix" {
+variable "vpc_id" {
   type        = string
-  default     = "10.38.0.0/16"
-  description = "The CIDR block for the private subnets of the EMR module."
+  description = "ID of the VPC Tecton to be installed in."
+}
+
+variable "vpc_cidr_blocks" {
+  type        = list(string)
+  description = "CIDR blocks for the EKS subnets."
+}
+
+variable "availability_zone_count" {
+  type        = number
+  description = "The number of availability zones for Tecton to use EKS in. Please set this to 3 unless the region you are deploying to only has 2 AZs."
+}
+
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "IDs of empty public subnets (one in each AZ) sorted by the associated AZ's alphanumerical name."
+}
+
+variable "eks_subnet_ids" {
+  type        = list(string)
+  description = "IDs of empty private subnets for EKS (one in each AZ) sorted by the associated AZ's alphanumerical name."
+}
+
+variable "emr_subnet_ids" {
+  type        = list(string)
+  description = "IDs of empty private subnets for EMR (one in each AZ) sorted by the associated AZ's alphanumerical name."
+}
+
+variable "allowed_CIDR_blocks" {
+  type          = list(string)
+  description   = "CIDR blocks that should be able to access Tecton endpoint. Defaults to `0.0.0.0/0`."
+  default       = null
 }
 
 # By default Redis is not enabled. You can re-run the terraform later
@@ -49,23 +78,11 @@ variable "elasticache_enabled" {
   default = false
 }
 
-# Role used to run terraform with. Usually the admin role in the account.
-variable "tecton_account_role_arn" {
-  type = string
-}
-
-variable "allowed_CIDR_blocks" {
-  type          = list(string)
-  description   = "CIDR blocks that should be able to access Tecton endpoint. Defaults to `0.0.0.0/0`."
-  default       = null
-}
-
 variable "tecton_assuming_account_id" {
   type        = string
   description = "Get this from your Tecton rep"
   default     = "472542229217"
 }
-
 
 variable "apply_layer" {
   type        = number
@@ -79,10 +96,12 @@ module "eks_subnets" {
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
+  vpc_id      = var.vpc_id
   region          = var.region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
-  availability_zone_count = 3
-  eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
+  availability_zone_count = var.availability_zone_count
+  public_subnet_ids = var.public_subnet_ids
+  eks_subnet_ids = var.eks_subnet_ids
 }
 
 module "eks_security_groups" {
@@ -91,17 +110,13 @@ module "eks_security_groups" {
   }
   source              = "../eks/security_groups"
   deployment_name     = var.deployment_name
-  vpc_id              = module.eks_subnets.vpc_id
+  vpc_id              = var.vpc_id
   allowed_CIDR_blocks = var.allowed_CIDR_blocks
   tags                = {"tecton-accessible:${var.deployment_name}": "true"}
 
-  # Allow Tecton NLB to be public.
-  # eks_ingress_load_balancer_public = true
-  # nat_gateway_ips                  = module.eks_subnets.nat_gateway_ips
-
-  # Alternatively configure Tecton NLB to be private.
+  # Configure Tecton NLB to be private.
   eks_ingress_load_balancer_public = false
-  vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
+  vpc_cidr_blocks                  = var.vpc_cidr_blocks
 }
 
 # EMR Subnets and Security Groups; Uses same VPC as EKS.
@@ -111,10 +126,10 @@ module "emr_subnets" {
   source                    = "../emr/vpc_subnets"
   deployment_name           = var.deployment_name
   region                    = var.region
-  availability_zone_count   = 3
-  vpc_id                    = module.eks_subnets.vpc_id
-  emr_subnet_cidr_prefix    = var.emr_subnet_cidr_prefix
-  az_name_to_nat_gateway_id = module.eks_subnets.az_name_to_nat_gateway_id
+  availability_zone_count   = var.availability_zone_count
+  vpc_id                    = var.vpc_id
+  emr_subnet_ids            = var.emr_subnet_ids
+  nat_gateway_ids           = module.eks_subnets.nat_gateway_ids
   depends_on                = [
     module.eks_subnets
   ]
@@ -125,9 +140,9 @@ module "emr_security_groups" {
   source            = "../emr/security_groups"
   deployment_name   = var.deployment_name
   region            = var.region
-  emr_vpc_id        = module.eks_subnets.vpc_id
-  vpc_subnet_prefix = module.eks_subnets.vpc_subnet_prefix
-  depends_on      = [
+  emr_vpc_id        = var.vpc_id
+  eks_CIDR_blocks   = var.vpc_cidr_blocks
+  depends_on        = [
     module.eks_subnets
   ]
 }
@@ -158,7 +173,7 @@ module "notebook_cluster" {
   deployment_name = var.deployment_name
   instance_type   = "m5.xlarge"
 
-  subnet_id            = module.emr_subnets[0].emr_subnet_id
+  subnet_id            = var.emr_subnet_ids[0]
   instance_profile_arn = module.roles[0].spark_role_name
   emr_service_role_id  = module.roles[0].emr_master_role_name
 

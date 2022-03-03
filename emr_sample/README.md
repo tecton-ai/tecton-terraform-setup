@@ -2,8 +2,8 @@
 
 This repository contains terraform code that you can run as part of the Tecton cluster setup. This repository does two main things:
 
-* Sets up the VPC, Security Groups and Subnets that will be used by Tecton admins to deploy the cluster.
-* Sets up cross account roles that Tecton can use to setup, monitor and debug your cluster.
+* Sets up the Security Groups and Routes.
+* Sets up roles, including a cross account role that Tecton can use to setup, monitor and debug your cluster.
 
 You can run the following terraform commands in this folder which will execute the `infrastructure.tf` file.
 Run Terraform init / plan which will output the objects that will be created
@@ -19,8 +19,11 @@ terraform apply
 
 The above commands will ask you for certain variable inputs. These can also be passes in with a file where the file contains the input variables. Example
 ```
-terraform apply -var-file=<your_file_name>.tfvars
+terraform apply -var-file=vars.tfvars
 ```
+
+Please apply the Terraform script with `apply_layer = 0` first. Once it succeeds, increment `apply_layer` and re-apply the script twice until `terraform plan` is empty for `apply_layer = 2`.
+
 ### Input Variables :
 
 * `deployment_name` :
@@ -33,7 +36,13 @@ terraform apply -var-file=<your_file_name>.tfvars
 * `region` :
     This is AWS region where this cluster will be setup
 
-*  `account_id` :
+* `vpc_id` :
+    This is the ID of the VPC Tecton to be installed in
+
+* `vpc_cidr_blocks` :
+    List of all CIDR blocks associated to the VPC.
+
+* `account_id` :
     This is the AWS account ID for your (customer) AWS Account
 
 * `elasticache_enabled` :
@@ -44,20 +53,29 @@ terraform apply -var-file=<your_file_name>.tfvars
     Role used to run this terraform with. Usually the admin role in the account.
 
 * `allowed_CIDR_blocks` :
-    IP ranges that should be able to access Tecton endpoint. If it's not set, everyone can access the Tecton endpoint (i.e. ingress from `0.0.0.0/0`).
+    IP ranges that should be able to access Tecton endpoints (i.e. Web-UI, CLI, Feature Server, etc.). If it's not set, everyone can access the Tecton endpoint (i.e. ingress from `0.0.0.0/0`).
 
 * `tecton_assuming_account_id` :
     This is the Tecton AWS account ID. Please get this from your Tecton rep.
+
+* `public_subnet_ids` :
+    IDs of empty public subnets (one in each AZ) sorted by the associated AZ's alphanumerical name.
+
+* `eks_subnet_ids` :
+    IDs of empty private subnets for EKS (one in each AZ) sorted by the associated AZ's alphanumerical name.
+
+* `emr_subnet_ids` :
+    IDs of empty private subnets for EMR (one in each AZ) sorted by the associated AZ's alphanumerical name.
 
 ### Output Variables :
 
 *Please provide the values for these to Tecton so we can use it to setup a cluster for you*
 
 * `deployment_name` :
-    Deployment Name. This comes directly from the input
+    Deployment Name. This comes directly from the input.
 
 * `region` :
-    Region. This comes directly from the input
+    Region. This comes directly from the input.
 
 * `spark_role_arn` :
     Spark Role ARN which is used by Tecton for materialization.
@@ -69,16 +87,16 @@ terraform apply -var-file=<your_file_name>.tfvars
     VPC ID where all AWS Services will be deployed.
 
 * `eks_subnet_ids` :
-    Subnets [Private] where the EKS cluster will be deployed
+    Subnets [Private] where the EKS cluster will be deployed.
 
 * `public_subnet_ids` :
-    Subnets [External] where the EKS cluster will be deployed
+    Subnets [External] where the EKS cluster will be deployed.
 
 * `eks_manager_security_group_id` :
-    Security Group ID for the EKS Manager needed by Tecton to deploy the EKS Cluster
+    Security Group ID for the EKS Manager needed by Tecton to deploy the EKS Cluster.
 
 * `eks_worker_security_group_id` :
-    Security Group ID for the EKS Worker needed by Tecton to deploy the EKS Cluster
+    Security Group ID for the EKS Worker needed by Tecton to deploy the EKS Cluster.
 
 * `rds_security_group_id` :
-    Security Group ID for RDS Postgres Instance needed by Tecton for metadata
+    Security Group ID for RDS Postgres Instance needed by Tecton for metadata.

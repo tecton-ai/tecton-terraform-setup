@@ -75,7 +75,7 @@ resource "aws_security_group_rule" "emr_security_group_livy_ingress" {
   from_port         = 8998
   protocol          = "tcp"
   security_group_id = aws_security_group.emr_security_group.id
-  cidr_blocks       = [var.vpc_subnet_prefix]
+  cidr_blocks       = var.eks_CIDR_blocks
   to_port           = 8998
   type              = "ingress"
 }

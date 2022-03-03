@@ -12,17 +12,17 @@ variable "region" {
   description = "The region for Tecton to use EKS in."
 }
 
-variable "eks_vpc_id" {
+variable "vpc_id" {
   type        = string
-  default     = null
-  description = "Id of a pre-existing VPC."
+  description = "ID of a pre-existing VPC."
 }
 
-variable "eks_subnet_cidr_prefix" {
-  type        = string
-  description = "The CIDR block for the private and public subnets for this module to create."
-  validation {
-    condition     = tonumber(regex("/([0-9]+)", var.eks_subnet_cidr_prefix)[0]) <= 18
-    error_message = "Subnet must have enough space: the smallest acceptable prefix is /18."
-  }
+variable "public_subnet_ids" {
+  type        = list(string)
+  description = "IDs of empty public subnets (one in each AZ)."
+}
+
+variable "eks_subnet_ids" {
+  type        = list(string)
+  description = "IDs of empty private subnets for EKS (one in each AZ)."
 }

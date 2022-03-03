@@ -12,7 +12,7 @@ variable "emr_vpc_id" {
   description = "Id of the vpc to create the security groups in."
 }
 
-variable "vpc_subnet_prefix" {
-  type = string
-  description = "CIDR block prefix to be used for the EMR VPC Subnet"
+variable "eks_CIDR_blocks" {
+  type = list(string)
+  description = "CIDR blocks used by the EKS subnets."
 }
