@@ -40,7 +40,7 @@ terraform apply -var-file=<your_file_name>.tfvars
     Whether you want to optional also create a Redis cluster that Tecton will use for an online store. This currently defaults to False.
     **Note that Redis is currently in Beta and you should talk to Tecton before turning it on**
 
-* `tecton_dataplane_account_role_arn` :
+* `tecton_account_role_arn` :
     Role used to run this terraform with. Usually the admin role in the account.
 
 * `allowed_CIDR_blocks` :

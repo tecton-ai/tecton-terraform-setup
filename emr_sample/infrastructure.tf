@@ -9,7 +9,7 @@ terraform {
 provider "aws" {
   region =  var.region
   assume_role {
-    role_arn = var.tecton_dataplane_account_role_arn
+    role_arn = var.tecton_account_role_arn
   }
 }
 
@@ -50,7 +50,7 @@ variable "elasticache_enabled" {
 }
 
 # Role used to run terraform with. Usually the admin role in the account.
-variable "tecton_dataplane_account_role_arn" {
+variable "tecton_account_role_arn" {
   type = string
 }
 
@@ -61,8 +61,9 @@ variable "allowed_CIDR_blocks" {
 }
 
 variable "tecton_assuming_account_id" {
-  type = string
+  type        = string
   description = "Get this from your Tecton rep"
+  default     = "472542229217"
 }
 
 
@@ -95,11 +96,12 @@ module "eks_security_groups" {
   tags                = {"tecton-accessible:${var.deployment_name}": "true"}
 
   # Allow Tecton NLB to be public.
-  eks_ingress_load_balancer_public = true
-  nat_gateway_ips                  = module.eks_subnets.nat_gateway_ips
+  # eks_ingress_load_balancer_public = true
+  # nat_gateway_ips                  = module.eks_subnets.nat_gateway_ips
+
   # Alternatively configure Tecton NLB to be private.
-  # eks_ingress_load_balancer_public = false
-  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
+  eks_ingress_load_balancer_public = false
+  vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
 }
 
 # EMR Subnets and Security Groups; Uses same VPC as EKS.
@@ -141,7 +143,6 @@ module "roles" {
   account_id                 = var.account_id
   tecton_assuming_account_id = var.tecton_assuming_account_id
   region                     = var.region
-  create_emr_roles           = true
   elasticache_enabled        = var.elasticache_enabled
 }
 
@@ -190,72 +191,3 @@ module "emr_debugging" {
   deployment_name         = var.deployment_name
   cross_account_role_name = module.roles[0].devops_role_name
 }
-
-
-##############################################################################################
-# OPTIONAL
-# creates subnets and notebook cluster for EMR on another account
-# note that for full functionality, you must also give this account access to the underlying
-# data sources tecton uses
-#
-# To use EMR notebooks in a different account than your Tecton account, uncomment the below
-# modules and also the relevant local vars
-##############################################################################################
-
-# locals {
-#   OPTIONAL for EMR notebook clusters in a different account (see optional block at end of file)
-#   cross_account_arn = "arn:aws:iam::9876543210:root"
-# }
-
-# provider "aws" {
-#   region = "this-accounts-region"
-
-#   assume_role {
-#     role_arn = "another-account-role-arn"
-#     # Once you run terraform for the first time, type `terraform output`
-#     # and copy the external_id below
-#     external_id = "my_external_id"
-#   }
-#   alias = "cross_account"
-# }
-
-# module "cross-account-notebook" {
-#   providers = {
-#     aws = aws.cross_account
-#   }
-#   count  = 0
-#   source = "../emr/cross_account"
-
-#   cidr_block              = "10.0.0.0/16"
-#   deployment_name         = var.deployment_name
-#   enable_notebook_cluster = true
-#   region                  = var.region
-#   # roles below created by `aws emr create-default-roles`
-#   # note that this role also needs access to S3 and Secretsmanager
-#   emr_instance_profile_name = "EMR_EC2_DefaultRole"
-#   emr_service_role_name     = "EMR_DefaultRole"
-#   glue_account_id           = var.account_id
-# }
-
-# # gives the cross-account permissions to read the materialized data bucket
-# resource "aws_s3_bucket_policy" "read-only-access" {
-#   bucket = module.tecton.s3_bucket.bucket
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid    = "AllowReadOnly"
-#         Effect = "Allow"
-#         Principal = {
-#           "AWS" : var.cross_account_arn
-#         }
-#         Action = ["s3:Get*", "s3:List*"]
-#         Resource = [
-#           module.tecton.s3_bucket.arn,
-#           # you may want to scope down the paths allowed further
-#           "${module.tecton.s3_bucket.arn}/*"
-#         ]
-#       }
-#     ]
-#   })
-# }

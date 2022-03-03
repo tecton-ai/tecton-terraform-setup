@@ -104,13 +104,13 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private_dynamodb_vpce" {
-  count           = length(aws_route_table.eks_subnet_route_table)
+  count           = var.availability_zone_count
   vpc_endpoint_id = aws_vpc_endpoint.dynamodb.id
   route_table_id  = aws_route_table.eks_subnet_route_table[count.index].id
 }
 
 resource "aws_vpc_endpoint_route_table_association" "private_s3_vpce" {
-  count           = length(aws_route_table.eks_subnet_route_table)
+  count           = var.availability_zone_count
   vpc_endpoint_id = aws_vpc_endpoint.s3.id
   route_table_id  = aws_route_table.eks_subnet_route_table[count.index].id
 }
