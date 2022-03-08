@@ -80,6 +80,8 @@
                 "eks:ListUpdates",
                 "eks:ListFargateProfiles",
                 "eks:UpdateClusterVersion",
+                "eks:UpdateNodegroupConfig",
+                "eks:UpdateNodegroupVersion",
                 "eks:UpdateClusterConfig",
                 "eks:DescribeUpdate",
                 "eks:DeleteCluster"
