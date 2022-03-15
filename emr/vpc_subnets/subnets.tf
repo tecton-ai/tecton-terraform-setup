@@ -82,7 +82,7 @@ resource "aws_subnet" "emr_subnet" {
   vpc_id            = local.vpc_id
 
   tags = {
-    "Name"                                     = "${var.deployment_name}-tecton-emr-subnet",
+    "Name"                                     = "${var.deployment_name}-emr-subnet",
     "tecton-accessible:${var.deployment_name}" = "true",
   }
 }
