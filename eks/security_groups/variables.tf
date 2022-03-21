@@ -33,3 +33,9 @@ variable "vpc_cidr_blocks" {
   description = "CIDR blocks of the VPC. Must be set if `allowed_CIDR_blocks` is set and `eks_ingress_load_balancer_public = false`."
   default     = null
 }
+
+variable "enable_eks_ingress_vpc_endpoint" {
+  default     = true
+  description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. Default: true."
+  type        = bool
+}

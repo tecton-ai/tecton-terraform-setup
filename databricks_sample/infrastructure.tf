@@ -28,28 +28,34 @@ variable "tecton_dataplane_account_role_arn" {
 }
 
 variable "external_databricks_account_id" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "external_databricks_account_role_arn" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "elasticache_enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "allowed_CIDR_blocks" {
-  description   = "CIDR blocks that should be able to access Tecton endpoint. Defaults to `0.0.0.0/0`."
-  default       = null
+  description = "CIDR blocks that should be able to access Tecton endpoint. Defaults to `0.0.0.0/0`."
+  default     = null
 }
 
 variable "tecton_assuming_account_id" {
-  type = string
+  type        = string
   description = "Get this from your Tecton rep"
+}
+
+variable "enable_eks_ingress_vpc_endpoint" {
+  default     = true
+  description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. EKS Ingress VPC Endpoint should always be enabled if the load balancer will not be public. Default: true."
+  type        = bool
 }
 
 provider "aws" {
@@ -60,7 +66,7 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias = "databricks-account"
+  alias  = "databricks-account"
   region = var.region
   assume_role {
     role_arn = var.external_databricks_account_role_arn
@@ -73,27 +79,28 @@ resource "random_id" "external_id" {
 
 module "roles" {
   providers = {
-    aws = aws
+    aws                    = aws
     aws.databricks-account = aws.databricks-account
   }
-  source                     = "../roles"
-  deployment_name            = var.deployment_name
-  account_id                 = var.account_id
-  region                     = var.region
-  spark_role_name            = var.spark_role_name
-  databricks_account_id      = var.external_databricks_account_id
-  tecton_assuming_account_id = var.tecton_assuming_account_id
-  elasticache_enabled        = var.elasticache_enabled
+  source                          = "../roles"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  account_id                      = var.account_id
+  region                          = var.region
+  spark_role_name                 = var.spark_role_name
+  databricks_account_id           = var.external_databricks_account_id
+  tecton_assuming_account_id      = var.tecton_assuming_account_id
+  elasticache_enabled             = var.elasticache_enabled
 }
 
 module "subnets" {
   providers = {
     aws = aws
   }
-  source                  = "../eks/vpc_subnets"
-  deployment_name         = var.deployment_name
-  region                  = var.region
-  eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
+  source                 = "../eks/vpc_subnets"
+  deployment_name        = var.deployment_name
+  region                 = var.region
+  eks_subnet_cidr_prefix = var.eks_subnet_cidr_prefix
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
 }
@@ -102,11 +109,12 @@ module "security_groups" {
   providers = {
     aws = aws
   }
-  source              = "../eks/security_groups"
-  deployment_name     = var.deployment_name
-  vpc_id              = module.subnets.vpc_id
-  allowed_CIDR_blocks = var.allowed_CIDR_blocks
-  tags = {"tecton-accessible:${var.deployment_name}": "true"}
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  vpc_id                          = module.subnets.vpc_id
+  allowed_CIDR_blocks             = var.allowed_CIDR_blocks
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
 
   # Allow Tecton NLB to be public.
   eks_ingress_load_balancer_public = true

@@ -16,7 +16,7 @@ variable "tecton_assuming_account_id" {
 }
 
 variable "databricks_account_id" {
-  type = string
+  type    = string
   default = null
 }
 
@@ -39,4 +39,10 @@ variable "emr_spark_role_name" {
   type        = string
   description = "Override the default name Tecton uses for emr spark role"
   default     = null
+}
+
+variable "enable_eks_ingress_vpc_endpoint" {
+  default     = true
+  description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. Default: true."
+  type        = bool
 }
