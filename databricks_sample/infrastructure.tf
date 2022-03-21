@@ -22,32 +22,38 @@ variable "tecton_dataplane_account_role_arn" {
 }
 
 variable "external_databricks_account_id" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "external_databricks_account_role_arn" {
-  type = string
+  type    = string
   default = ""
 }
 
 variable "is_vpc_deployment" {
-  type = bool
+  type    = bool
   default = false
 }
 
 variable "elasticache_enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
+variable "enable_eks_ingress_vpc_endpoint" {
+  default     = true
+  description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. EKS Ingress VPC Endpoint should always be enabled if the load balancer will not be public. Default: true."
+  type        = bool
+}
+
 variable "ip_whitelist" {
-  description   = "Ip ranges that should be able to access Tecton endpoint"
-  default       = ["0.0.0.0/0"]
+  description = "Ip ranges that should be able to access Tecton endpoint"
+  default     = ["0.0.0.0/0"]
 }
 
 variable "tecton_assuming_account_id" {
-  type = string
+  type        = string
   description = "Get this from your Tecton rep"
 }
 
@@ -59,7 +65,7 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias = "databricks-account"
+  alias  = "databricks-account"
   region = var.region
   assume_role {
     role_arn = var.external_databricks_account_role_arn
@@ -86,18 +92,19 @@ module "tecton" {
 
 module "tecton_vpc" {
   providers = {
-    aws = aws
+    aws                    = aws
     aws.databricks-account = aws.databricks-account
   }
-  count                      = var.is_vpc_deployment ? 1 : 0
-  source                     = "../vpc_deployment"
-  deployment_name            = var.deployment_name
-  account_id                 = var.account_id
-  region                     = var.region
-  spark_role_name            = var.spark_role_name
-  databricks_account_id      = var.external_databricks_account_id
-  tecton_assuming_account_id = var.tecton_assuming_account_id
-  elasticache_enabled        = var.elasticache_enabled
+  count                           = var.is_vpc_deployment ? 1 : 0
+  source                          = "../vpc_deployment"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  account_id                      = var.account_id
+  region                          = var.region
+  spark_role_name                 = var.spark_role_name
+  databricks_account_id           = var.external_databricks_account_id
+  tecton_assuming_account_id      = var.tecton_assuming_account_id
+  elasticache_enabled             = var.elasticache_enabled
 }
 
 # optionally, use a Tecton default vpc/subnet configuration
@@ -105,10 +112,10 @@ module "subnets" {
   providers = {
     aws = aws
   }
-  count                     = var.is_vpc_deployment ? 1 : 0
-  source                  = "../eks/vpc_subnets"
-  deployment_name         = var.deployment_name
-  region                  = var.region
+  count           = var.is_vpc_deployment ? 1 : 0
+  source          = "../eks/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = var.region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
 }
@@ -117,10 +124,11 @@ module "security_groups" {
   providers = {
     aws = aws
   }
-  count           = var.is_vpc_deployment ? 1 : 0
-  source          = "../eks/security_groups"
-  deployment_name = var.deployment_name
-  cluster_vpc_id      = module.subnets[0].vpc_id
-  ip_whitelist = concat([for ip in module.subnets[0].eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
-  tags = {"tecton-accessible:${var.deployment_name}": "true"}
+  count                           = var.is_vpc_deployment ? 1 : 0
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  cluster_vpc_id                  = module.subnets[0].vpc_id
+  ip_whitelist                    = concat([for ip in module.subnets[0].eks_subnet_ips : "${ip}/32"], var.ip_whitelist)
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
 }

@@ -1,13 +1,13 @@
 terraform {
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      version               = ">= 3.0.0"
+      source  = "hashicorp/aws"
+      version = ">= 3.0.0"
     }
   }
 }
 provider "aws" {
-  region =  var.region
+  region = var.region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
@@ -32,14 +32,14 @@ variable "account_id" {
 
 # VPC deployment by default
 variable "is_vpc_deployment" {
-  type = bool
+  type    = bool
   default = true
 }
 
 # By default Redis is not enabled. You can re-run the terraform later
 # with this enabled if you want
 variable "elasticache_enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
@@ -49,13 +49,13 @@ variable "tecton_dataplane_account_role_arn" {
 }
 
 variable "ip_whitelist" {
-  type          = list(string)
-  description   = "Ip ranges that should be able to access Tecton endpoint"
-  default       = ["0.0.0.0/0"]
+  type        = list(string)
+  description = "Ip ranges that should be able to access Tecton endpoint"
+  default     = ["0.0.0.0/0"]
 }
 
 variable "tecton_assuming_account_id" {
-  type = string
+  type        = string
   description = "Get this from your Tecton rep"
 }
 
@@ -64,6 +64,12 @@ variable "apply_layer" {
   type        = number
   default     = 2
   description = "due to terraform issues with dynamic number of resources, we need to apply in layers. Layers start at 0 and should be incremented after each successful apply until the default value is reached"
+}
+
+variable "enable_eks_ingress_vpc_endpoint" {
+  default     = true
+  description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. EKS Ingress VPC Endpoint should always be enabled if the load balancer will not be public. Default: true."
+  type        = bool
 }
 
 # Optionally, use a Tecton default vpc/subnet configuration
@@ -85,24 +91,25 @@ module "eks_security_groups" {
   providers = {
     aws = aws
   }
-  count             = var.is_vpc_deployment ? 1 : 0
-  source            = "../eks/security_groups"
-  deployment_name   = var.deployment_name
-  cluster_vpc_id    = module.eks_subnets[0].vpc_id
-  ip_whitelist      = concat([for ip in module.eks_subnets[0].eks_subnet_ips: "${ip}/32"], var.ip_whitelist)
-  tags              = {"tecton-accessible:${var.deployment_name}": "true"}
+  count                           = var.is_vpc_deployment ? 1 : 0
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  cluster_vpc_id                  = module.eks_subnets[0].vpc_id
+  ip_whitelist                    = concat([for ip in module.eks_subnets[0].eks_subnet_ips : "${ip}/32"], var.ip_whitelist)
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
 }
 
 # EMR Subnet and Security Group. Use same VPC as EKS
 module "subnets" {
-  count               = var.apply_layer > 0 ? 1 : 0
-  source              = "../emr/vpc_subnets"
-  deployment_name     = var.deployment_name
-  region              = var.region
+  count                   = var.apply_layer > 0 ? 1 : 0
+  source                  = "../emr/vpc_subnets"
+  deployment_name         = var.deployment_name
+  region                  = var.region
   availability_zone_count = 3
-  existing_vpc_id     = module.eks_subnets[0].vpc_id
-  internet_gateway_id = module.eks_subnets[0].internet_gateway_id
-  depends_on          = [
+  existing_vpc_id         = module.eks_subnets[0].vpc_id
+  internet_gateway_id     = module.eks_subnets[0].internet_gateway_id
+  depends_on = [
     module.eks_subnets
   ]
 }
@@ -114,7 +121,7 @@ module "security_groups" {
   region            = var.region
   emr_vpc_id        = module.eks_subnets[0].vpc_id
   vpc_subnet_prefix = module.eks_subnets[0].vpc_subnet_prefix
-  depends_on      = [
+  depends_on = [
     module.eks_subnets
   ]
 }
@@ -135,17 +142,18 @@ module "tecton" {
 
 module "tecton_vpc" {
   providers = {
-    aws = aws
+    aws                    = aws
     aws.databricks-account = aws
   }
-  count                      = (var.is_vpc_deployment && (var.apply_layer > 1)) ? 1 : 0
-  source                     = "../vpc_deployment"
-  deployment_name            = var.deployment_name
-  account_id                 = var.account_id
-  tecton_assuming_account_id = var.tecton_assuming_account_id
-  region                     = var.region
-  create_emr_roles           = true
-  elasticache_enabled        = var.elasticache_enabled
+  count                           = (var.is_vpc_deployment && (var.apply_layer > 1)) ? 1 : 0
+  source                          = "../vpc_deployment"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  account_id                      = var.account_id
+  tecton_assuming_account_id      = var.tecton_assuming_account_id
+  region                          = var.region
+  create_emr_roles                = true
+  elasticache_enabled             = var.elasticache_enabled
 }
 
 module "notebook_cluster" {
@@ -154,7 +162,7 @@ module "notebook_cluster" {
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-  count           = 0
+  count = 0
 
   region          = var.region
   deployment_name = var.deployment_name
