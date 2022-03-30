@@ -1,0 +1,63 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "TagOnCreateTaggedEC2Resources",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateTags",
+        "ec2:DeleteTags"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:*:vpc-endpoint/*",
+        "arn:aws:ec2:*:*:vpc-endpoint-service/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:CreateAction": [
+            "CreateVpcEndpoint",
+            "CreateVpcEndpointServiceConfiguration"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "VpcEndpointValidateAndAttachToNetworking",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVpcEndpoint*",
+        "ec2:DescribePrefixLists"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EksVpcEndpointCreate",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateVpcEndpointServiceConfiguration",
+        "ec2:CreateVpcEndpoint"
+      ],
+      "Resource": [
+        "*"
+      ]
+    },
+    {
+      "Sid": "EksVpcEndpointModify",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DeleteVpcEndpointServiceConfigurations",
+        "ec2:ModifyVpcEndpointServicePermissions",
+        "ec2:DeleteVpcEndpoints",
+        "ec2:ModifyVpcEndpoint"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+        }
+      }
+    }
+  ]
+}
