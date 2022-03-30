@@ -21,10 +21,10 @@ resource "aws_security_group" "postgres_metadata_db_security" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    description = "Allow EKS worker nodes to talk to RDS postgres DB"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    description     = "Allow EKS worker nodes to talk to RDS postgres DB"
     security_groups = [aws_security_group.worker_node.id]
   }
 
@@ -49,7 +49,7 @@ resource "aws_security_group" "tecton_eks_cluster" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = merge( var.tags,
+  tags = merge(var.tags,
     {
       Name = var.deployment_name
     }
@@ -131,12 +131,53 @@ resource "aws_security_group_rule" "lb_to_eks_ingress_port" {
   # will go through the coresponding NAT gateway first.
   # For the private NLB, we also whitelist the private CIDR block(s) of the VPC because
   # the Tecton requests from the VPC will be routed directly to the NLB.
-  cidr_blocks       = var.allowed_CIDR_blocks == null ? ["0.0.0.0/0"] : (
-      var.eks_ingress_load_balancer_public ?
-      concat(var.allowed_CIDR_blocks, [for ip in var.nat_gateway_ips: format("%s/32", ip)]) :
-      concat(var.allowed_CIDR_blocks, var.vpc_cidr_blocks)
+  cidr_blocks = var.allowed_CIDR_blocks == null ? ["0.0.0.0/0"] : (
+    var.eks_ingress_load_balancer_public ?
+    concat(var.allowed_CIDR_blocks, [for ip in var.nat_gateway_ips : format("%s/32", ip)]) :
+    concat(var.allowed_CIDR_blocks, var.vpc_cidr_blocks)
   )
 
 
-  description       = "Access from the NLB to the K8s Ingress port(s)"
+  description = "Access from the NLB to the K8s Ingress port(s)"
+}
+
+resource "aws_security_group" "eks_ingress_vpc_endpoint_security_group" {
+  count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
+
+  name = format(
+    "%s-eks-ingress-vpc-endpoint-security-group", var.deployment_name,
+  )
+  description = "EKS Ingress VPC Endpoint Security group for in-VPC communication"
+  vpc_id      = var.vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    var.tags,
+    {
+      "Name" = format(
+        "%s-eks-ingress-vpc-endpoint-security-group", var.deployment_name,
+      ),
+      format(
+        "kubernetes.io/cluster/%s", var.deployment_name,
+      ) = "owned",
+    }
+  )
+}
+
+resource "aws_security_group_rule" "eks_ingress_vpc_endpoint_security_group_ingress" {
+  count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
+
+  description              = "Allow all ingress from EKS worker node security group"
+  from_port                = 0
+  protocol                 = "-1"
+  security_group_id        = aws_security_group.eks_ingress_vpc_endpoint_security_group[0].id
+  source_security_group_id = aws_security_group.worker_node.id
+  to_port                  = 65535
+  type                     = "ingress"
 }
