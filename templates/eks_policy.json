@@ -62,6 +62,14 @@
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
             ]
+        },
+        {
+            "Sid": "CrossAccountAccess",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::019343560973:role/tecton-materialized-data-access-cross-account-role"
+            ]
         }
     ]
 }

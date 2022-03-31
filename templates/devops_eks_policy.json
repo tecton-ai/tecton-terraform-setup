@@ -149,6 +149,14 @@
                     "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
                 }
             }
+        },
+        {
+            "Sid": "CrossAccountAccess",
+            "Effect": "Allow",
+            "Action": "sts:AssumeRole",
+            "Resource": [
+                "arn:aws:iam::019343560973:role/tecton-materialized-data-access-cross-account-role"
+            ]
         }
     ]
 }
