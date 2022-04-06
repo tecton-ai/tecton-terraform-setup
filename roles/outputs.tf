@@ -1,9 +1,9 @@
 output "spark_role_name" {
-  value = var.spark_role_name
+  value = aws_iam_role.emr_spark_role.name
 }
 
 output "spark_role_arn" {
-  value = aws_iam_role.emr_spark_role.name
+  value = aws_iam_role.emr_spark_role.arn
 }
 
 output "emr_master_role_name" {

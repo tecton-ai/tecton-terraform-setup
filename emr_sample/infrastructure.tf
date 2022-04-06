@@ -167,7 +167,7 @@ module "notebook_cluster" {
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-  count           = 0
+  count           = 1
 
   region          = var.region
   deployment_name = var.deployment_name
@@ -202,7 +202,7 @@ module "notebook_cluster" {
 module "emr_debugging" {
   source = "../emr/debugging"
 
-  count                   = 0
+  count                   = 1
   deployment_name         = var.deployment_name
   cross_account_role_name = module.roles[0].devops_role_name
 }
