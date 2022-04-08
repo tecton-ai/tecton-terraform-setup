@@ -35,6 +35,7 @@
             "Action": "s3:ListBucket",
             "Resource": [
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-materialized",
                 "arn:aws:s3:::tecton.ai.databricks-init-scripts",
                 "arn:aws:s3:::tecton.ai.public",
                 "arn:aws:s3:::tecton-materialization-release"
@@ -45,11 +46,12 @@
             "Effect": "Allow",
             "Action": [
                 "s3:GetObject",
-        "s3:PutObject",
+                "s3:PutObject",
                 "s3:DeleteObject"
             ],
             "Resource": [
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-materialized/*"
             ]
         },
         {

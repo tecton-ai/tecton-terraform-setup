@@ -17,7 +17,10 @@
                 "s3:PutBucketVersioning",
                 "s3:PutLifecycleConfiguration"
             ],
-            "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"]
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-materialized"
+            ]
         },
         {
             "Sid": "S3Object",
@@ -29,7 +32,10 @@
                 "s3:GetObjectTagging",
                 "s3:PutObjectTagging"
             ],
-            "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"]
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-materialized/*"
+            ]
         },
         {
             "Sid": "VerifyPermissionsAndCreateInstanceProfiles",
