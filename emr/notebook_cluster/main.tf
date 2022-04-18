@@ -61,8 +61,9 @@ locals {
   // certain regions. Currently Tecton supports serving bootstrap scripts from the following
   // regions. (including us-west-2 by default) Reach out to customer support for further information.
   bootstrap_regions = {
-    "eu-central-1" : "-eu-central-1"
-    "us-east-2" : "-us-east-2"
+    "eu-central-1" : "-eu-central-1",
+    "eu-west-1" : "-eu-west-1",
+    "us-east-2" : "-us-east-2",
   }
 
   bootstrap_action = [
