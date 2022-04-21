@@ -66,6 +66,8 @@
             "Action": [
                 "es:CreateDomain",
                 "es:DescribeElasticsearchDomain",
+                "es:DescribeElasticsearchDomainConfig",
+                "es:DescribeDomainConfig",
                 "es:ListTags",
                 "es:DeleteElasticsearchDomain"
             ],
