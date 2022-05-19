@@ -61,6 +61,7 @@
                 "elasticmapreduce:ListBootstrapActions",
                 "elasticmapreduce:TerminateJobFlows",
                 "elasticmapreduce:ListInstanceGroups",
+                "elasticmapreduce:ListInstanceGroups",
                 "ssm:StartSession"
             ],
             "Resource": "*",
