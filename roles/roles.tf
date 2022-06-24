@@ -16,9 +16,10 @@ data "template_file" "eks_policy_json" {
 data "template_file" "devops_policy_json_1" {
   template = file("${path.module}/../templates/devops_policy_1.json")
   vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
+    ACCOUNT_ID             = var.account_id
+    DEPLOYMENT_NAME        = var.deployment_name
+    DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
+    REGION                 = var.region
   }
 }
 
