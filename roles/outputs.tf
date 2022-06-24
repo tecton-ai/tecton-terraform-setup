@@ -17,3 +17,11 @@ output "emr_spark_instance_profile_arn" {
 output "devops_role_name" {
   value = aws_iam_role.devops_role.name
 }
+
+output "eks_node_role_name" {
+  value = aws_iam_role.eks_node_role.name
+}
+
+output "eks_management_role_name" {
+  value = aws_iam_role.eks_management_role.name
+}
