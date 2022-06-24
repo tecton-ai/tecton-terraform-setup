@@ -29,3 +29,12 @@ output "public_subnet_ids" {
 output "security_group_ids" {
   value = [module.eks_security_groups.eks_security_group_id, module.eks_security_groups.eks_worker_security_group_id, module.eks_security_groups.rds_security_group_id]
 }
+
+output "roles" {
+  value = {
+    devops_role_name      = module.roles.devops_role_name
+    eks_cluster_role_name = module.roles.eks_management_role_name
+    eks_node_role_name    = module.roles.eks_node_role_name
+    spark_node_role_name  = module.roles.spark_role_name
+  }
+}
