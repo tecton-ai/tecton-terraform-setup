@@ -34,3 +34,11 @@ resource "aws_s3_bucket_policy" "read-only-access" {
     ]
   })
 }
+
+resource "aws_s3_bucket_ownership_controls" "bucket_owner_enforced" {
+  bucket = aws_s3_bucket.tecton.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
