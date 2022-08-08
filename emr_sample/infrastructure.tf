@@ -56,13 +56,18 @@ module "subnets" {
   region          = local.region
 }
 
+locals {
+  # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
+  notebook_cluster_count = 0
+}
+
 module "notebook_cluster" {
   source = "../emr/notebook_cluster"
   # See https://docs.tecton.ai/v2/setting-up-tecton/04b-connecting-emr.html#prerequisites
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-  count = 0
+  count = local.notebook_cluster_count
 
   region          = local.region
   deployment_name = local.deployment_name
