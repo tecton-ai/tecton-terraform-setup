@@ -58,6 +58,12 @@ variable "enable_eks_ingress_vpc_endpoint" {
   type        = bool
 }
 
+variable "additional_s3_read_only_principals" {
+  type        = list(string)
+  default     = []
+  description = "Additional principals that should be able to access (read-only) the cluster s3 bucket."
+}
+
 provider "aws" {
   region = var.region
   assume_role {
@@ -122,4 +128,10 @@ module "security_groups" {
   # Alternatively configure Tecton NLB to be private.
   # eks_ingress_load_balancer_public = false
   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
+}
+
+module "s3" {
+  source                             = "../s3"
+  deployment_name                    = var.deployment_name
+  additional_s3_read_only_principals = var.additional_s3_read_only_principals
 }
