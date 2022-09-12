@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "tecton" {
   bucket = "tecton-${var.deployment_name}"
   acl    = "private"
-  tags   = "${merge(local.tags, var.additional_offline_storage_tags)}"
+  tags   = merge(local.tags, var.additional_offline_storage_tags)
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
