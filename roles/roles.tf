@@ -122,6 +122,8 @@ data "template_file" "emr_access_policy_json" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role" "devops_role" {
+  count = var.enable_devops_role ? 1 : 0
+
   name               = "tecton-${var.deployment_name}-devops-role"
   tags               = local.tags
   assume_role_policy = <<POLICY
@@ -142,6 +144,8 @@ POLICY
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_policy_1" {
+  count = var.enable_devops_role ? 1 : 0
+
   name   = "tecton-${var.deployment_name}-devops-policy-1"
   policy = data.template_file.devops_policy_json_1.rendered
   tags   = local.tags
@@ -149,6 +153,8 @@ resource "aws_iam_policy" "devops_policy_1" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_policy_2" {
+  count = var.enable_devops_role ? 1 : 0
+
   name   = "tecton-${var.deployment_name}-devops-policy-2"
   policy = data.template_file.devops_policy_json_2.rendered
   tags   = local.tags
@@ -156,6 +162,8 @@ resource "aws_iam_policy" "devops_policy_2" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_policy" {
+  count = var.enable_devops_role ? 1 : 0
+
   name   = "tecton-${var.deployment_name}-devops-eks-policy"
   policy = data.template_file.devops_eks_policy_json.rendered
   tags   = local.tags
@@ -163,7 +171,7 @@ resource "aws_iam_policy" "devops_eks_policy" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
-  count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
+  count = var.enable_eks_ingress_vpc_endpoint && var.enable_devops_role ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-eks-vpce"
   policy = data.template_file.devops_eks_vpc_endpoint_policy_json[0].rendered
@@ -172,7 +180,8 @@ resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_elasticache_policy" {
-  count  = var.elasticache_enabled ? 1 : 0
+  count = var.elasticache_enabled && var.enable_devops_role ? 1 : 0
+
   name   = "tecton-${var.deployment_name}-devops-elasticache-policy"
   policy = data.template_file.devops_elasticache_policy_json.rendered
   tags   = local.tags
@@ -180,36 +189,151 @@ resource "aws_iam_policy" "devops_elasticache_policy" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_policy_attachment_1" {
-  policy_arn = aws_iam_policy.devops_policy_1.arn
-  role       = aws_iam_role.devops_role.name
+  count = var.enable_devops_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.devops_policy_1[0].arn
+  role       = aws_iam_role.devops_role[0].name
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
-  policy_arn = aws_iam_policy.devops_policy_2.arn
-  role       = aws_iam_role.devops_role.name
+  count = var.enable_devops_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.devops_policy_2[0].arn
+  role       = aws_iam_role.devops_role[0].name
 }
 
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_policy_attachment" {
-  policy_arn = aws_iam_policy.devops_eks_policy.arn
-  role       = aws_iam_role.devops_role.name
+  count = var.enable_devops_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.devops_eks_policy[0].arn
+  role       = aws_iam_role.devops_role[0].name
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_vpc_endpoint_policy_attachment" {
-  count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
+  count = var.enable_eks_ingress_vpc_endpoint && var.enable_devops_role ? 1 : 0
 
   policy_arn = aws_iam_policy.devops_eks_vpc_endpoint_policy[0].arn
-  role       = aws_iam_role.devops_role.name
+  role       = aws_iam_role.devops_role[0].name
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_elasticache_policy_attachment" {
-  count      = var.elasticache_enabled ? 1 : 0
+  count = var.elasticache_enabled && var.enable_devops_role ? 1 : 0
+
   policy_arn = aws_iam_policy.devops_elasticache_policy[0].arn
-  role       = aws_iam_role.devops_role.name
+  role       = aws_iam_role.devops_role[0].name
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+#  Duplicates the functionality of the 'devops' role for systems use
+resource "aws_iam_role" "cross_account" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  name               = "tecton-${var.deployment_name}-cross-account"
+  tags               = local.tags
+  assume_role_policy = data.aws_iam_policy_document.cross_account_assume_role_policy[0].json
+}
+
+data "aws_iam_policy_document" "cross_account_assume_role_policy" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  version = "2012-10-17"
+  statement {
+    effect = "Allow"
+    principals {
+      identifiers = [format("arn:aws:iam::%s:root", var.tecton_assuming_account_id)]
+      type        = "AWS"
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_policy" "cross_account_1" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-ca-1"
+  policy = data.template_file.devops_policy_json_1.rendered
+  tags   = local.tags
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_policy" "cross_account_2" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-ca-2"
+  policy = data.template_file.devops_policy_json_2.rendered
+  tags   = local.tags
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_policy" "cross_account_eks" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-ca-eks"
+  policy = data.template_file.devops_eks_policy_json.rendered
+  tags   = local.tags
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_policy" "cross_account_eks_vpc_endpoint" {
+  count = var.enable_eks_ingress_vpc_endpoint && var.enable_cross_account_role ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-ca-eks-vpce"
+  policy = data.template_file.devops_eks_vpc_endpoint_policy_json[0].rendered
+  tags   = local.tags
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_policy" "cross_account_elasticache" {
+  count  = var.elasticache_enabled && var.enable_cross_account_role ? 1 : 0
+  name   = "tecton-${var.deployment_name}-ca-elasticache"
+  policy = data.template_file.devops_elasticache_policy_json.rendered
+  tags   = local.tags
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "cross_account_1" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.cross_account_1[0].arn
+  role       = aws_iam_role.cross_account[0].name
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "cross_account_2" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.cross_account_2[0].arn
+  role       = aws_iam_role.cross_account[0].name
+}
+
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "cross_account_eks" {
+  count = var.enable_cross_account_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.cross_account_eks[0].arn
+  role       = aws_iam_role.cross_account[0].name
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "cross_account_eks_vpc_endpoint_policy_attachment" {
+  count = var.enable_eks_ingress_vpc_endpoint && var.enable_cross_account_role ? 1 : 0
+
+  policy_arn = aws_iam_policy.cross_account_eks_vpc_endpoint[0].arn
+  role       = aws_iam_role.cross_account[0].name
+}
+
+# System Cross-Account [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "cross_account_elasticache_policy_attachment" {
+  count      = var.elasticache_enabled && var.enable_cross_account_role ? 1 : 0
+  policy_arn = aws_iam_policy.cross_account_elasticache[0].arn
+  role       = aws_iam_role.cross_account[0].name
 }
 
 # EKS MANAGEMENT [Common : Databricks and EMR]

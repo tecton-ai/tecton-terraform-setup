@@ -31,10 +31,5 @@ output "security_group_ids" {
 }
 
 output "roles" {
-  value = {
-    devops_role_name      = module.roles.devops_role_name
-    eks_cluster_role_name = module.roles.eks_management_role_name
-    eks_node_role_name    = module.roles.eks_node_role_name
-    spark_node_role_name  = module.roles.spark_role_name
-  }
+  value = var.apply_layer > 1 ? module.roles[0].roles : {}
 }

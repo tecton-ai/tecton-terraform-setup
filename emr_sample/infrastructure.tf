@@ -51,7 +51,8 @@ variable "elasticache_enabled" {
 
 # Role used to run terraform with. Usually the admin role in the account.
 variable "tecton_dataplane_account_role_arn" {
-  type = string
+  type        = string
+  description = "The AWS IAM role ARN to be used to provision resources into the Tecton dataplane (VPC) account."
 }
 
 variable "allowed_CIDR_blocks" {

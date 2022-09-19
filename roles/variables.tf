@@ -46,3 +46,15 @@ variable "enable_eks_ingress_vpc_endpoint" {
   description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. Default: true."
   type        = bool
 }
+
+variable "enable_cross_account_role" {
+  default     = true
+  description = "Toggle enabling the cross-account role, which allows Tecton systems assume-role access to the Tecton deployment. Default, true, recommended."
+  type        = bool
+}
+
+variable "enable_devops_role" {
+  default     = true
+  description = "Toggle enabling the devops cross-account role, which allows Tecton engineers assume-role access to the Tecton deployment. Default, true, recommended."
+  type        = bool
+}

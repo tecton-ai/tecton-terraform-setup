@@ -24,7 +24,8 @@ variable "spark_role_name" {
 }
 
 variable "tecton_dataplane_account_role_arn" {
-  type = string
+  type        = string
+  description = "The AWS IAM role ARN to be used to provision resources into the Tecton dataplane (VPC) account."
 }
 
 variable "external_databricks_account_id" {
