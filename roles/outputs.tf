@@ -1,9 +1,9 @@
 output "spark_role_name" {
-  value = var.spark_role_name
+  value = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.spark_role_name
 }
 
 output "spark_role_arn" {
-  value = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : null
+  value = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].arn : null
 }
 
 output "emr_master_role_name" {
@@ -36,6 +36,6 @@ output "roles" {
     devops_role_name        = var.enable_devops_role ? aws_iam_role.devops_role[0].name : ""
     eks_cluster_role_name   = aws_iam_role.eks_management_role.name
     eks_node_role_name      = aws_iam_role.eks_node_role.name
-    spark_node_role_name    = var.spark_role_name
+    spark_node_role_name    = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.spark_role_name
   }
 }
