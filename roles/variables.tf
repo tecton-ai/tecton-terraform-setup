@@ -58,3 +58,15 @@ variable "enable_devops_role" {
   description = "Toggle enabling the devops cross-account role, which allows Tecton engineers assume-role access to the Tecton deployment. Default, true, recommended."
   type        = bool
 }
+
+variable "enable_spot_service_linked_role" {
+  default     = true
+  description = "Toggle enabling the spot service linked role. The resource is required for a Tecton deployment."
+  type        = bool
+}
+
+variable "enable_eks_nodegroup_service_linked_role" {
+  default     = true
+  description = "Toggle enabling the eks-node service linked role. The resource is required for a Tecton deployment."
+  type        = bool
+}
