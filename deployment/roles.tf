@@ -5,8 +5,9 @@ locals {
 
 data "aws_iam_role" "spark_role" {
   name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
-}
 
+  depends_on = [aws_iam_role.emr_spark_role]
+}
 
 # CROSS ACCOUNT ROLE
 resource "aws_iam_role" "cross_account_role" {

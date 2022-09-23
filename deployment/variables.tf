@@ -38,3 +38,9 @@ variable "additional_offline_storage_tags" {
   description = "Additional tags for offline storage (S3 bucket)"
   default     = {}
 }
+
+variable "s3_tecton_enforce_secure_transport" {
+  type        = bool
+  description = "Toggle enforcing HTTPS traffic to the Tecton s3 bucket."
+  default     = true
+}
