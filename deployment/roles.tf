@@ -63,3 +63,20 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
   policy_arn = aws_iam_policy.common_spark_policy.arn
   role       = local.spark_role_name
 }
+
+resource "aws_iam_policy" "satellite_region_policy" {
+  count = var.satellite_region == null ? 0 : 1
+  name  = "tecton-satellite-region-policy"
+  policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
+    ACCOUNT_ID       = var.account_id
+    DEPLOYMENT_NAME  = var.deployment_name
+    REGION           = var.region
+    SATELLITE_REGION = var.satellite_region
+  })
+  tags = local.tags
+}
+resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
+  count      = var.satellite_region == null ? 0 : 1
+  policy_arn = aws_iam_policy.satellite_region_policy[0].arn
+  role       = local.spark_role_name
+}
