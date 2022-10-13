@@ -96,7 +96,8 @@ module "notebook_cluster" {
 
 # This module adds some IAM privileges to enable your Tecton technical support
 # reps to open and execute EMR notebooks in your account to help troubleshoot
-# or test code you are developing.
+# or test code you are developing. It also will give Tecton access to your EMR
+# notebook cluster logs.
 #
 # Enable this module by setting count = 1
 module "emr_debugging" {
@@ -105,6 +106,9 @@ module "emr_debugging" {
   count                   = 0
   deployment_name         = local.deployment_name
   cross_account_role_name = module.tecton.cross_account_role_name
+  account_id              = local.account_id
+  log_uri_bucket          = module.notebook_cluster[0].logs_s3_bucket.bucket
+  log_uri_bucket_arn      = module.notebook_cluster[0].logs_s3_bucket.arn
 }
 
 ##############################################################################################
