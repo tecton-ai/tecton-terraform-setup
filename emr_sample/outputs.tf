@@ -17,5 +17,5 @@ output "spark_instance_profile_arn" {
   value = module.tecton.emr_spark_instance_profile_arn
 }
 output "notebook_cluster_id" {
-  value = local.notebook_cluster_count > 0 ? module.notebook_cluster.cluster_id : ""
+  value = local.notebook_cluster_count > 0 ? module.notebook_cluster[0].cluster_id : ""
 }
