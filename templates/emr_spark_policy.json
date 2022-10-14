@@ -15,6 +15,7 @@
                 "dynamodb:ConditionCheckItem",
                 "dynamodb:DescribeTable",
                 "dynamodb:PutItem",
+                "dynamodb:GetItem",
                 "dynamodb:Query"
             ],
             "Resource": [
