@@ -59,6 +59,9 @@ module "subnets" {
 locals {
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
   notebook_cluster_count = 0
+
+  # Set count = 1 to allow Tecton to debug EMR clusters
+  emr_debugging_count = 0
 }
 
 module "notebook_cluster" {
@@ -103,7 +106,8 @@ module "notebook_cluster" {
 module "emr_debugging" {
   source = "../emr/debugging"
 
-  count                   = 0
+  count = local.emr_debugging_count
+
   deployment_name         = local.deployment_name
   cross_account_role_name = module.tecton.cross_account_role_name
   account_id              = local.account_id
