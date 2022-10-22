@@ -2,15 +2,18 @@ resource "aws_s3_bucket" "tecton" {
   bucket = "tecton-${var.deployment_name}"
   acl    = "private"
   tags   = merge(local.tags, var.additional_offline_storage_tags)
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
   lifecycle {
     ignore_changes = [lifecycle_rule]
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "tecton_s3_bucket_encryption_configuration" {
+  bucket = aws_s3_bucket.tecton.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
