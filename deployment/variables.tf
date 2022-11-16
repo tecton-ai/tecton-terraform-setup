@@ -32,3 +32,9 @@ variable "additional_s3_read_only_principals" {
   type    = list(string)
   default = []
 }
+
+variable "additional_offline_storage_tags" {
+  type        = map(string)
+  description = "Additional tags for offline storage (S3 bucket)"
+  default     = {}
+}

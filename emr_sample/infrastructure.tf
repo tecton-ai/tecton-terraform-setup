@@ -68,6 +68,14 @@ module "redis" {
   redis_security_group_id  = module.security_groups.emr_security_group_id
   deployment_name          = local.deployment_name
 }
+  
+locals {
+  # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
+  notebook_cluster_count = 0
+
+  # Set count = 1 to allow Tecton to debug EMR clusters
+  emr_debugging_count = 0
+}
 
 module "notebook_cluster" {
   source = "../emr/notebook_cluster"
@@ -75,7 +83,7 @@ module "notebook_cluster" {
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-  count = 0
+  count = local.notebook_cluster_count
 
   region          = local.region
   deployment_name = local.deployment_name
@@ -104,15 +112,20 @@ module "notebook_cluster" {
 
 # This module adds some IAM privileges to enable your Tecton technical support
 # reps to open and execute EMR notebooks in your account to help troubleshoot
-# or test code you are developing.
+# or test code you are developing. It also will give Tecton access to your EMR
+# notebook cluster logs.
 #
 # Enable this module by setting count = 1
 module "emr_debugging" {
   source = "../emr/debugging"
 
-  count                   = 0
+  count = local.emr_debugging_count
+
   deployment_name         = local.deployment_name
   cross_account_role_name = module.tecton.cross_account_role_name
+  account_id              = local.account_id
+  log_uri_bucket          = module.notebook_cluster[0].logs_s3_bucket.bucket
+  log_uri_bucket_arn      = module.notebook_cluster[0].logs_s3_bucket.arn
 }
 
 ##############################################################################################

@@ -83,6 +83,8 @@ resource "aws_emr_cluster" "cluster" {
 
   applications = ["Spark", "Livy", "Hive", "JupyterEnterpriseGateway"]
 
+  log_uri = "s3n://${aws_s3_bucket.tecton_notebook_cluster_logs.bucket}/"
+
   ec2_attributes {
     subnet_id                         = var.subnet_id
     emr_managed_master_security_group = var.emr_security_group_id
