@@ -140,6 +140,9 @@ module "emr_security_groups" {
 module "roles" {
   providers = {
     aws                    = aws
+    # This is needed because the roles module supports both databricks and EMR.
+    # Specifying it is an artifact of the module interfaces, and does not actually create
+    # any databricks resources when using `emr_sample`.
     aws.databricks-account = aws
   }
   count                           = (var.apply_layer > 1) ? 1 : 0
