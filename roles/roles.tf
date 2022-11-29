@@ -62,6 +62,21 @@ data "template_file" "devops_elasticache_policy_json" {
   }
 }
 
+data "template_file" "assume_role_policy" {
+  template = file("${path.module}/../templates/assume_role.json")
+  vars = {
+    ASSUMING_ACCOUNT_ID      = var.tecton_assuming_account_id
+  }
+}
+
+data "template_file" "assume_role_external_id_policy" {
+  template = file("${path.module}/../templates/assume_role_external_id.json")
+  vars = {
+    ASSUMING_ACCOUNT_ID      = var.tecton_assuming_account_id
+    EXTERNAL_ID = var.external_id
+  }
+}
+
 # Spark : Databricks
 data "template_file" "spark_policy_json" {
   count    = var.create_emr_roles ? 0 : 1
@@ -124,20 +139,7 @@ data "template_file" "emr_access_policy_json" {
 resource "aws_iam_role" "devops_role" {
   name               = "tecton-${var.deployment_name}-devops-role"
   tags               = local.tags
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${var.tecton_assuming_account_id}:root"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-POLICY
+  assume_role_policy = var.external_id != "" ? data.template_file.assume_role_external_id_policy.rendered : data.template_file.assume_role_policy.rendered
 }
 
 # DEVOPS [Common : Databricks and EMR]

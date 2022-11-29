@@ -154,6 +154,7 @@ module "roles" {
   region                          = var.region
   create_emr_roles                = true
   elasticache_enabled             = var.elasticache_enabled
+  external_id = random_id.external_id.id
 }
 
 module "notebook_cluster" {
