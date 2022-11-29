@@ -48,7 +48,7 @@ variable "enable_eks_ingress_vpc_endpoint" {
 }
 
 variable "external_id" {
-  default = ""
+  default     = ""
   description = "The external id that should be usd by Tecton when assuming the devops role."
-  type = string
+  type        = string
 }

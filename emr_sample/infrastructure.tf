@@ -82,9 +82,9 @@ module "eks_subnets" {
   providers = {
     aws = aws
   }
-  source          = "../eks/vpc_subnets"
-  deployment_name = var.deployment_name
-  region          = var.region
+  source                  = "../eks/vpc_subnets"
+  deployment_name         = var.deployment_name
+  region                  = var.region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
   eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
@@ -120,7 +120,7 @@ module "emr_subnets" {
   vpc_id                    = module.eks_subnets.vpc_id
   emr_subnet_cidr_prefix    = var.emr_subnet_cidr_prefix
   az_name_to_nat_gateway_id = module.eks_subnets.az_name_to_nat_gateway_id
-  depends_on = [
+  depends_on                = [
     module.eks_subnets
   ]
 }
@@ -132,7 +132,7 @@ module "emr_security_groups" {
   region            = var.region
   emr_vpc_id        = module.eks_subnets.vpc_id
   vpc_subnet_prefix = module.eks_subnets.vpc_subnet_prefix
-  depends_on = [
+  depends_on        = [
     module.eks_subnets
   ]
 }
@@ -154,7 +154,7 @@ module "roles" {
   region                          = var.region
   create_emr_roles                = true
   elasticache_enabled             = var.elasticache_enabled
-  external_id = random_id.external_id.id
+  external_id                     = random_id.external_id.id
 }
 
 module "notebook_cluster" {

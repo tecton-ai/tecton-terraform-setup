@@ -5,7 +5,7 @@ locals {
 # EKS [Common : Databricks and EMR]
 data "template_file" "eks_policy_json" {
   template = file("${path.module}/../templates/eks_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -15,7 +15,7 @@ data "template_file" "eks_policy_json" {
 # EKS [Common : Databricks and EMR]
 data "template_file" "devops_policy_json_1" {
   template = file("${path.module}/../templates/devops_policy_1.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID             = var.account_id
     DEPLOYMENT_NAME        = var.deployment_name
     DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
@@ -26,7 +26,7 @@ data "template_file" "devops_policy_json_1" {
 # EKS [Common : Databricks and EMR]
 data "template_file" "devops_policy_json_2" {
   template = file("${path.module}/../templates/devops_policy_2.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -36,7 +36,7 @@ data "template_file" "devops_policy_json_2" {
 # EKS [Common : Databricks and EMR]
 data "template_file" "devops_eks_policy_json" {
   template = file("${path.module}/../templates/devops_eks_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -47,7 +47,7 @@ data "template_file" "devops_eks_vpc_endpoint_policy_json" {
   count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
 
   template = file("${path.module}/../templates/devops_eks_vpc_endpoint_policy.json")
-  vars = {
+  vars     = {
     DEPLOYMENT_NAME = var.deployment_name
   }
 }
@@ -55,7 +55,7 @@ data "template_file" "devops_eks_vpc_endpoint_policy_json" {
 # Elasticache [Common : Databricks and EMR]
 data "template_file" "devops_elasticache_policy_json" {
   template = file("${path.module}/../templates/devops_elasticache_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -64,16 +64,16 @@ data "template_file" "devops_elasticache_policy_json" {
 
 data "template_file" "assume_role_policy" {
   template = file("${path.module}/../templates/assume_role.json")
-  vars = {
-    ASSUMING_ACCOUNT_ID      = var.tecton_assuming_account_id
+  vars     = {
+    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
   }
 }
 
 data "template_file" "assume_role_external_id_policy" {
   template = file("${path.module}/../templates/assume_role_external_id.json")
-  vars = {
-    ASSUMING_ACCOUNT_ID      = var.tecton_assuming_account_id
-    EXTERNAL_ID = var.external_id
+  vars     = {
+    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+    EXTERNAL_ID         = var.external_id
   }
 }
 
@@ -81,7 +81,7 @@ data "template_file" "assume_role_external_id_policy" {
 data "template_file" "spark_policy_json" {
   count    = var.create_emr_roles ? 0 : 1
   template = file("${path.module}/../templates/spark_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -92,7 +92,7 @@ data "template_file" "spark_policy_json" {
 data "template_file" "cross_account_databricks_json" {
   count    = var.create_emr_roles ? 0 : 1
   template = file("${path.module}/../templates/cross_account_databricks.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -103,7 +103,7 @@ data "template_file" "cross_account_databricks_json" {
 data "template_file" "emr_spark_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_spark_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -114,7 +114,7 @@ data "template_file" "emr_spark_policy_json" {
 data "template_file" "emr_master_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_master_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
@@ -126,7 +126,7 @@ data "template_file" "emr_master_policy_json" {
 data "template_file" "emr_access_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_ca_policy.json")
-  vars = {
+  vars     = {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
