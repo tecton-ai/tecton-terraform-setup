@@ -46,3 +46,9 @@ variable "enable_eks_ingress_vpc_endpoint" {
   description = "Whether or not to enable resources supporting the EKS Ingress VPC Endpoint for in-VPC communication. Default: true."
   type        = bool
 }
+
+variable "external_id" {
+  default     = ""
+  description = "The external id that should be usd by Tecton when assuming the devops role."
+  type        = string
+}
