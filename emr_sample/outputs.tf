@@ -32,9 +32,9 @@ output "security_group_ids" {
 
 output "roles" {
   value = {
-    devops_role_name      = module.roles[0].devops_role_name
-    eks_cluster_role_name = module.roles[0].eks_management_role_name
-    eks_node_role_name    = module.roles[0].eks_node_role_name
-    spark_node_role_name  = module.roles[0].spark_role_name
+    devops_role_name      = (var.apply_layer > 1) ? module.roles[0].devops_role_name : ""
+    eks_cluster_role_name = (var.apply_layer > 1) ? module.roles[0].eks_management_role_name : ""
+    eks_node_role_name    = (var.apply_layer > 1) ? module.roles[0].eks_node_role_name : ""
+    spark_node_role_name  = (var.apply_layer > 1) ? module.roles[0].spark_role_name : ""
   }
 }
