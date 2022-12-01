@@ -27,5 +27,5 @@ output "eks_management_role_name" {
 }
 
 output "online_ingestion_role_name" {
-  value = aws_iam_role.online_ingestion_role.name
+  value = aws_iam_role.online_ingestion_role[0].name
 }

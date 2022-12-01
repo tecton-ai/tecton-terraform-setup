@@ -326,40 +326,8 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 # Ingest API - Common for Databricks and EMR.
 
 ## IAM Policy Document - Allow Cloudwatch Logging
-#TODO: This should be templated, and the resources it has access to should be constrained.
-data "aws_iam_policy_document" "online_ingestion_logging" {
-  count = var.enable_ingest_api ? 1 : 0
-
-  statement {
-    sid       = "LambdaKinesisAndCloudwatchAccess"
-    effect    = "Allow"
-    resources = ["*"]
-
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-
-      "kinesis:PutRecord",
-      "kinesis:PutRecords",
-      "kinesis:ListStreams",
-      "kinesis:DescribeStreamSummary",
-
-      "sqs:SendMessage",
-    ]
-  }
-}
-
-resource "aws_iam_policy" "online_ingestion_logging" {
-  count = var.enable_ingest_api ? 1 : 0
-
-  name   = "tecton-${var.deployment_name}-online-ingestion-logs"
-  policy = data.aws_iam_policy_document.online_ingestion_logging[0].json
-  tags   = local.tags
-}
-
 # Allow Lambda to assume this role for the push writer lambda.
-data "aws_iam_policy_document" "lambda_role_push_api" {
+data "aws_iam_policy_document" "ingest_api_assume_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   statement {
@@ -378,19 +346,14 @@ resource "aws_iam_role" "online_ingestion_role" {
   count = var.enable_ingest_api ? 1 : 0
 
   name               = "tecton-${var.deployment_name}-push-writer"
-  assume_role_policy = data.aws_iam_policy_document.lambda_role_push_api[0].json
+  assume_role_policy = data.aws_iam_policy_document.ingest_api_assume_policy[0].json
   tags               = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "online_ingestion_logging" {
-  count = var.enable_ingest_api ? 1 : 0
-
-  policy_arn = aws_iam_policy.online_ingestion_logging[0].arn
-  role       = aws_iam_role.online_ingestion_role[0].name
-}
-
+// This file contains the permissions needed by the Ingest API Writer to write to Dynamo, Kinesis (for offline logging)
+// and SQS in case of DLQ.
 data "template_file" "online_ingestion_role_json" {
-  count    = var.create_emr_roles ? 0 : 1
+  count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/online_ingestion_role.json")
   vars     = {
     ACCOUNT_ID      = var.account_id
@@ -400,14 +363,14 @@ data "template_file" "online_ingestion_role_json" {
 }
 
 resource "aws_iam_policy" "online_ingestion_role_policy" {
-  count  = var.enable_ingest_api ? 0 : 1
+  count  = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-online-ingestion"
   policy = data.template_file.online_ingestion_role_json[0].rendered
   tags   = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_role_dynamodb" {
+resource "aws_iam_role_policy_attachment" "online_ingest_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = aws_iam_policy.online_ingestion_role_policy[0].arn
@@ -424,51 +387,32 @@ resource "aws_iam_role_policy_attachment" "lambda_role_vpc" {
   role       = aws_iam_role.online_ingestion_role[0].name
 }
 
-#TODO: This should be templated, and the resources it has access to should be constrained.
-data "aws_iam_policy_document" "online_ingestion_management" {
-  count = var.enable_ingest_api ? 1 : 0
+// This file contains the permissions needed by the control plane services to deploy new versions of the Ingest API,
+// update ALB accordingly, and also to discover the offline log on the fly.
+data "template_file" "online_ingestion_management_policy_json" {
+  count    = var.enable_ingest_api ? 1 : 0
 
-  statement {
-    sid    = "LambdaAndELBAccess"
-    effect = "Allow"
-    actions = [
-      "lambda:AddPermission",
-      "lambda:GetPolicy",
-      "lambda:CreateFunction",
-      "lambda:UpdateFunctionConfiguration",
-      "lambda:PublishVersion",
-      "lambda:UpdateFunctionCode",
-      "lambda:GetFunction",
-      "lambda:PublishLayerVersion",
-      "lambda:GetLayerVersion",
-
-
-      "elasticloadbalancing:DescribeLoadBalancers",
-      "elasticloadbalancing:DescribeTags",
-      "elasticloadbalancing:DescribeListeners",
-      "elasticloadbalancing:DescribeRules",
-      "elasticloadbalancing:CreateRule",
-      "elasticloadbalancing:CreateTargetGroup",
-      "elasticloadbalancing:DescribeTargetGroups",
-      "elasticloadbalancing:DescribeTargetHealth",
-      "elasticloadbalancing:RegisterTargets",
-
-      # These permissions are used for orchestrator to discover which stream we publish offline log messages to.
-      "kinesis:ListStreams",
-      "kinesis:ListTagsForStream",
-      "kinesis:DescribeStreamSummary",
-    ]
-    resources = ["*"]
+  template = file("${path.module}/../templates/online_ingestion_management_policy.json")
+  vars     = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
   }
 }
 
-# Allow deployment of new versions of the Ingest API and the connection between ALB and Ingest Lambda.
-resource "aws_iam_role_policy" "push_writer_lambda_access" {
+resource "aws_iam_policy" "online_ingestion_management_policy" {
+  count  = var.enable_ingest_api ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-ingest-manage"
+  policy = data.template_file.online_ingestion_management_policy_json[0].rendered
+  tags   = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "online_ingestion_management_policy_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-online-ingestion-management"
-  policy = data.aws_iam_policy_document.online_ingestion_management.json
-  role   = aws_iam_role.eks_node_role.id
+  policy_arn = aws_iam_policy.online_ingestion_management_policy[0].arn
+  role       = aws_iam_role.eks_node_role.id
 }
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks

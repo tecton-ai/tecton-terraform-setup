@@ -1,0 +1,54 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "UpdateALBOnLambdaDeployments",
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeTags",
+        "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:DescribeRules",
+        "elasticloadbalancing:CreateRule",
+        "elasticloadbalancing:CreateTargetGroup",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:DescribeTargetHealth",
+        "elasticloadbalancing:RegisterTargets",
+      ],
+      "Resource": [
+        "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME}-${REGION}*"
+      ]
+    },
+    {
+      "Sid": "DeployNewLambdaVersions",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:AddPermission",
+        "lambda:GetPolicy",
+        "lambda:CreateFunction",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:PublishVersion",
+        "lambda:UpdateFunctionCode",
+        "lambda:GetFunction",
+        "lambda:PublishLayerVersion",
+        "lambda:GetLayerVersion"
+      ],
+      "Resource": [
+        "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:tecton-${DEPLOYMENT_NAME}*"
+      ]
+    },
+    {
+      "Sid": "DiscoverOfflineLogStream",
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:ListStreams",
+        "kinesis:ListTagsForStream",
+        "kinesis:DescribeStreamSummary"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+      ]
+    }
+
+  ]
+}

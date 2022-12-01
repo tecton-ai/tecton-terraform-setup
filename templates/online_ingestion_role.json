@@ -21,6 +21,29 @@
       "Resource": [
         "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
       ]
+    },
+    {
+      "Sid": "OfflineLog",
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:PutRecord",
+        "kinesis:PutRecords",
+        "kinesis:ListStreams",
+        "kinesis:DescribeStreamSummary"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+      ]
+    },
+    {
+      "Sid": "OfflineLogDLQ",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:SendMessage"
+      ],
+      "Resource": [
+        "arn:aws:sqs:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+      ]
     }
   ]
 }
