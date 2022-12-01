@@ -36,6 +36,6 @@ output "roles" {
     eks_cluster_role_name = (var.apply_layer > 1) ? module.roles[0].eks_management_role_name : ""
     eks_node_role_name    = (var.apply_layer > 1) ? module.roles[0].eks_node_role_name : ""
     spark_node_role_name  = (var.apply_layer > 1) ? module.roles[0].spark_role_name : ""
-    online_ingestion_role_name  = (var.apply_layer > 1) ? module.roles[0].online_ingestion_role_name : ""
+    online_ingest_role_name  = (var.apply_layer > 1) ? module.roles[0].online_ingest_role_arn : ""
   }
 }

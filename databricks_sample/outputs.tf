@@ -22,6 +22,6 @@ output "roles" {
     devops_role_name           = module.roles.devops_role_name
     eks_cluster_role_name      = module.roles.eks_management_role_name
     eks_node_role_name         = module.roles.eks_node_role_name
-    online_ingestion_role_name = module.roles.online_ingestion_role_name
+    online_ingest_role_arn = module.roles.online_ingest_role_arn
   }
 }

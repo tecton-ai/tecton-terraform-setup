@@ -26,6 +26,6 @@ output "eks_management_role_name" {
   value = aws_iam_role.eks_management_role.name
 }
 
-output "online_ingestion_role_name" {
-  value = aws_iam_role.online_ingestion_role[0].name
+output "online_ingest_role_arn" {
+  value = aws_iam_role.online_ingestion_role[0].arn
 }
