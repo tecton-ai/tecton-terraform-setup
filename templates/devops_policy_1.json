@@ -93,7 +93,7 @@
             ],
             "Resource": [
                 "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/net/tecton-${DEPLOYMENT_NAME_CONCAT}*",
+                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:autoscaling:${REGION}:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:autoscaling:${REGION}:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
