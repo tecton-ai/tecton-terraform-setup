@@ -326,7 +326,8 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 # Ingest API - Common for Databricks and EMR.
 
 ## IAM Policy Document - Allow Cloudwatch Logging
-data "aws_iam_policy_document" "lambda_permissions" {
+#TODO: This should be templated, and the resources it has access to should be constrained.
+data "aws_iam_policy_document" "online_ingestion_logging" {
   count = var.enable_ingest_api ? 1 : 0
 
   statement {
@@ -345,16 +346,15 @@ data "aws_iam_policy_document" "lambda_permissions" {
       "kinesis:DescribeStreamSummary",
 
       "sqs:SendMessage",
-
     ]
   }
 }
 
-resource "aws_iam_policy" "lambda_logs" {
+resource "aws_iam_policy" "online_ingestion_logging" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "${var.deployment_name}-lambda-logs"
-  policy = data.aws_iam_policy_document.lambda_permissions.json
+  name   = "tecton-${var.deployment_name}-online-ingestion-logs"
+  policy = data.aws_iam_policy_document.online_ingestion_logging[0].json
   tags   = local.tags
 }
 
@@ -377,23 +377,41 @@ data "aws_iam_policy_document" "lambda_role_push_api" {
 resource "aws_iam_role" "online_ingestion_role" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name               = "${var.deployment_name}-push-writer"
-  assume_role_policy = data.aws_iam_policy_document.lambda_role_push_api.json
+  name               = "tecton-${var.deployment_name}-push-writer"
+  assume_role_policy = data.aws_iam_policy_document.lambda_role_push_api[0].json
   tags               = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_role_lambda_logs" {
+resource "aws_iam_role_policy_attachment" "online_ingestion_logging" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.lambda_logs.arn
-  role       = aws_iam_role.online_ingestion_role.name
+  policy_arn = aws_iam_policy.online_ingestion_logging[0].arn
+  role       = aws_iam_role.online_ingestion_role[0].name
+}
+
+data "template_file" "online_ingestion_role_json" {
+  count    = var.create_emr_roles ? 0 : 1
+  template = file("${path.module}/../templates/online_ingestion_role.json")
+  vars     = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+  }
+}
+
+resource "aws_iam_policy" "online_ingestion_role_policy" {
+  count  = var.enable_ingest_api ? 0 : 1
+
+  name   = "tecton-${var.deployment_name}-online-ingestion"
+  policy = data.template_file.online_ingestion_role_json[0].rendered
+  tags   = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_role_dynamodb" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  role       = aws_iam_role.online_ingestion_role.name
+  policy_arn = aws_iam_policy.online_ingestion_role_policy[0].arn
+  role       = aws_iam_role.online_ingestion_role[0].name
 }
 
 // Needed for Lambda to talk to Redis
@@ -403,10 +421,11 @@ resource "aws_iam_role_policy_attachment" "lambda_role_vpc" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-  role       = aws_iam_role.online_ingestion_role.name
+  role       = aws_iam_role.online_ingestion_role[0].name
 }
 
-data "aws_iam_policy_document" "push_writer_lambda_access_document" {
+#TODO: This should be templated, and the resources it has access to should be constrained.
+data "aws_iam_policy_document" "online_ingestion_management" {
   count = var.enable_ingest_api ? 1 : 0
 
   statement {
@@ -447,8 +466,8 @@ data "aws_iam_policy_document" "push_writer_lambda_access_document" {
 resource "aws_iam_role_policy" "push_writer_lambda_access" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "${var.deployment_name}-push-writer-lambda-elb-access"
-  policy = data.aws_iam_policy_document.push_writer_lambda_access_document.json
+  name   = "tecton-${var.deployment_name}-online-ingestion-management"
+  policy = data.aws_iam_policy_document.online_ingestion_management.json
   role   = aws_iam_role.eks_node_role.id
 }
 
