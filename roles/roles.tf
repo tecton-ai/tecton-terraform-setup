@@ -323,6 +323,135 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
   role       = var.create_emr_roles ? (var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role") : var.spark_role_name
 }
 
+# Ingest API - Common for Databricks and EMR.
+
+## IAM Policy Document - Allow Cloudwatch Logging
+data "aws_iam_policy_document" "lambda_permissions" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  statement {
+    sid       = "LambdaKinesisAndCloudwatchAccess"
+    effect    = "Allow"
+    resources = ["*"]
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+
+      "kinesis:PutRecord",
+      "kinesis:PutRecords",
+      "kinesis:ListStreams",
+      "kinesis:DescribeStreamSummary",
+
+      "sqs:SendMessage",
+
+    ]
+  }
+}
+
+resource "aws_iam_policy" "lambda_logs" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  name   = "${var.deployment_name}-lambda-logs"
+  policy = data.aws_iam_policy_document.lambda_permissions.json
+  tags   = local.tags
+}
+
+# Allow Lambda to assume this role for the push writer lambda.
+data "aws_iam_policy_document" "lambda_role_push_api" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  statement {
+    sid     = "LambdaRoleAccess"
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "online_ingestion_role" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  name               = "${var.deployment_name}-push-writer"
+  assume_role_policy = data.aws_iam_policy_document.lambda_role_push_api.json
+  tags               = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_role_lambda_logs" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  policy_arn = aws_iam_policy.lambda_logs.arn
+  role       = aws_iam_role.online_ingestion_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_role_dynamodb" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  role       = aws_iam_role.online_ingestion_role.name
+}
+
+// Needed for Lambda to talk to Redis
+// From AWS Docs : Provides minimum permissions for a Lambda function to execute while accessing a resource within a
+// VPC - create, describe, delete network interfaces and write permissions to CloudWatch Logs.
+resource "aws_iam_role_policy_attachment" "lambda_role_vpc" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+  role       = aws_iam_role.online_ingestion_role.name
+}
+
+data "aws_iam_policy_document" "push_writer_lambda_access_document" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  statement {
+    sid    = "LambdaAndELBAccess"
+    effect = "Allow"
+    actions = [
+      "lambda:AddPermission",
+      "lambda:GetPolicy",
+      "lambda:CreateFunction",
+      "lambda:UpdateFunctionConfiguration",
+      "lambda:PublishVersion",
+      "lambda:UpdateFunctionCode",
+      "lambda:GetFunction",
+      "lambda:PublishLayerVersion",
+      "lambda:GetLayerVersion",
+
+
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeTags",
+      "elasticloadbalancing:DescribeListeners",
+      "elasticloadbalancing:DescribeRules",
+      "elasticloadbalancing:CreateRule",
+      "elasticloadbalancing:CreateTargetGroup",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeTargetHealth",
+      "elasticloadbalancing:RegisterTargets",
+
+      # These permissions are used for orchestrator to discover which stream we publish offline log messages to.
+      "kinesis:ListStreams",
+      "kinesis:ListTagsForStream",
+      "kinesis:DescribeStreamSummary",
+    ]
+    resources = ["*"]
+  }
+}
+
+# Allow deployment of new versions of the Ingest API and the connection between ALB and Ingest Lambda.
+resource "aws_iam_role_policy" "push_writer_lambda_access" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  name   = "${var.deployment_name}-push-writer-lambda-elb-access"
+  policy = data.aws_iam_policy_document.push_writer_lambda_access_document.json
+  role   = aws_iam_role.eks_node_role.id
+}
+
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
 resource "aws_iam_role" "spark_cross_account_role" {
   count                = var.create_emr_roles ? 0 : 1
