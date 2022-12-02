@@ -342,7 +342,7 @@ data "aws_iam_policy_document" "ingest_api_assume_policy" {
   }
 }
 
-resource "aws_iam_role" "online_ingestion_role" {
+resource "aws_iam_role" "online_ingest_role" {
   count = var.enable_ingest_api ? 1 : 0
 
   name               = "tecton-${var.deployment_name}-push-writer"
@@ -352,9 +352,9 @@ resource "aws_iam_role" "online_ingestion_role" {
 
 // This file contains the permissions needed by the Ingest API Writer to write to Dynamo, Kinesis (for offline logging)
 // and SQS in case of DLQ.
-data "template_file" "online_ingestion_role_json" {
+data "template_file" "online_ingest_role_json" {
   count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/online_ingestion_role.json")
+  template = file("${path.module}/../templates/online_ingest_role.json")
   vars = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
@@ -366,7 +366,7 @@ resource "aws_iam_policy" "online_ingestion_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-online-ingestion"
-  policy = data.template_file.online_ingestion_role_json[0].rendered
+  policy = data.template_file.online_ingest_role_json[0].rendered
   tags   = local.tags
 }
 
@@ -374,7 +374,7 @@ resource "aws_iam_role_policy_attachment" "online_ingest_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = aws_iam_policy.online_ingestion_role_policy[0].arn
-  role       = aws_iam_role.online_ingestion_role[0].name
+  role       = aws_iam_role.online_ingest_role[0].name
 }
 
 // Needed for Lambda to talk to Redis
@@ -384,15 +384,15 @@ resource "aws_iam_role_policy_attachment" "lambda_role_vpc" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-  role       = aws_iam_role.online_ingestion_role[0].name
+  role       = aws_iam_role.online_ingest_role[0].name
 }
 
 // This file contains the permissions needed by the control plane services to deploy new versions of the Ingest API,
 // update ALB accordingly, and also to discover the offline log on the fly.
-data "template_file" "online_ingestion_management_policy_json" {
+data "template_file" "online_ingest_management_policy_json" {
   count = var.enable_ingest_api ? 1 : 0
 
-  template = file("${path.module}/../templates/online_ingestion_management_policy.json")
+  template = file("${path.module}/../templates/online_ingest_management_policy.json")
   vars = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
@@ -400,18 +400,18 @@ data "template_file" "online_ingestion_management_policy_json" {
   }
 }
 
-resource "aws_iam_policy" "online_ingestion_management_policy" {
+resource "aws_iam_policy" "online_ingest_management_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-ingest-manage"
-  policy = data.template_file.online_ingestion_management_policy_json[0].rendered
+  policy = data.template_file.online_ingest_management_policy_json[0].rendered
   tags   = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "online_ingestion_management_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "online_ingest_management_policy_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.online_ingestion_management_policy[0].arn
+  policy_arn = aws_iam_policy.online_ingest_management_policy[0].arn
   role       = aws_iam_role.eks_node_role.id
 }
 
