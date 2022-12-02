@@ -52,3 +52,9 @@ variable "external_id" {
   description = "The external id that should be usd by Tecton when assuming the devops role."
   type        = string
 }
+
+variable "enable_ingest_api" {
+  default     = true
+  type        = bool
+  description = "Whether or not to enable resources supporting the Ingest API. Default: true."
+}

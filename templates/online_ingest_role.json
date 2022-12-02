@@ -1,0 +1,49 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "OnlineIngestionToDynamoDB",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteItem",
+        "dynamodb:DeleteTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:TagResource",
+        "dynamodb:UpdateTable"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+      ]
+    },
+    {
+      "Sid": "OfflineLog",
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:PutRecord",
+        "kinesis:PutRecords",
+        "kinesis:ListStreams",
+        "kinesis:DescribeStreamSummary"
+      ],
+      "Resource": [
+        "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+      ]
+    },
+    {
+      "Sid": "OfflineLogDLQ",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:SendMessage"
+      ],
+      "Resource": [
+        "arn:aws:sqs:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+      ]
+    }
+  ]
+}

@@ -18,7 +18,7 @@ variable "allowed_CIDR_blocks" {
 }
 
 variable "eks_ingress_load_balancer_public" {
-  type    = bool
+  type        = bool
   description = "Whether or not the Tecton NLB should be accessible by the public internet and have a public IP address."
 }
 

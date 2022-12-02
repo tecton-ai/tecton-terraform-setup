@@ -20,6 +20,11 @@ resource "random_id" "external_id" {
 # Fill these in
 variable "deployment_name" {
   type = string
+
+  validation {
+    condition     = !can(regex("^tecton-", var.deployment_name))
+    error_message = "Deployment name should not start with the `tecton-` prefix."
+  }
 }
 
 variable "region" {
@@ -82,9 +87,9 @@ module "eks_subnets" {
   providers = {
     aws = aws
   }
-  source                  = "../eks/vpc_subnets"
-  deployment_name         = var.deployment_name
-  region                  = var.region
+  source          = "../eks/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = var.region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
   eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
@@ -120,7 +125,7 @@ module "emr_subnets" {
   vpc_id                    = module.eks_subnets.vpc_id
   emr_subnet_cidr_prefix    = var.emr_subnet_cidr_prefix
   az_name_to_nat_gateway_id = module.eks_subnets.az_name_to_nat_gateway_id
-  depends_on                = [
+  depends_on = [
     module.eks_subnets
   ]
 }
@@ -132,14 +137,14 @@ module "emr_security_groups" {
   region            = var.region
   emr_vpc_id        = module.eks_subnets.vpc_id
   vpc_subnet_prefix = module.eks_subnets.vpc_subnet_prefix
-  depends_on        = [
+  depends_on = [
     module.eks_subnets
   ]
 }
 
 module "roles" {
   providers = {
-    aws                    = aws
+    aws = aws
     # This is needed because the roles module supports both databricks and EMR.
     # Specifying it is an artifact of the module interfaces, and does not actually create
     # any databricks resources when using `emr_sample`.

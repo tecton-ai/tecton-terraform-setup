@@ -3,6 +3,11 @@
 # Fill these in
 variable "deployment_name" {
   type = string
+
+  validation {
+    condition     = !can(regex("^tecton-", var.deployment_name))
+    error_message = "Deployment name should not start with the `tecton-` prefix."
+  }
 }
 
 variable "region" {
@@ -97,10 +102,10 @@ module "subnets" {
   providers = {
     aws = aws
   }
-  source                  = "../eks/vpc_subnets"
-  deployment_name         = var.deployment_name
-  region                  = var.region
-  eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
+  source                 = "../eks/vpc_subnets"
+  deployment_name        = var.deployment_name
+  region                 = var.region
+  eks_subnet_cidr_prefix = var.eks_subnet_cidr_prefix
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
 }
