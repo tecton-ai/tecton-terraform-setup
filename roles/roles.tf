@@ -34,6 +34,18 @@ data "template_file" "devops_policy_json_2" {
 }
 
 # EKS [Common : Databricks and EMR]
+data "template_file" "devops_ingest_policy_json" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  template = file("${path.module}/../templates/devops_ingest_policy.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+  }
+}
+
+# EKS [Common : Databricks and EMR]
 data "template_file" "devops_eks_policy_json" {
   template = file("${path.module}/../templates/devops_eks_policy.json")
   vars = {
@@ -156,6 +168,15 @@ resource "aws_iam_policy" "devops_policy_2" {
   tags   = local.tags
 }
 
+resource "aws_iam_policy" "devops_ingest_policy" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-devops-ingest-policy"
+  policy = data.template_file.devops_ingest_policy_json[0].rendered
+  tags   = local.tags
+}
+
+
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_policy" {
   name   = "tecton-${var.deployment_name}-devops-eks-policy"
@@ -189,6 +210,13 @@ resource "aws_iam_role_policy_attachment" "devops_policy_attachment_1" {
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
   policy_arn = aws_iam_policy.devops_policy_2.arn
+  role       = aws_iam_role.devops_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
+  count = var.enable_ingest_api ? 1 : 0
+
+  policy_arn = aws_iam_policy.devops_ingest_policy[0].arn
   role       = aws_iam_role.devops_role.name
 }
 

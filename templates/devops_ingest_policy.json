@@ -1,0 +1,38 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Kinesis",
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:CreateStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:IncreaseStreamRetentionPeriod",
+                "kinesis:ListTagsForStream",
+                "kinesis:EnableEnhancedMonitoring",
+                "kinesis:AddTagsToStream",
+                "kinesis:DeleteStream"
+            ],
+            "Resource": ["arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"]
+        },
+        {
+            "Sid": "RolesAndPoliciesManagementForIngestAPI",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PutRolePolicy",
+                "iam:CreateRole",
+                "iam:ListRolePolicies",
+                "iam:DeleteRole",
+                "iam:AttachRolePolicy",
+                "iam:CreatePolicy",
+                "iam:DeleteRolePolicy",
+                "iam:TagPolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:instance-profile/tecton-*"
+            ]
+        }
+    ]
+}
