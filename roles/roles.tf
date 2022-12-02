@@ -362,10 +362,10 @@ data "template_file" "online_ingest_role_json" {
   }
 }
 
-resource "aws_iam_policy" "online_ingestion_role_policy" {
+resource "aws_iam_policy" "online_ingest_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-online-ingestion"
+  name   = "tecton-${var.deployment_name}-online-ingest"
   policy = data.template_file.online_ingest_role_json[0].rendered
   tags   = local.tags
 }
@@ -373,7 +373,7 @@ resource "aws_iam_policy" "online_ingestion_role_policy" {
 resource "aws_iam_role_policy_attachment" "online_ingest_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.online_ingestion_role_policy[0].arn
+  policy_arn = aws_iam_policy.online_ingest_role_policy[0].arn
   role       = aws_iam_role.online_ingest_role[0].name
 }
 
