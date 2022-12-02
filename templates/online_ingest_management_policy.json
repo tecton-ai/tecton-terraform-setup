@@ -49,6 +49,5 @@
         "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
       ]
     }
-    
   ]
 }
