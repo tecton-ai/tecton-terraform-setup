@@ -13,7 +13,7 @@
         "elasticloadbalancing:CreateTargetGroup",
         "elasticloadbalancing:DescribeTargetGroups",
         "elasticloadbalancing:DescribeTargetHealth",
-        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:RegisterTargets"
       ],
       "Resource": [
         "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME}-${REGION}*"
@@ -49,6 +49,5 @@
         "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
       ]
     }
-
   ]
 }
