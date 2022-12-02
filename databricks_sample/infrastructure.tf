@@ -3,6 +3,11 @@
 # Fill these in
 variable "deployment_name" {
   type = string
+
+  validation {
+    condition     = !can(regex("^tecton-", var.deployment_name))
+    error_message = "Deployment name should not start with the `tecton-` prefix."
+  }
 }
 
 variable "region" {
