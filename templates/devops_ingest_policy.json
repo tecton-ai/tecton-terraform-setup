@@ -19,12 +19,8 @@
             "Sid": "RolesAndPoliciesManagementForIngestAPI",
             "Effect": "Allow",
             "Action": [
-                "iam:PutRolePolicy",
-                "iam:CreateRole",
                 "iam:ListRolePolicies",
-                "iam:DeleteRole",
                 "iam:AttachRolePolicy",
-                "iam:CreatePolicy",
                 "iam:DeleteRolePolicy",
                 "iam:TagPolicy"
             ],
