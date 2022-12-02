@@ -326,7 +326,7 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 # Ingest API - Common for Databricks and EMR.
 
 ## IAM Policy Document - Allow Cloudwatch Logging
-# Allow Lambda to assume this role for the push writer lambda.
+# Allow Lambda to assume this role for the online ingest lambda.
 data "aws_iam_policy_document" "ingest_api_assume_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
@@ -345,7 +345,7 @@ data "aws_iam_policy_document" "ingest_api_assume_policy" {
 resource "aws_iam_role" "online_ingest_role" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name               = "tecton-${var.deployment_name}-push-writer"
+  name               = "tecton-${var.deployment_name}-online-ingest"
   assume_role_policy = data.aws_iam_policy_document.ingest_api_assume_policy[0].json
   tags               = local.tags
 }
