@@ -14,6 +14,18 @@
                 "kinesis:DeleteStream"
             ],
             "Resource": ["arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"]
+        },
+        {
+            "Sid": "RolesAndPoliciesManagementForIngestAPI",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListRolePolicies"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:instance-profile/tecton-*"
+            ]
         }
     ]
 }
