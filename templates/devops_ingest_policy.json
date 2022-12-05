@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Kinesis",
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:CreateStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:IncreaseStreamRetentionPeriod",
+                "kinesis:ListTagsForStream",
+                "kinesis:EnableEnhancedMonitoring",
+                "kinesis:AddTagsToStream",
+                "kinesis:DeleteStream"
+            ],
+            "Resource": ["arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"]
+        }
+    ]
+}

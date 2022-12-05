@@ -1,0 +1,47 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadFromOfflineLog",
+      "Effect": "Allow",
+      "Action": [
+        "kinesis:ListShards",
+        "kinesis:ListStreams",
+  
+        "kinesis:GetRecords",
+        "kinesis:GetShardIterator",
+        "kinesis:DescribeStream"
+        ],
+      "Resource": [
+        "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+      ]
+    },
+    {
+      "Sid": "Metrics",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:PutMetricData"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Condition": {
+        "StringEquals": {
+            "cloudwatch:namespace": "tecton"
+        }
+      }
+    },
+    {
+      "Sid": "S3Object",
+      "Effect": "Allow",
+      "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+      ],
+      "Resource": [
+          "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+      ]
+    }
+  ]
+}
