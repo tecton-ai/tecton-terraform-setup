@@ -81,6 +81,7 @@
                 "elasticloadbalancing:RegisterTargets",
                 "elasticloadbalancing:DeleteListener",
                 "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:ModifyListener",
                 "elasticloadbalancing:ModifyTargetGroupAttributes",
                 "elasticloadbalancing:AddTags",
                 "elasticloadbalancing:CreateTargetGroup",
