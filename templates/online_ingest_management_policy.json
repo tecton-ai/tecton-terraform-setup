@@ -14,10 +14,7 @@
         "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:listener/app/tecton-${DEPLOYMENT_NAME}*",
         "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/net/tecton-*",
         "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/app/tecton-*",
-        "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
-        "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:targetgroup/${DEPLOYMENT_NAME}*",
-        "arn:aws:autoscaling:${REGION}:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
-        "arn:aws:autoscaling:${REGION}:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
+        "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*"
 ]
     },
     {
@@ -36,8 +33,7 @@
       ],
       "Resource": [
         "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:tecton-*",
-        "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:tecton-*",
-        "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:push_writer_config_layer*"
+        "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:layer:tecton-*"
       ]
     },
     {
