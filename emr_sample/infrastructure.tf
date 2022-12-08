@@ -83,6 +83,12 @@ variable "enable_eks_ingress_vpc_endpoint" {
   type        = bool
 }
 
+variable "fargate_enabled" {
+  default     = false
+  description = "Enable fargate on cluster."
+  type        = bool
+}
+
 module "eks_subnets" {
   providers = {
     aws = aws
@@ -160,6 +166,7 @@ module "roles" {
   create_emr_roles                = true
   elasticache_enabled             = var.elasticache_enabled
   external_id                     = random_id.external_id.id
+  fargate_enabled                 = var.fargate_enabled
 }
 
 module "notebook_cluster" {
