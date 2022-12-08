@@ -710,7 +710,7 @@ data "aws_iam_policy_document" "fargate_logging_policy" {
     ]
     effect = "Allow"
     resources = [
-      locals.fargate_kinesis_delivery_stream_arn
+      local.fargate_kinesis_delivery_stream_arn
     ]
   }
 }
