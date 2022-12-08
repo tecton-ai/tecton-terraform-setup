@@ -1,5 +1,5 @@
 locals {
-  tags = { "tecton-accessible:${var.deployment_name}" : "true" }
+  tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
 }
 
