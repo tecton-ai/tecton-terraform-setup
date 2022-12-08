@@ -627,7 +627,7 @@ resource "aws_iam_service_linked_role" "eks-nodegroup" {
 }
 
 
-# FARGATE ROLES AND POLICIES
+# FARGATE [Common : Databricks and EMR]
 
 data "aws_iam_policy_document" "kinesis_firehose_stream" {
   count   = var.fargate_enabled ? 1 : 0
