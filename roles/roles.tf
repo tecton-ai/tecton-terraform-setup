@@ -1,5 +1,6 @@
 locals {
   tags = { "tecton-accessible:${var.deployment_name}" : "true" }
+  fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
 }
 
 # EKS [Common : Databricks and EMR]
@@ -623,4 +624,111 @@ resource "aws_iam_service_linked_role" "spot" {
 
 resource "aws_iam_service_linked_role" "eks-nodegroup" {
   aws_service_name = "eks-nodegroup.amazonaws.com"
+}
+
+
+# FARGATE ROLES AND POLICIES
+
+data "aws_iam_policy_document" "kinesis_firehose_stream" {
+  count   = var.fargate_enabled ? 1 : 0
+  version = "2012-10-17"
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+    principals {
+      identifiers = ["firehose.amazonaws.com"]
+      type        = "Service"
+    }
+    effect = "Allow"
+  }
+}
+
+# Resources to enable logs output to S3
+resource "aws_iam_role" "kinesis_firehose_stream" {
+  count              = var.fargate_enabled ? 1 : 0
+  name               = "tecton-${var.deployment_name}_fargate_kinesis_firehose"
+  assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
+}
+
+data "aws_iam_policy_document" "fargate_logging_cross_account_write" {
+  count   = var.fargate_enabled ? 1 : 0
+  version = "2012-10-17"
+  statement {
+    actions = [
+      "s3:PutObject",
+      "s3:PutObjectAcl"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::tecton-logs-aggregation/${var.deployment_name}",
+      "arn:aws:s3:::tecton-logs-aggregation/${var.deployment_name}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "fargate_logging_cross_account" {
+  count  = var.fargate_enabled ? 1 : 0
+  name   = "tecton-${var.deployment_name}-fargate-cross-account-write"
+  policy = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "logging_write" {
+  count      = var.fargate_enabled ? 1 : 0
+  role       = aws_iam_role.kinesis_firehose_stream[0].name
+  policy_arn = aws_iam_policy.fargate_logging_cross_account[0].arn
+}
+
+# Resources for EKS fargate pod execution role
+data "aws_iam_policy_document" "eks_fargate_assume_role" {
+  count   = var.fargate_enabled ? 1 : 0
+  version = "2012-10-17"
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+    principals {
+      identifiers = ["eks-fargate-pods.amazonaws.com"]
+      type        = "Service"
+    }
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_role" "eks_fargate_pod_execution" {
+  count              = var.fargate_enabled ? 1 : 0
+  name               = "tecton-${var.deployment_name}-eks-fargate-pod-execution"
+  assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
+}
+
+data "aws_iam_policy_document" "fargate_logging_policy" {
+  count   = var.fargate_enabled ? 1 : 0
+  version = "2012-10-17"
+  statement {
+    actions = [
+      "firehose:PutRecordBatch",
+    ]
+    effect = "Allow"
+    resources = [
+      locals.fargate_kinesis_delivery_stream_arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "fargate_logging" {
+  count  = var.fargate_enabled ? 1 : 0
+  name   = "tecton-${var.deployment_name}-fargate-logging-to-kinesis-firehose"
+  policy = data.aws_iam_policy_document.fargate_logging_policy[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "logging" {
+  count      = var.fargate_enabled ? 1 : 0
+  role       = aws_iam_role.eks_fargate_pod_execution[0].name
+  policy_arn = aws_iam_policy.fargate_logging[0].arn
+}
+
+resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
+  count      = var.fargate_enabled ? 1 : 0
+  role       = aws_iam_role.eks_fargate_pod_execution[0].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
