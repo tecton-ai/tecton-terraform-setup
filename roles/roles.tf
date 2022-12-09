@@ -732,3 +732,31 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
+
+data "aws_iam_policy_document" "dummy_policy" {
+  count   = var.fargate_enabled ? 1 : 0
+  version = "2012-10-17"
+  statement {
+    // https://stackoverflow.com/questions/62287436/is-it-possible-to-have-a-no-op-iam-policy
+    actions = [
+      "none:null",
+    ]
+    effect = "Allow"
+    resources = [
+      "*"
+    ]
+  }
+}
+
+resource "aws_iam_role" "eks_fargate_feature_server_role" {
+  count = var.fargate_enabled ? 1 : 0
+  name  = "${var.cluster_name}-fargate-fs"
+  tags  = local.common_tags
+  lifecycle {
+    ignore_changes = [permissions_boundary]
+  }
+
+  max_session_duration = var.worker_node_max_session_duration
+
+  assume_role_policy = data.aws_iam_policy_document.dummy_policy[0].json
+}
