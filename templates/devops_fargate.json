@@ -1,0 +1,38 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "FargateAttachRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole"
+                "iam:AttachRolePolicy",
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
+                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs", // honestly not sure which is which(the tecton header or no header)
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "iam:PolicyARN":
+                        [
+                            "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy",
+                            "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy",
+                        ]
+                }
+            }
+        },
+        {
+            "Sid": "CreateFargateRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole",
+                "iam:CreateRole",
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
+                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs", // honestly not sure which is which
+            ],
+        },
+    ]
+}

@@ -1,10 +1,6 @@
 locals {
   tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  common_tags = {
-      tecton-cluster-name = var.deployment_name
-      tecton-owned        = true
-  }
 }
 
 # EKS [Common : Databricks and EMR]
@@ -43,6 +39,17 @@ data "template_file" "devops_ingest_policy_json" {
   count = var.enable_ingest_api ? 1 : 0
 
   template = file("${path.module}/../templates/devops_ingest_policy.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+  }
+}
+
+# EKS [Common : Databricks and EMR]
+data "template_file" "devops_fargate_role_json" {
+  count    = var.fargate_enabled ? 1 : 0
+  template = file("${path.module}/../templates/devops_fargate.json")
   vars = {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
@@ -181,6 +188,15 @@ resource "aws_iam_policy" "devops_ingest_policy" {
   tags   = local.tags
 }
 
+# DEVOPS [Common : Databricks and EMR]
+resource "aws_iam_policy" "devops_fargate_policy" {
+  count = var.fargate_enabled ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-devops-fargate-policy"
+  policy = data.template_file.devops_fargate_role_json[0].rendered
+  tags   = local.tags
+}
+
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_policy" {
@@ -224,6 +240,14 @@ resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
   policy_arn = aws_iam_policy.devops_ingest_policy[0].arn
   role       = aws_iam_role.devops_role.name
 }
+
+resource "aws_iam_role_policy_attachment" "devops_fargate_policy_attachment" {
+  count = var.fargate_enabled ? 1 : 0
+
+  policy_arn = aws_iam_policy.devops_fargate_policy[0].arn
+  role       = aws_iam_role.devops_role.name
+}
+
 
 
 # DEVOPS [Common : Databricks and EMR]
@@ -737,30 +761,21 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
 
-data "aws_iam_policy_document" "dummy_policy" {
-  count   = var.fargate_enabled ? 1 : 0
-  version = "2012-10-17"
-  statement {
-    // https://stackoverflow.com/questions/62287436/is-it-possible-to-have-a-no-op-iam-policy
-    actions = [
-      "none:null",
-    ]
-    effect = "Allow"
-    resources = [
-      "*"
-    ]
+data "template_file" "eks_fargate_node" {
+  count = var.fargate_enabled ? 1 : 0
+
+  template = file("${path.module}/../templates/fargate_eks_role.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
   }
 }
 
-resource "aws_iam_role" "eks_fargate_feature_server_role" {
+resource "aws_iam_policy" "eks_fargate_node_policy" {
   count = var.fargate_enabled ? 1 : 0
-  name  = "tecton-${var.deployment_name}-fargate-fs"
-  tags  = local.common_tags
-  lifecycle {
-    ignore_changes = [permissions_boundary]
-  }
 
-  max_session_duration = 28800 # probably needs to be not hard coded
-
-  assume_role_policy = data.aws_iam_policy_document.dummy_policy[0].json
+  name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
+  policy = data.template_file.eks_fargate_node[0].rendered
+  tags   = local.tags
 }

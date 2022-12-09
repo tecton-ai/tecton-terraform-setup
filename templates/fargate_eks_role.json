@@ -1,0 +1,74 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "DynamoDBRoles",
+        "Effect": "Allow",
+        "Action": [
+          "dynamodb:PutItem",
+          "dynamodb:DescribeStream",
+          "dynamodb:GetRecords",
+          "dynamodb:GetShardIterator",
+          "dynamodb:ListStreams",
+          "dynamodb:BatchGetItem",
+          "dynamodb:DescribeStream",
+          "dynamodb:DescribeTable",
+          "dynamodb:GetItem",
+          "dynamodb:ListStreams",
+          "dynamodb:ListTables",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+        ],
+        "Resource": [
+          "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+        ]
+      },
+      {
+        "Sid": "CloudwatchRoles",
+        "Effect": "Allow",
+        "Action": [
+            "cloudwatch:DescribeAlarmHistory",
+            "cloudwatch:DescribeAlarms",
+            "cloudwatch:DescribeAlarmsForMetric",
+            "cloudwatch:GetMetricStatistics",
+            "cloudwatch:ListMetrics",
+          "cloudwatch:PutMetricData"
+        ],
+        "Resource": [
+          "*"
+        ],
+        "Condition": {
+          "StringEquals": {
+              "cloudwatch:namespace": "tecton"
+          }
+        }
+      },
+      {
+        "Sid": "AmazonS3Roles",
+        "Effect": "Allow",
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:DeleteObject"
+        ],
+        "Resource": [
+            "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+        ]
+      },
+      {
+        "Sid": "EC2ReadOnly",
+        "Effect": "Allow",
+        "Action": [
+            "ecr:GetAuthorizationToken",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:GetRepositoryPolicy",
+            "ecr:DescribeRepositories",
+            "ecr:ListImages",
+            "ecr:DescribeImages",
+            "ecr:BatchGetImage"
+        ],
+        "Resource": "*"
+    }
+    ]
+  }
