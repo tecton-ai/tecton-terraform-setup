@@ -1,6 +1,10 @@
 locals {
   tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  common_tags = {
+      tecton-cluster-name = var.deployment_name
+      tecton-owned        = true
+  }
 }
 
 # EKS [Common : Databricks and EMR]
@@ -750,13 +754,13 @@ data "aws_iam_policy_document" "dummy_policy" {
 
 resource "aws_iam_role" "eks_fargate_feature_server_role" {
   count = var.fargate_enabled ? 1 : 0
-  name  = "${var.cluster_name}-fargate-fs"
+  name  = "tecton-${var.deployment_name}-fargate-fs"
   tags  = local.common_tags
   lifecycle {
     ignore_changes = [permissions_boundary]
   }
 
-  max_session_duration = var.worker_node_max_session_duration
+  max_session_duration = 28800
 
   assume_role_policy = data.aws_iam_policy_document.dummy_policy[0].json
 }
