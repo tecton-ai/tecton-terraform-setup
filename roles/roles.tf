@@ -760,7 +760,7 @@ resource "aws_iam_role" "eks_fargate_feature_server_role" {
     ignore_changes = [permissions_boundary]
   }
 
-  max_session_duration = 28800
+  max_session_duration = 28800 # probably needs to be not hard coded
 
   assume_role_policy = data.aws_iam_policy_document.dummy_policy[0].json
 }
