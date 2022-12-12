@@ -249,7 +249,6 @@ resource "aws_iam_role_policy_attachment" "devops_fargate_policy_attachment" {
 }
 
 
-
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_policy_attachment" {
   policy_arn = aws_iam_policy.devops_eks_policy.arn

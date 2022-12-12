@@ -5,19 +5,19 @@
             "Sid": "FargateAttachRole",
             "Effect": "Allow",
             "Action": [
-                "iam:PassRole"
-                "iam:AttachRolePolicy",
+                "iam:PassRole",
+                "iam:AttachRolePolicy"
             ],
             "Resource": [
                 "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
-                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs", // honestly not sure which is which(the tecton header or no header)
+                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs"
             ],
             "Condition": {
                 "StringEquals": {
                     "iam:PolicyARN":
                         [
                             "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy",
-                            "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy",
+                            "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy"
                         ]
                 }
             }
@@ -27,12 +27,26 @@
             "Effect": "Allow",
             "Action": [
                 "iam:PassRole",
-                "iam:CreateRole",
+                "iam:CreateRole"
             ],
             "Resource": [
                 "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
-                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs", // honestly not sure which is which
-            ],
+                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs"
+            ]
         },
+        {
+            "Sid": "KinesisStream",
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:CreateStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:IncreaseStreamRetentionPeriod",
+                "kinesis:ListTagsForStream",
+                "kinesis:EnableEnhancedMonitoring",
+                "kinesis:AddTagsToStream",
+                "kinesis:DeleteStream"
+            ],
+            "Resource": ["arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"]
+        }
     ]
 }
