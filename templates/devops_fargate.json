@@ -6,7 +6,8 @@
             "Effect": "Allow",
             "Action": [
                 "iam:PassRole",
-                "iam:AttachRolePolicy"
+                "iam:AttachRolePolicy",
+                "iam:DescribeRole"
             ],
             "Resource": [
                 "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
@@ -26,7 +27,9 @@
             "Effect": "Allow",
             "Action": [
                 "iam:PassRole",
-                "iam:CreateRole"
+                "iam:CreateRole",
+                "iam:DescribeRole",
+                "iam:TagRole"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
@@ -38,12 +41,19 @@
             "Action": [
                 "firehose:CreateDeliveryStream",
                 "firehose:UpdateDestination",
-                "firehose:DeleteDeliveryStream",
-                "firehose:DescribeDeliveryStream",
-                "kinesis:DescribeStream"
-
+                "firehose:DeleteDeliveryStream"
             ],
-            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream"]
+            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
+        },
+        {
+            "Sid": "DescribeDeliveryStreams",
+            "Effect": "Allow",
+            "Action": [
+                "firehose:DescribeDeliveryStream",
+                "firehose:ListDeliveryStreams",
+                "firehose:DeleteDeliveryStream"
+            ],
+            "Resource": ["*"]
         },
         {
             "Sid": "FargateProfile",
@@ -54,10 +64,13 @@
                 "eks:DeleteFargateProfile",
                 "eks:TagResource"
             ],
-            "Resource": ["arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*"]
+            "Resource": [
+                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
+            ]
         },
         {
-            "Sid": "OidcProvider",
+            "Sid": "ProviderPermissions",
             "Effect": "Allow",
             "Action": [
                 "iam:CreateOpenIDConnectProvider",
