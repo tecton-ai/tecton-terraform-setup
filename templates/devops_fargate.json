@@ -6,7 +6,7 @@
             "Effect": "Allow",
             "Action": [
                 "iam:PassRole",
-                "iam:AttachRolePolicy",
+                "iam:AttachRolePolicy"
             ],
             "Resource": [
                 "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
@@ -33,17 +33,6 @@
             ]
         },
         {
-            "Sid": "GetRole",
-            "Effect": "Allow",
-            "Action": [
-                "iam:GetRole"
-
-            ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}*"
-            ]
-        },
-        {
             "Sid": "KinesisStream",
             "Effect": "Allow",
             "Action": [
@@ -61,6 +50,8 @@
             "Effect": "Allow",
             "Action": [
                 "eks:CreateFargateProfile",
+                "eks:DescribeFargateProfile",
+                "eks:DeleteFargateProfile",
                 "eks:TagResource"
             ],
             "Resource": ["arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*"]
@@ -70,9 +61,15 @@
             "Effect": "Allow",
             "Action": [
                 "iam:CreateOpenIDConnectProvider",
-                "iam:GetOpenIDConnectProvider"
+                "iam:DeleteOpenIDConnectProvider",
+                "iam:GetOpenIDConnectProvider",
+                "iam:ListOpenIDConnectProviders",
+                "iam:ListSAMLProviders"
             ],
-            "Resource": ["arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"]
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*",
+                "arn:aws:iam::${ACCOUNT_ID}:saml-provider/*"
+            ]
         }
     ]
 }

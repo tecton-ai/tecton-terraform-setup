@@ -307,6 +307,8 @@ resource "aws_iam_role_policy_attachment" "tecton-eks-cluster-AmazonEKSVPCResour
   role       = aws_iam_role.eks_management_role.name
 }
 
+
+
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_node_role" {
   name               = "tecton-${var.deployment_name}-eks-worker-role"
@@ -658,6 +660,10 @@ resource "aws_iam_service_linked_role" "spot" {
 
 resource "aws_iam_service_linked_role" "eks-nodegroup" {
   aws_service_name = "eks-nodegroup.amazonaws.com"
+}
+
+resource "aws_iam_service_linked_role" "eks-fargate" {
+  aws_service_name = "eks-fargate.amazonaws.com"
 }
 
 
