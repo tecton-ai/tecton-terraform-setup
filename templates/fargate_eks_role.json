@@ -32,7 +32,7 @@
             "cloudwatch:DescribeAlarmsForMetric",
             "cloudwatch:GetMetricStatistics",
             "cloudwatch:ListMetrics",
-          "cloudwatch:PutMetricData"
+            "cloudwatch:PutMetricData"
         ],
         "Resource": [
           "*"

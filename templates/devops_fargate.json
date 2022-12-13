@@ -6,7 +6,7 @@
             "Effect": "Allow",
             "Action": [
                 "iam:PassRole",
-                "iam:AttachRolePolicy"
+                "iam:AttachRolePolicy",
             ],
             "Resource": [
                 "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
@@ -16,8 +16,7 @@
                 "StringEquals": {
                     "iam:PolicyARN":
                         [
-                            "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy",
-                            "arn:aws:iam::*:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy"
+                            "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy"
                         ]
                 }
             }
@@ -30,23 +29,50 @@
                 "iam:CreateRole"
             ],
             "Resource": [
-                "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
-                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
+            ]
+        },
+        {
+            "Sid": "GetRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetRole"
+
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}*"
             ]
         },
         {
             "Sid": "KinesisStream",
             "Effect": "Allow",
             "Action": [
-                "kinesis:CreateStream",
-                "kinesis:DescribeStreamSummary",
-                "kinesis:IncreaseStreamRetentionPeriod",
-                "kinesis:ListTagsForStream",
-                "kinesis:EnableEnhancedMonitoring",
-                "kinesis:AddTagsToStream",
-                "kinesis:DeleteStream"
+                "firehose:CreateDeliveryStream",
+                "firehose:UpdateDestination",
+                "firehose:DeleteDeliveryStream",
+                "firehose:DescribeDeliveryStream",
+                "kinesis:DescribeStream"
+
             ],
-            "Resource": ["arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"]
+            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream"]
+        },
+        {
+            "Sid": "FargateProfile",
+            "Effect": "Allow",
+            "Action": [
+                "eks:CreateFargateProfile",
+                "eks:TagResource"
+            ],
+            "Resource": ["arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*"]
+        },
+        {
+            "Sid": "OidcProvider",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateOpenIDConnectProvider",
+                "iam:GetOpenIDConnectProvider"
+            ],
+            "Resource": ["arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"]
         }
     ]
 }

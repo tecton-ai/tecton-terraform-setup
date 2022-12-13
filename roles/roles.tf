@@ -300,6 +300,13 @@ resource "aws_iam_role_policy_attachment" "eks_management_policy" {
   role       = aws_iam_role.eks_management_role.name
 }
 
+# EKS VPC Management [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "tecton-eks-cluster-AmazonEKSVPCResourceController" {
+  count      = var.fargate_enabled ? 1 : 0
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  role       = aws_iam_role.eks_management_role.name
+}
+
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_node_role" {
   name               = "tecton-${var.deployment_name}-eks-worker-role"
@@ -674,7 +681,7 @@ data "aws_iam_policy_document" "kinesis_firehose_stream" {
 # Resources to enable logs output to S3
 resource "aws_iam_role" "kinesis_firehose_stream" {
   count              = var.fargate_enabled ? 1 : 0
-  name               = "tecton-${var.deployment_name}_fargate_kinesis_firehose"
+  name               = "tecton-${var.deployment_name}-fargate-kinesis-firehose"
   assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
 }
 
