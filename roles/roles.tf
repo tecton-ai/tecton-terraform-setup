@@ -46,7 +46,28 @@ data "template_file" "devops_ingest_policy_json" {
   }
 }
 
-# EKS [Common : Databricks and EMR]
+# Fargate [Common : Databricks and EMR]
+data "template_file" "eks_fargate_node" {
+  count = var.fargate_enabled ? 1 : 0
+
+  template = file("${path.module}/../templates/fargate_eks_role.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    REGION          = var.region
+  }
+}
+
+# Fargate [Common : Databricks and EMR]
+resource "aws_iam_policy" "eks_fargate_node_policy" {
+  count = var.fargate_enabled ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
+  policy = data.template_file.eks_fargate_node[0].rendered
+  tags   = local.tags
+}
+
+# Fargate [Common : Databricks and EMR]
 data "template_file" "devops_fargate_role_json" {
   count    = var.fargate_enabled ? 1 : 0
   template = file("${path.module}/../templates/devops_fargate.json")
@@ -54,6 +75,7 @@ data "template_file" "devops_fargate_role_json" {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
+    FARGATE_POLICY_ARN      = aws_iam_policy.eks_fargate_node_policy[0].arn
   }
 }
 
@@ -771,23 +793,4 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-}
-
-data "template_file" "eks_fargate_node" {
-  count = var.fargate_enabled ? 1 : 0
-
-  template = file("${path.module}/../templates/fargate_eks_role.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-resource "aws_iam_policy" "eks_fargate_node_policy" {
-  count = var.fargate_enabled ? 1 : 0
-
-  name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
-  policy = data.template_file.eks_fargate_node[0].rendered
-  tags   = local.tags
 }

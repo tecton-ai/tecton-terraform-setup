@@ -16,7 +16,7 @@
                 "StringEquals": {
                     "iam:PolicyARN":
                         [
-                            "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-eks-fargate-node-policy"
+                            "${FARGATE_POLICY_ARN}"
                         ]
                 }
             }
