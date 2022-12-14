@@ -10,8 +10,8 @@
                 "iam:DescribeRole"
             ],
             "Resource": [
-                "arn:aws:iam::*:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
-                "arn:aws:iam::*:role/${DEPLOYMENT_NAME}-fargate-fs"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-fargate-fs"
             ],
             "Condition": {
                 "StringEquals": {
@@ -41,7 +41,8 @@
             "Action": [
                 "firehose:CreateDeliveryStream",
                 "firehose:UpdateDestination",
-                "firehose:DeleteDeliveryStream"
+                "firehose:DeleteDeliveryStream",
+                "firehose:ListTagsForDeliveryStream"
             ],
             "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
         },
@@ -50,8 +51,7 @@
             "Effect": "Allow",
             "Action": [
                 "firehose:DescribeDeliveryStream",
-                "firehose:ListDeliveryStreams",
-                "firehose:DeleteDeliveryStream"
+                "firehose:ListDeliveryStreams"
             ],
             "Resource": ["*"]
         },
@@ -76,12 +76,10 @@
                 "iam:CreateOpenIDConnectProvider",
                 "iam:DeleteOpenIDConnectProvider",
                 "iam:GetOpenIDConnectProvider",
-                "iam:ListOpenIDConnectProviders",
-                "iam:ListSAMLProviders"
+                "iam:ListOpenIDConnectProviders"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*",
-                "arn:aws:iam::${ACCOUNT_ID}:saml-provider/*"
+                "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
             ]
         }
     ]
