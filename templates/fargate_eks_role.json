@@ -68,7 +68,7 @@
             "ecr:DescribeImages",
             "ecr:BatchGetImage"
         ],
-        "Resource": "*"
+        "Resource": ["arn:aws:ecr:::*"]
       }
     ]
   }

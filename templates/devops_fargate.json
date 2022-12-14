@@ -41,18 +41,11 @@
                 "firehose:CreateDeliveryStream",
                 "firehose:UpdateDestination",
                 "firehose:DeleteDeliveryStream",
-                "firehose:ListTagsForDeliveryStream"
-            ],
-            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
-        },
-        {
-            "Sid": "DescribeDeliveryStreams",
-            "Effect": "Allow",
-            "Action": [
+                "firehose:ListTagsForDeliveryStream",
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams"
             ],
-            "Resource": ["*"]
+            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
         },
         {
             "Sid": "FargateProfile",
