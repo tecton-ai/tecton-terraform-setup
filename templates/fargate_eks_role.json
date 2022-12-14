@@ -44,7 +44,7 @@
         }
       },
       {
-        "Sid": "AmazonS3Roles",
+        "Sid": "ReadWriteTectonS3Buckets",
         "Effect": "Allow",
         "Action": [
             "s3:GetObject",

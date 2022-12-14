@@ -10,8 +10,7 @@
                 "iam:DescribeRole"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-fargate-fs"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
             ],
             "Condition": {
                 "StringEquals": {
