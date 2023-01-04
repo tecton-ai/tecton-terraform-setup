@@ -263,6 +263,7 @@ resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
   role       = aws_iam_role.devops_role.name
 }
 
+# DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_fargate_policy_attachment" {
   count = var.fargate_enabled ? 1 : 0
 
@@ -328,8 +329,6 @@ resource "aws_iam_role_policy_attachment" "tecton-eks-cluster-AmazonEKSVPCResour
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   role       = aws_iam_role.eks_management_role.name
 }
-
-
 
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_node_role" {
@@ -690,7 +689,6 @@ resource "aws_iam_service_linked_role" "eks-fargate" {
 
 
 # FARGATE [Common : Databricks and EMR]
-
 data "aws_iam_policy_document" "kinesis_firehose_stream" {
   count   = var.fargate_enabled ? 1 : 0
   version = "2012-10-17"
