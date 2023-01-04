@@ -88,6 +88,7 @@ data "template_file" "devops_eks_policy_json" {
     REGION          = var.region
   }
 }
+
 # EKS [Common : Databricks and EMR]
 data "template_file" "devops_eks_vpc_endpoint_policy_json" {
   count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
@@ -150,7 +151,6 @@ data "template_file" "emr_spark_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_spark_policy.json")
   vars = {
-    ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
   }
@@ -219,7 +219,6 @@ resource "aws_iam_policy" "devops_fargate_policy" {
   tags   = local.tags
 }
 
-
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_policy" {
   name   = "tecton-${var.deployment_name}-devops-eks-policy"
@@ -270,7 +269,6 @@ resource "aws_iam_role_policy_attachment" "devops_fargate_policy_attachment" {
   policy_arn = aws_iam_policy.devops_fargate_policy[0].arn
   role       = aws_iam_role.devops_role.name
 }
-
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_policy_attachment" {
@@ -686,7 +684,6 @@ resource "aws_iam_service_linked_role" "eks-nodegroup" {
 resource "aws_iam_service_linked_role" "eks-fargate" {
   aws_service_name = "eks-fargate.amazonaws.com"
 }
-
 
 # FARGATE [Common : Databricks and EMR]
 data "aws_iam_policy_document" "kinesis_firehose_stream" {

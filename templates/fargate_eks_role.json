@@ -2,7 +2,7 @@
     "Version": "2012-10-17",
     "Statement": [
       {
-        "Sid": "DynamoDBRoles",
+        "Sid": "TectonDynamoDBAccessPolicies",
         "Effect": "Allow",
         "Action": [
           "dynamodb:PutItem",
@@ -24,27 +24,7 @@
         ]
       },
       {
-        "Sid": "CloudwatchRoles",
-        "Effect": "Allow",
-        "Action": [
-            "cloudwatch:DescribeAlarmHistory",
-            "cloudwatch:DescribeAlarms",
-            "cloudwatch:DescribeAlarmsForMetric",
-            "cloudwatch:GetMetricStatistics",
-            "cloudwatch:ListMetrics",
-            "cloudwatch:PutMetricData"
-        ],
-        "Resource": [
-          "*"
-        ],
-        "Condition": {
-          "StringEquals": {
-              "cloudwatch:namespace": "tecton"
-          }
-        }
-      },
-      {
-        "Sid": "ReadWriteTectonS3Buckets",
+        "Sid": "ReadWriteTectonS3BucketsPolicies",
         "Effect": "Allow",
         "Action": [
             "s3:GetObject",
@@ -56,7 +36,7 @@
         ]
       },
       {
-        "Sid": "EC2ReadOnly",
+        "Sid": "TectonAmazonEC2ContainerRegistryReadOnlyPolicies",
         "Effect": "Allow",
         "Action": [
             "ecr:GetAuthorizationToken",
@@ -68,7 +48,9 @@
             "ecr:DescribeImages",
             "ecr:BatchGetImage"
         ],
-        "Resource": ["arn:aws:ecr:::*"]
+        "Resource": [
+          "arn:aws:ecr:${REGION}:${ACCOUNT_ID}:tecton/*"
+        ]
       }
     ]
   }
