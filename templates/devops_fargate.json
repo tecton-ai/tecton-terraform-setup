@@ -7,7 +7,9 @@
             "Action": [
                 "iam:PassRole",
                 "iam:AttachRolePolicy",
-                "iam:DescribeRole"
+                "iam:DescribeRole",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRolePolicy"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
@@ -28,7 +30,8 @@
                 "iam:PassRole",
                 "iam:CreateRole",
                 "iam:DescribeRole",
-                "iam:TagRole"
+                "iam:TagRole",
+                "iam:DeleteRole"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
