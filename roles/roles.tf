@@ -151,6 +151,7 @@ data "template_file" "emr_spark_policy_json" {
   count    = var.create_emr_roles ? 1 : 0
   template = file("${path.module}/../templates/emr_spark_policy.json")
   vars = {
+    ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
   }
