@@ -16,11 +16,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tecton_s3_bucket_
   }
 }
 
-resource "aws_s3_bucket_acl" "tecton_s3_bucket_acl" {
-  bucket = aws_s3_bucket.tecton.id
-  acl    = "private"
-}
-
 resource "aws_s3_bucket_policy" "read-only-access" {
   count  = length(var.additional_s3_read_only_principals) > 0 ? 1 : 0
   bucket = aws_s3_bucket.tecton.bucket
