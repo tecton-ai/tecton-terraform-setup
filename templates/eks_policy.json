@@ -52,6 +52,17 @@
             ]
         },
         {
+            "Sid": "S3Logs",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": [
+		"arn:aws:s3:::tecton-logs-aggregation"
+            ]
+        },
+        {
             "Sid": "CreateServiceLinkedRoles",
             "Effect": "Allow",
             "Action": [
