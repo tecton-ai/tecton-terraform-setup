@@ -73,10 +73,10 @@ data "template_file" "devops_fargate_role_json" {
   count    = var.fargate_enabled ? 1 : 0
   template = file("${path.module}/../templates/devops_fargate.json")
   vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-    FARGATE_POLICY_ARN      = aws_iam_policy.eks_fargate_node_policy[0].arn
+    ACCOUNT_ID         = var.account_id
+    DEPLOYMENT_NAME    = var.deployment_name
+    REGION             = var.region
+    FARGATE_POLICY_ARN = aws_iam_policy.eks_fargate_node_policy[0].arn
   }
 }
 
