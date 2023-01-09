@@ -76,6 +76,17 @@
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
             ]
+        },
+        {
+            "Sid": "EksFargateNodePolicyPolicies",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListPolicies",
+                "iam:DescribePolicies"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/*"
+            ]
         }
     ]
 }
