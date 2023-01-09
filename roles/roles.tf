@@ -52,9 +52,10 @@ data "template_file" "eks_fargate_node" {
 
   template = file("${path.module}/../templates/fargate_eks_role.json")
   vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
+    ACCOUNT_ID          = var.account_id
+    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+    DEPLOYMENT_NAME     = var.deployment_name
+    REGION              = var.region
   }
 }
 
@@ -77,6 +78,15 @@ data "template_file" "devops_fargate_role_json" {
     REGION          = var.region
     FARGATE_POLICY_ARN      = aws_iam_policy.eks_fargate_node_policy[0].arn
   }
+}
+
+# DEVOPS [Common : Databricks and EMR]
+resource "aws_iam_policy" "devops_fargate_policy" {
+  count = var.fargate_enabled ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-devops-fargate-policy"
+  policy = data.template_file.devops_fargate_role_json[0].rendered
+  tags   = local.tags
 }
 
 # EKS [Common : Databricks and EMR]
@@ -208,15 +218,6 @@ resource "aws_iam_policy" "devops_ingest_policy" {
 
   name   = "tecton-${var.deployment_name}-devops-ingest-policy"
   policy = data.template_file.devops_ingest_policy_json[0].rendered
-  tags   = local.tags
-}
-
-# DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_fargate_policy" {
-  count = var.fargate_enabled ? 1 : 0
-
-  name   = "tecton-${var.deployment_name}-devops-fargate-policy"
-  policy = data.template_file.devops_fargate_role_json[0].rendered
   tags   = local.tags
 }
 

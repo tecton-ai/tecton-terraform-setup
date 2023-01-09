@@ -70,6 +70,12 @@ provider "aws" {
   }
 }
 
+variable "fargate_enabled" {
+  default     = false
+  description = "Enable fargate on cluster."
+  type        = bool
+}
+
 provider "aws" {
   alias  = "databricks-account"
   region = var.region
@@ -96,6 +102,7 @@ module "roles" {
   databricks_account_id           = var.external_databricks_account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id
   elasticache_enabled             = var.elasticache_enabled
+  fargate_enabled                 = var.fargate_enabled
 }
 
 module "subnets" {
