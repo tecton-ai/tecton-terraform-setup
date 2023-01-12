@@ -49,7 +49,7 @@
             "ecr:BatchGetImage"
         ],
         "Resource": [
-          "arn:aws:ecr:*:${ASSUMING_ACCOUNT_ID}:tecton/*",
+          "arn:aws:ecr:*:${ASSUMING_ACCOUNT_ID}:tecton/*"
         ]
       }
     ]
