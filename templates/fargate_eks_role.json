@@ -50,8 +50,6 @@
         ],
         "Resource": [
           "arn:aws:ecr:*:${ASSUMING_ACCOUNT_ID}:tecton/*",
-          "arn:aws:ecr:*:${ASSUMING_ACCOUNT_ID}:mlflow-pyfunc",
-          "arn:aws:ecr:*:${ASSUMING_ACCOUNT_ID}:vouch/vouch-proxy"
         ]
       }
     ]
