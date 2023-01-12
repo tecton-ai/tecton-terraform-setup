@@ -75,7 +75,8 @@
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
-            ]
+            ],
+            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
         },
         {
             "Sid": "EksFargateNodePolicyPolicies",
