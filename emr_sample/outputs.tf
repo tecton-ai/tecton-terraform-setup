@@ -32,11 +32,13 @@ output "security_group_ids" {
 
 output "roles" {
   value = {
-    devops_role_name        = (var.apply_layer > 1) ? module.roles[0].devops_role_name : ""
-    eks_cluster_role_name   = (var.apply_layer > 1) ? module.roles[0].eks_management_role_name : ""
-    eks_node_role_name      = (var.apply_layer > 1) ? module.roles[0].eks_node_role_name : ""
-    spark_node_role_name    = (var.apply_layer > 1) ? module.roles[0].spark_role_name : ""
-    online_ingest_role_arn = (var.apply_layer > 1) ? module.roles[0].online_ingest_role_arn : ""
-    offline_ingest_role_arn = (var.apply_layer > 1) ? module.roles[0].offline_ingest_role_arn : ""
+    devops_role_name                            = (var.apply_layer > 1) ? module.roles[0].devops_role_name : ""
+    eks_cluster_role_name                       = (var.apply_layer > 1) ? module.roles[0].eks_management_role_name : ""
+    eks_node_role_name                          = (var.apply_layer > 1) ? module.roles[0].eks_node_role_name : ""
+    spark_node_role_name                        = (var.apply_layer > 1) ? module.roles[0].spark_role_name : ""
+    online_ingest_role_arn                      = (var.apply_layer > 1) ? module.roles[0].online_ingest_role_arn : ""
+    offline_ingest_role_arn                     = (var.apply_layer > 1) ? module.roles[0].offline_ingest_role_arn : ""
+    fargate_kinesis_firehose_stream_role_name   = (var.apply_layer > 1) ? module.roles[0].fargate_kinesis_firehose_stream_role_name : ""
+    fargate_eks_fargate_pod_execution_role_name = (var.apply_layer > 1) ? module.roles[0].fargate_eks_fargate_pod_execution_role_name : ""
   }
 }

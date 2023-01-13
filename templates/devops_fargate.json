@@ -1,0 +1,94 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "FargateAttachRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole",
+                "iam:AttachRolePolicy",
+                "iam:DescribeRole",
+                "iam:DetachRolePolicy",
+                "iam:DeleteRolePolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "iam:PolicyARN":
+                        [
+                            "${FARGATE_POLICY_ARN}"
+                        ]
+                }
+            }
+        },
+        {
+            "Sid": "CreateFargateRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole",
+                "iam:CreateRole",
+                "iam:DescribeRole",
+                "iam:TagRole",
+                "iam:DeleteRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
+            ]
+        },
+        {
+            "Sid": "KinesisStream",
+            "Effect": "Allow",
+            "Action": [
+                "firehose:CreateDeliveryStream",
+                "firehose:UpdateDestination",
+                "firehose:DeleteDeliveryStream",
+                "firehose:ListTagsForDeliveryStream",
+                "firehose:DescribeDeliveryStream",
+                "firehose:ListDeliveryStreams"
+            ],
+            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
+        },
+        {
+            "Sid": "FargateProfile",
+            "Effect": "Allow",
+            "Action": [
+                "eks:CreateFargateProfile",
+                "eks:DescribeFargateProfile",
+                "eks:DeleteFargateProfile",
+                "eks:TagResource"
+            ],
+            "Resource": [
+                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "ProviderPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateOpenIDConnectProvider",
+                "iam:DeleteOpenIDConnectProvider",
+                "iam:GetOpenIDConnectProvider",
+                "iam:ListOpenIDConnectProviders",
+                "iam:TagOpenIDConnectProvider"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
+            ],
+            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+        },
+        {
+            "Sid": "EksFargateNodePolicyPolicies",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListPolicies",
+                "iam:DescribePolicies"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/*"
+            ]
+        }
+    ]
+}

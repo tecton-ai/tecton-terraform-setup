@@ -42,7 +42,8 @@
                 "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
                 "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService",
                 "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
-                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup",
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/eks-fargate.amazonaws.com/AWSServiceRoleForAmazonEKSForFargate"
             ]
         },
         {

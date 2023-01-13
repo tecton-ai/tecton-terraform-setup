@@ -58,3 +58,9 @@ variable "enable_ingest_api" {
   type        = bool
   description = "Whether or not to enable resources supporting the Ingest API. Default: true."
 }
+
+variable "fargate_enabled" {
+  default     = false
+  type        = bool
+  description = "Whether or not to enable resources supporting Fargate. Default: false."
+}
