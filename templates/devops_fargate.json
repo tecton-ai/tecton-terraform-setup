@@ -71,7 +71,8 @@
                 "iam:CreateOpenIDConnectProvider",
                 "iam:DeleteOpenIDConnectProvider",
                 "iam:GetOpenIDConnectProvider",
-                "iam:ListOpenIDConnectProviders"
+                "iam:ListOpenIDConnectProviders",
+                "iam:TagOpenIDConnectProvider"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
