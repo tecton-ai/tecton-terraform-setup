@@ -65,14 +65,23 @@
             ]
         },
         {
-            "Sid": "ProviderPermissions",
+            "Sid": "CreateProviderPermissions",
             "Effect": "Allow",
             "Action": [
                 "iam:CreateOpenIDConnectProvider",
-                "iam:DeleteOpenIDConnectProvider",
                 "iam:GetOpenIDConnectProvider",
-                "iam:ListOpenIDConnectProviders",
                 "iam:TagOpenIDConnectProvider"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
+            ]
+        },
+        {
+            "Sid": "ProviderPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListOpenIDConnectProviders",
+                "iam:DeleteOpenIDConnectProvider"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/*"
