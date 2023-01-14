@@ -65,7 +65,7 @@
             ]
         },
         {
-            "Sid": "CreateProviderPermissions",
+            "Sid": "CreateProviderPermissions/OIDCProvider",
             "Effect": "Allow",
             "Action": [
                 "iam:CreateOpenIDConnectProvider",
@@ -77,7 +77,7 @@
             ]
         },
         {
-            "Sid": "ProviderPermissions",
+            "Sid": "ProviderPermissions/OIDCProvider",
             "Effect": "Allow",
             "Action": [
                 "iam:ListOpenIDConnectProviders",
