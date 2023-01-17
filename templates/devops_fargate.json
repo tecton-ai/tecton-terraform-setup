@@ -65,7 +65,7 @@
             ]
         },
         {
-            "Sid": "CreateProviderPermissions/OIDCProvider",
+            "Sid": "ListDeleteOIDCProvider",
             "Effect": "Allow",
             "Action": [
                 "iam:CreateOpenIDConnectProvider",
