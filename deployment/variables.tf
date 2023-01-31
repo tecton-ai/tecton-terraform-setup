@@ -7,6 +7,10 @@ variable "account_id" {
 variable "region" {
   type = string
 }
+variable "satellite_region" {
+  type    = string
+  default = null
+}
 variable "cross_account_external_id" {
   type = string
 }
