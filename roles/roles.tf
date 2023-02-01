@@ -412,7 +412,7 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 resource "aws_iam_policy" "satellite_region_policy" {
   count = var.satellite_region != null ? 1 : 0
   name  = "tecton-satellite-region-policy"
-  policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
+  policy = file("${path.module}/../templates/satellite_ca_policy.json", {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
@@ -605,21 +605,6 @@ resource "aws_iam_role_policy_attachment" "cross_account_databricks_policy_attac
   role       = aws_iam_role.spark_cross_account_role[0].name
 }
 
-# CROSS ACCOUNT ACCESS FOR SATELLITE SERVING
-resource "aws_iam_policy" "emr_cross_account_satellite_region_policy" {
-  count = var.create_emr_roles && (var.satellite_region != null) ? 1 : 0
-  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy-emr"
-  policy = templatefile("${path.module}/../templates/satellite_serving_dynamodb_policy.json", {
-    ACCOUNT_ID       = var.account_id
-    DEPLOYMENT_NAME  = var.deployment_name
-    REGION           = var.region
-    EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
-    SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
-  })
-  tags = local.tags
-}
-
-
 # SPARK ROLE : EMR
 resource "aws_iam_role" "emr_spark_role" {
   count              = var.create_emr_roles ? 1 : 0
@@ -654,6 +639,20 @@ resource "aws_iam_role_policy_attachment" "emr_spark_policy_attachment" {
   count      = var.create_emr_roles ? 1 : 0
   policy_arn = aws_iam_policy.emr_spark_policy[0].arn
   role       = aws_iam_role.emr_spark_role[0].name
+}
+
+# CROSS-ACCOUNT ACCESS FOR SATELLITE SERVING
+resource "aws_iam_policy" "cross_account_satellite_region_policy" {
+  count = var.satellite_region != null ? 1 : 0
+  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy-emr"
+  policy = file("${path.module}/../templates/satellite_serving_dynamodb_policy.json")
+  tags = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "emr_cross_account_satellite_region_policy_attachment" {
+  count      = var.satellite_region != null ? 1 : 0
+  policy_arn = aws_iam_policy.emr_cross_account_satellite_region_policy[0].arn
+  role       = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : aws_iam_role.spark_cross_account_role[0].name
 }
 
 # SPARK ROLE SSM POLICY ATTACHMENT: EMR
