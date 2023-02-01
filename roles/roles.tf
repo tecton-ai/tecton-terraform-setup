@@ -423,7 +423,7 @@ resource "aws_iam_policy" "satellite_region_policy" {
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   count      = var.satellite_region != null ? 1 : 0
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
-  role       = var.spark_role_name
+  role       = var.create_emr_roles ? (var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role") : var.spark_role_name
 }
 
 # Ingest API - Common for Databricks and EMR.
