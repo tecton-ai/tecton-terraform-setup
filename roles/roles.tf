@@ -411,7 +411,7 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 }
 
 resource "aws_iam_policy" "satellite_region_policy" {
-  count = local.enable_satellite_region ? 0 : 1
+  count = local.enable_satellite_region ? 1 : 0
   name  = "tecton-satellite-region-policy"
   policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
     ACCOUNT_ID       = var.account_id
@@ -422,7 +422,7 @@ resource "aws_iam_policy" "satellite_region_policy" {
   tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
-  count      = local.enable_satellite_region ? 0 : 1
+  count      = local.enable_satellite_region ? 1 : 0
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
   role       = var.spark_role_name
 }
@@ -608,7 +608,7 @@ resource "aws_iam_role_policy_attachment" "cross_account_databricks_policy_attac
 
 # CROSS ACCOUNT ACCESS FOR SATELLITE SERVING
 resource "aws_iam_policy" "emr_cross_account_satellite_region_policy" {
-  count = var.create_emr_roles && var.satellite_region ? 1 : 0
+  count = var.create_emr_roles && local.enable_satellite_region ? 1 : 0
   name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy-emr"
   policy = templatefile("${path.module}/../templates/satellite_serving_dynamodb_policy.json", {
     ACCOUNT_ID       = var.account_id
