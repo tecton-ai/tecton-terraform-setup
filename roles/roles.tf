@@ -618,11 +618,6 @@ resource "aws_iam_policy" "emr_cross_account_satellite_region_policy" {
   })
   tags = local.tags
 }
-resource "aws_iam_role_policy_attachment" "emr_cross_account_satellite_region_policy_attachment" {
-  count      = var.create_emr_roles && var.satellite_region ? 1 : 0
-  policy_arn = aws_iam_policy.emr_cross_account_satellite_region_policy[0].arn
-  role       = aws_iam_role.cross_account_role.name
-}
 
 # SPARK ROLE : EMR
 resource "aws_iam_role" "emr_spark_role" {
