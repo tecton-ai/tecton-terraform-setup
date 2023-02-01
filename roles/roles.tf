@@ -1,6 +1,7 @@
 locals {
   tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  enable_satellite_region             = try(length(var.satellite_region), 0) > 0
 }
 
 # EKS [Common : Databricks and EMR]
@@ -410,7 +411,7 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 }
 
 resource "aws_iam_policy" "satellite_region_policy" {
-  count = var.satellite_region ? 0 : 1
+  count = local.enable_satellite_region ? 0 : 1
   name  = "tecton-satellite-region-policy"
   policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
     ACCOUNT_ID       = var.account_id
@@ -421,7 +422,7 @@ resource "aws_iam_policy" "satellite_region_policy" {
   tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
-  count      = var.satellite_region ? 0 : 1
+  count      = local.enable_satellite_region ? 0 : 1
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
   role       = var.spark_role_name
 }
