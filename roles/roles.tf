@@ -1,7 +1,7 @@
 locals {
   tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  enable_satellite_region             = try(length(var.satellite_region), 0) > 0
+  enable_satellite_region             = try(var.satellite_region, false)
 }
 
 # EKS [Common : Databricks and EMR]
