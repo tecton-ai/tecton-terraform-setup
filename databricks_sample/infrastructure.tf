@@ -63,6 +63,12 @@ variable "enable_eks_ingress_vpc_endpoint" {
   type        = bool
 }
 
+variable "satellite_region" {
+  type        = string
+  description = "Satellite region for Tecton deployment."
+  default     = null
+}
+
 provider "aws" {
   region = var.region
   assume_role {

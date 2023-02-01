@@ -89,6 +89,12 @@ variable "fargate_enabled" {
   type        = bool
 }
 
+variable "satellite_region" {
+  type        = string
+  description = "Satellite region for Tecton deployment."
+  default     = null
+}
+
 module "eks_subnets" {
   providers = {
     aws = aws
