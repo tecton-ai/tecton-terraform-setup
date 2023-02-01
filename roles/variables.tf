@@ -64,3 +64,8 @@ variable "fargate_enabled" {
   type        = bool
   description = "Whether or not to enable resources supporting Fargate. Default: false."
 }
+
+variable "satellite_region" {
+  type    = string
+  default = null
+}
