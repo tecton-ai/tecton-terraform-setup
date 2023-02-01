@@ -104,6 +104,7 @@ module "roles" {
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
   account_id                      = var.account_id
   region                          = var.region
+  satellite_region                = var.satellite_region
   spark_role_name                 = var.spark_role_name
   databricks_account_id           = var.external_databricks_account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id

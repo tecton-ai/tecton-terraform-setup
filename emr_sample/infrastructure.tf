@@ -169,6 +169,7 @@ module "roles" {
   account_id                      = var.account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id
   region                          = var.region
+  satellite_region                = var.satellite_region
   create_emr_roles                = true
   elasticache_enabled             = var.elasticache_enabled
   external_id                     = random_id.external_id.id
