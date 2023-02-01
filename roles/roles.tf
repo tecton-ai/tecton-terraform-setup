@@ -613,7 +613,6 @@ resource "aws_iam_policy" "emr_cross_account_satellite_region_policy" {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
-    SATELLITE_REGION = var.satellite_region
     EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
     SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
   })

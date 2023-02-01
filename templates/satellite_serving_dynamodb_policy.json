@@ -2,39 +2,21 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "DynamoDB",
+            "Sid": "CreateSatelliteServingDynamoDBServiceLinkedRole",
             "Effect": "Allow",
             "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:CreateTable",
-                "dynamodb:DeleteItem",
-                "dynamodb:DeleteTable",
-                "dynamodb:DescribeTable",
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:Query",
-                "dynamodb:TagResource",
-                "dynamodb:UpdateTable"
+                "iam:CreateServiceLinkedRole"
             ],
             "Resource": [
-                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
-            ]
-        },
-        {
-            "Sid": "DynamoDBCrossRegion",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:CreateTableReplica",
-                "dynamodb:Scan",
-                "dynamodb:UpdateItem",
-                "dynamodb:DeleteTableReplica"
+                "arn:aws:iam::*:role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication*"
             ],
-            "Resource": [
-                "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
-            ]
+            "Condition": {
+                "StringLike": {
+                    "iam:AWSServiceName": [
+                        "replication.dynamodb.amazonaws.com"
+                    ]
+                }
+            }
         }
     ]
 }
