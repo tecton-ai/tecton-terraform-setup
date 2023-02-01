@@ -10,6 +10,12 @@ variable "region" {
   type = string
 }
 
+variable "satellite_region" {
+  type        = string
+  description = "The satellite region for Tecton deployment."
+  default     = null
+}
+
 variable "tecton_assuming_account_id" {
   type        = string
   description = "The account Tecton will use to assume any cross-account roles."

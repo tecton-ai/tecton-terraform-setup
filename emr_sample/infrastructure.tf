@@ -31,6 +31,12 @@ variable "region" {
   type = string
 }
 
+variable "satellite_region" {
+  type        = string
+  description = "The satellite region for Tecton deployment."
+  default     = null
+}
+
 variable "account_id" {
   type = string
 }
@@ -87,12 +93,6 @@ variable "fargate_enabled" {
   default     = false
   description = "Enable fargate on cluster."
   type        = bool
-}
-
-variable "satellite_region" {
-  type        = string
-  description = "Satellite region for Tecton deployment."
-  default     = null
 }
 
 module "eks_subnets" {

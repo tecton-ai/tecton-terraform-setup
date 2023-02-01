@@ -423,7 +423,7 @@ resource "aws_iam_policy" "satellite_region_policy" {
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   count      = var.satellite_region ? 0 : 1
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
-  role       = local.spark_role_name
+  role       = var.spark_role_name
 }
 
 # Ingest API - Common for Databricks and EMR.
