@@ -93,7 +93,8 @@
                 "iam:GetRole",
                 "iam:ListRolePolicies",
                 "iam:ListAttachedRolePolicies",
-                "iam:GetPolicy"
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion"
             ],
             "Resource": ["*"]
         }
