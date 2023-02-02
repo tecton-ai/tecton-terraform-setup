@@ -89,7 +89,8 @@
             "Effect": "Allow",
             "Action": [
                 "iam:CreateRole",
-                "iam:CreatePolicy"
+                "iam:CreatePolicy",
+                "iam:GetRole"
             ],
             "Resource": ["*"]
         }
