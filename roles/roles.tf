@@ -837,7 +837,7 @@ resource "aws_iam_policy" "fargate_logging" {
 
 resource "aws_iam_policy" "fargate_satelite_logging" {
   count  = var.fargate_enabled && var.satellite_region != "" ? 1 : 0
-  name   = "tecton-${var.deployment_name}-fargate-logging-to-kinesis-firehose"
+  name   = "tecton-${var.deployment_name}-fargate-satellite-logging-to-kinesis-firehose"
   policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[0].json
 }
 
