@@ -94,7 +94,9 @@
                 "iam:ListRolePolicies",
                 "iam:ListAttachedRolePolicies",
                 "iam:GetPolicy",
-                "iam:GetPolicyVersion"
+                "iam:GetPolicyVersion",
+                "iam:ListInstanceProfilesForRole",
+                "iam:ListPolicyVersions"
             ],
             "Resource": ["*"]
         }
