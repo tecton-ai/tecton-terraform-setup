@@ -91,7 +91,9 @@
                 "iam:CreateRole",
                 "iam:CreatePolicy",
                 "iam:GetRole",
-                "iam:ListRolePolicies"
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:GetPolicy"
             ],
             "Resource": ["*"]
         }
