@@ -48,6 +48,50 @@
                 "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}-${SATELLITE_REGION}": "true"
               }
             }
-          }
+          },
+          {
+            "Sid": "ConfigureLoadBalancer",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:DescribeSSLPolicies",
+                "elasticloadbalancing:DescribeTargetGroups",
+                "elasticloadbalancing:DescribeTargetHealth",
+                "elasticloadbalancing:DescribeListeners",
+                "elasticloadbalancing:DescribeTargetGroupAttributes",
+                "elasticloadbalancing:DescribeAccountLimits",
+                "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:RegisterTargets",
+                "elasticloadbalancing:DeleteListener",
+                "elasticloadbalancing:CreateListener",
+                "elasticloadbalancing:ModifyListener",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:CreateLoadBalancer",
+                "elasticloadbalancing:DeleteLoadBalancer",
+                "autoscaling:AttachLoadBalancerTargetGroups",
+                "autoscaling:DetachLoadBalancerTargetGroups"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:listener/app/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:autoscaling:${SATELLITE_REGION}:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:autoscaling:${SATELLITE_REGION}:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
+            ]
+        },
+        {
+            "Sid": "AllowS3Replication",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateRole",
+                "iam:CreatePolicy"
+            ],
+            "Resource": ["*"]
+        }
     ]
 }
