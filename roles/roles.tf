@@ -815,7 +815,7 @@ data "aws_iam_policy_document" "fargate_logging_policy" {
   }
 }
 
-data "aws_iam_policy_document" "fargate_logging_policy" {
+data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
   count   = var.fargate_enabled && var.satellite_region != "" ? 1 : 0
   version = "2012-10-17"
   statement {
@@ -835,10 +835,22 @@ resource "aws_iam_policy" "fargate_logging" {
   policy = data.aws_iam_policy_document.fargate_logging_policy[0].json
 }
 
+resource "aws_iam_policy" "fargate_satelite_logging" {
+  count  = var.fargate_enabled && var.satellite_region != "" ? 1 : 0
+  name   = "tecton-${var.deployment_name}-fargate-logging-to-kinesis-firehose"
+  policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[0].json
+}
+
 resource "aws_iam_role_policy_attachment" "logging" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
   policy_arn = aws_iam_policy.fargate_logging[0].arn
+}
+
+resource "aws_iam_role_policy_attachment" "satellite_logging" {
+  count      = var.fargate_enabled ? 1 : 0
+  role       = aws_iam_role.eks_fargate_pod_execution[0].name
+  policy_arn = aws_iam_policy.fargate_satelite_logging[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
