@@ -644,14 +644,14 @@ resource "aws_iam_role_policy_attachment" "emr_spark_policy_attachment" {
 # CROSS-ACCOUNT ACCESS FOR SATELLITE SERVING
 resource "aws_iam_policy" "cross_account_satellite_region_policy" {
   count = var.satellite_region != null ? 1 : 0
-  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy-emr"
+  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy"
   policy = file("${path.module}/../templates/satellite_serving_dynamodb_policy.json")
   tags = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "emr_cross_account_satellite_region_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "cross_account_satellite_region_policy_attachment" {
   count      = var.satellite_region != null ? 1 : 0
-  policy_arn = aws_iam_policy.emr_cross_account_satellite_region_policy[0].arn
+  policy_arn = aws_iam_policy.cross_account_satellite_region_policy[0].arn
   role       = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : aws_iam_role.spark_cross_account_role[0].name
 }
 
