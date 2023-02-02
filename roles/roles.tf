@@ -663,7 +663,7 @@ resource "aws_iam_policy" "cross_account_satellite_region_policy" {
 resource "aws_iam_role_policy_attachment" "cross_account_satellite_region_policy_attachment" {
   count      = var.satellite_region != "" ? 1 : 0
   policy_arn = aws_iam_policy.cross_account_satellite_region_policy[0].arn
-  role       = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : aws_iam_role.spark_cross_account_role[0].name
+  role       = "tecton-${var.deployment_name}-eks-worker-role"
 }
 
 # SPARK ROLE SSM POLICY ATTACHMENT: EMR
