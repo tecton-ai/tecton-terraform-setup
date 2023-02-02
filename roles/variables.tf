@@ -13,7 +13,7 @@ variable "region" {
 variable "satellite_region" {
   type        = string
   description = "The satellite region for Tecton deployment."
-  default     = null
+  default     = ""
 }
 
 variable "tecton_assuming_account_id" {

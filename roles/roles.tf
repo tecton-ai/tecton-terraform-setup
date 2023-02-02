@@ -1,6 +1,7 @@
 locals {
-  tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
-  fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  tags                                          = { "tecton-accessible:${var.deployment_name}" : "true" }
+  fargate_kinesis_delivery_stream_arn           = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  fargate_satellite_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
 }
 
 # EKS [Common : Databricks and EMR]
@@ -56,6 +57,7 @@ data "template_file" "eks_fargate_node" {
     ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
     DEPLOYMENT_NAME     = var.deployment_name
     REGION              = var.region
+    SATELLITE_REGION    = var.satellite_region
   }
 }
 
@@ -189,6 +191,18 @@ data "template_file" "emr_access_policy_json" {
     REGION           = var.region
     EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
     SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
+  }
+}
+
+# EKS [Common : Databricks and EMR]
+data "template_file" "satellite_ca_policy_json" {
+  count    = var.satellite_region != 0 ? 1 : 0
+  template = file("${path.module}/../templates/satellite_ca_policy.json")
+  vars = {
+    ACCOUNT_ID       = var.account_id
+    DEPLOYMENT_NAME  = var.deployment_name
+    REGION           = var.region
+    SATELLITE_REGION = var.satellite_region
   }
 }
 
@@ -410,20 +424,17 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 }
 
 resource "aws_iam_policy" "satellite_region_policy" {
-  count = var.satellite_region != null ? 1 : 0
+  count = var.satellite_region != "" ? 1 : 0
   name  = "tecton-satellite-region-policy"
-  policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
-    ACCOUNT_ID       = var.account_id
-    DEPLOYMENT_NAME  = var.deployment_name
-    REGION           = var.region
-    SATELLITE_REGION = var.satellite_region
-  })
+  policy = data.template_file.satellite_ca_policy_json[0].rendered
   tags = local.tags
 }
+
+# Spark Common : Databricks and EMR
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
-  count      = var.satellite_region != null ? 1 : 0
+  count      = var.satellite_region != "" ? 1 : 0
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
-  role       = var.create_emr_roles ? (var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role") : var.spark_role_name
+  role       = "tecton-${var.deployment_name}-eks-worker-role"
 }
 
 # Ingest API - Common for Databricks and EMR.
@@ -643,14 +654,14 @@ resource "aws_iam_role_policy_attachment" "emr_spark_policy_attachment" {
 
 # CROSS-ACCOUNT ACCESS FOR SATELLITE SERVING
 resource "aws_iam_policy" "cross_account_satellite_region_policy" {
-  count = var.satellite_region != null ? 1 : 0
+  count = var.satellite_region != "" ? 1 : 0
   name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy"
   policy = file("${path.module}/../templates/satellite_serving_dynamodb_policy.json")
   tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "cross_account_satellite_region_policy_attachment" {
-  count      = var.satellite_region != null ? 1 : 0
+  count      = var.satellite_region != "" ? 1 : 0
   policy_arn = aws_iam_policy.cross_account_satellite_region_policy[0].arn
   role       = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : aws_iam_role.spark_cross_account_role[0].name
 }
@@ -800,6 +811,20 @@ data "aws_iam_policy_document" "fargate_logging_policy" {
     effect = "Allow"
     resources = [
       local.fargate_kinesis_delivery_stream_arn
+    ]
+  }
+}
+
+data "aws_iam_policy_document" "fargate_logging_policy" {
+  count   = var.fargate_enabled && var.satellite_region != "" ? 1 : 0
+  version = "2012-10-17"
+  statement {
+    actions = [
+      "firehose:PutRecordBatch",
+    ]
+    effect = "Allow"
+    resources = [
+      local.fargate_satellite_kinesis_delivery_stream_arn
     ]
   }
 }
