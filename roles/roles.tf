@@ -206,6 +206,18 @@ data "template_file" "satellite_ca_policy_json" {
   }
 }
 
+data "template_file" "satellite_devops_policy_json" {
+  count    = var.satellite_region != 0 ? 1 : 0
+  template = file("${path.module}/../templates/satellite_devops_policy.json")
+  vars = {
+    ACCOUNT_ID             = var.account_id
+    DEPLOYMENT_NAME        = var.deployment_name
+    DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
+    REGION                 = var.region
+    SATELLITE_REGION       = var.satellite_region
+  }
+}
+
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role" "devops_role" {
   name               = "tecton-${var.deployment_name}-devops-role"
@@ -224,6 +236,14 @@ resource "aws_iam_policy" "devops_policy_1" {
 resource "aws_iam_policy" "devops_policy_2" {
   name   = "tecton-${var.deployment_name}-devops-policy-2"
   policy = data.template_file.devops_policy_json_2.rendered
+  tags   = local.tags
+}
+
+# DEVOPS [Common: Databricks and EMR]
+resource "aws_iam_policy" "satellite_devops_policy" {
+  count  = var.satellite_region != 0 ? 1 : 0
+  name   = "tecton-${var.deployment_name}-satellite-devops-policy"
+  policy = data.template_file.satellite_devops_policy_json[0].rendered
   tags   = local.tags
 }
 
@@ -431,10 +451,17 @@ resource "aws_iam_policy" "satellite_region_policy" {
 }
 
 # Spark Common : Databricks and EMR
+resource "aws_iam_role_policy_attachment" "satellite_devops_policy_attachment" {
+  count      = var.satellite_region != "" ? 1 : 0
+  policy_arn = aws_iam_policy.satellite_devops_policy[0].arn
+  role       = aws_iam_role.devops_role.name
+}
+
+# Spark Common : Databricks and EMR
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   count      = var.satellite_region != "" ? 1 : 0
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
-  role       = "tecton-${var.deployment_name}-eks-worker-role"
+  role       = aws_iam_role.eks_node_role.name
 }
 
 # Ingest API - Common for Databricks and EMR.
@@ -663,7 +690,7 @@ resource "aws_iam_policy" "cross_account_satellite_region_policy" {
 resource "aws_iam_role_policy_attachment" "cross_account_satellite_region_policy_attachment" {
   count      = var.satellite_region != "" ? 1 : 0
   policy_arn = aws_iam_policy.cross_account_satellite_region_policy[0].arn
-  role       = "tecton-${var.deployment_name}-eks-worker-role"
+  role       = aws_iam_role.eks_node_role.name
 }
 
 # SPARK ROLE SSM POLICY ATTACHMENT: EMR
