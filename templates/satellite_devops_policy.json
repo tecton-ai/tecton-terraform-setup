@@ -90,7 +90,8 @@
             "Action": [
                 "iam:CreateRole",
                 "iam:CreatePolicy",
-                "iam:GetRole"
+                "iam:GetRole",
+                "iam:ListRolePolicies"
             ],
             "Resource": ["*"]
         }
