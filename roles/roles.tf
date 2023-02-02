@@ -412,7 +412,7 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
 resource "aws_iam_policy" "satellite_region_policy" {
   count = var.satellite_region != null ? 1 : 0
   name  = "tecton-satellite-region-policy"
-  policy = file("${path.module}/../templates/satellite_ca_policy.json", {
+  policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
