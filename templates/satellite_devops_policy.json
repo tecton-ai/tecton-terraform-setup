@@ -20,6 +20,14 @@
             "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}"]
         },
         {
+            "Sid": "S3BucketReplication",
+            "Effect": "Allow",
+            "Action":[
+                "s3:PutReplicationConfiguration"
+            ],
+            "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"]
+        },
+        {
             "Sid": "S3Object",
             "Effect": "Allow",
             "Action": [
