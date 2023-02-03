@@ -2,12 +2,25 @@
     "Version": "2012-10-17",
     "Statement": [
         {
+            "Sid": "AllowSupport",
             "Effect": "Allow",
             "Action": [
-                "*"
+                "support:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AmazonS3FullAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
             ],
             "Resource": [
-                "*"
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}/*"
             ]
         },
         {
