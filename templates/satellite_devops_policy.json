@@ -26,6 +26,7 @@
                 "s3:CreateBucket",
                 "s3:DeleteBucket",
                 "s3:DeleteBucketPolicy",
+                "s3:ListBucketVersions",
                 "s3:PutBucketPolicy",
                 "s3:PutEncryptionConfiguration",
                 "s3:PutBucketTagging",
