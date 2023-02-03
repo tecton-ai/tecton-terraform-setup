@@ -16,6 +16,34 @@
             ]
         },
         {
+            "Sid": "Eks",
+            "Effect": "Allow",
+            "Action": [
+                "eks:CreateCluster",
+                "eks:CreateNodegroup",
+                "eks:DeleteNodegroup",
+                "eks:DescribeNodegroup",
+                "eks:ListNodegroups",
+                "eks:DescribeCluster",
+                "eks:ListClusters",
+                "eks:AccessKubernetesApi",
+                "eks:ListUpdates",
+                "eks:ListFargateProfiles",
+                "eks:UpdateClusterVersion",
+                "eks:UpdateNodegroupConfig",
+                "eks:UpdateNodegroupVersion",
+                "eks:UpdateClusterConfig",
+                "eks:DescribeUpdate",
+                "eks:DeleteCluster"
+            ],
+            "Resource": [
+                "arn:aws:eks:${SATELLITE_REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:${SATELLITE_REGION}:${ACCOUNT_ID}:cluster/${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:${SATELLITE_REGION}:${ACCOUNT_ID}:nodegroup/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:${SATELLITE_REGION}:${ACCOUNT_ID}:nodegroup/${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
             "Sid": "ConfigureLoadBalancer",
             "Effect": "Allow",
             "Action": [
@@ -46,6 +74,7 @@
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/${DEPLOYMENT_NAME}*",
                 "arn:aws:autoscaling:${SATELLITE_REGION}:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:autoscaling:${SATELLITE_REGION}:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
             ]
