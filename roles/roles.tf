@@ -218,6 +218,14 @@ data "template_file" "satellite_devops_policy_json" {
   }
 }
 
+data "aws_iam_policy" "AmazonVPCFullAccess" {
+  arn = "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
+}
+
+data "aws_iam_policy" "AmazonDynamoDBFullAccess" {
+  arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role" "devops_role" {
   name               = "tecton-${var.deployment_name}-devops-role"
@@ -290,6 +298,19 @@ resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
   policy_arn = aws_iam_policy.devops_policy_2.arn
   role       = aws_iam_role.devops_role.name
 }
+
+resource "aws_iam_role_policy_attachment" "satellite_vpc" {
+  count = var.satellite_region != "" ? 1 : 0
+  policy_arn = data.aws_iam_policy.AmazonVPCFullAccess.arn
+  role       = aws_iam_role.devops_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "satellite_dynamodb" {
+  count = var.satellite_region != "" ? 1 : 0
+  policy_arn = data.aws_iam_policy.AmazonDynamoDBFullAccess.arn
+  role       = aws_iam_role.devops_role.name
+}
+
 
 resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
   count = var.enable_ingest_api ? 1 : 0
