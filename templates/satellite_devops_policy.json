@@ -94,6 +94,7 @@
                 "iam:DeletePolicy",
                 "iam:DeleteRole",
                 "iam:GetRole",
+                "iam:ListEntitiesForPolicy",
                 "iam:ListRolePolicies",
                 "iam:ListAttachedRolePolicies",
                 "iam:GetPolicy",
