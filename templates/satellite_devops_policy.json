@@ -69,7 +69,7 @@
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:listener/app/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
-                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/${DEPLOYMENT_NAME}*",
