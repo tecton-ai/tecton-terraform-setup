@@ -88,6 +88,7 @@
             "Sid": "AllowS3Replication",
             "Effect": "Allow",
             "Action": [
+                "iam:AttachRolePolicy",
                 "iam:CreateRole",
                 "iam:CreatePolicy",
                 "iam:DeletePolicy",
@@ -98,7 +99,8 @@
                 "iam:GetPolicy",
                 "iam:GetPolicyVersion",
                 "iam:ListInstanceProfilesForRole",
-                "iam:ListPolicyVersions"
+                "iam:ListPolicyVersions",
+                "sts:DecodeAuthorizationMessage"
             ],
             "Resource": ["*"]
         }
