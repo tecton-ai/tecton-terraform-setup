@@ -9,10 +9,7 @@
                 "s3-object-lambda:*"
             ],
             "Resource": [
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*",
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}",
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}/*"
+                "*"
             ]
         },
         {
