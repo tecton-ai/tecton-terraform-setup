@@ -113,7 +113,7 @@
             ]
         },
         {
-            "Sid": "AllowS3Replication",
+            "Sid": "AllowIAM",
             "Effect": "Allow",
             "Action": [
                 "iam:AttachRolePolicy",
