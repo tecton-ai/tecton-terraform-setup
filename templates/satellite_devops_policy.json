@@ -93,6 +93,7 @@
                 "iam:CreatePolicy",
                 "iam:DeletePolicy",
                 "iam:DeleteRole",
+                "iam:DetachRolePolicy",
                 "iam:GetRole",
                 "iam:ListEntitiesForPolicy",
                 "iam:ListRolePolicies",
