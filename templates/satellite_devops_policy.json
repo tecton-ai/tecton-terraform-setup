@@ -191,15 +191,27 @@
             "Resource": ["*"]
         },
         {
-            "Sid": "AllowEC2",
+            "Sid": "ListActionsForEC2Resources",
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateVp*",
-                "ec2:DeleteVp*",
-                "ec2:DescribeVp*",
-                "ec2:ModifyVp*"
+                "ec2:DescribeAccountAttributes",
+                "ec2:DescribeCapacityReservations",
+                "ec2:DescribeDhcpOptions",
+                "ec2:DescribeInstances",
+                "ec2:DescribeLaunchTemplates",
+                "ec2:DescribeNetworkAcls",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribePlacementGroups",
+                "ec2:DescribeRouteTables",
+                "ec2:DescribeSecurityGroups",
+                "ec2:DescribeSubnets",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeVolumeStatus",
+                "ec2:DescribeVpcAttribute",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DescribeVpcs"
             ],
-            "Resource": ["*"]
-        }
+            "Resource": "*"
+        },
     ]
 }
