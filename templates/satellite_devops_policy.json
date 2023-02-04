@@ -189,6 +189,12 @@
                 "sts:DecodeAuthorizationMessage"
             ],
             "Resource": ["*"]
+        },
+        {
+            "Sid": "AllowEC2",
+            "Effect": "Allow",
+            "Action": ["ec2:DescribeRouteTables"],
+            "Resource": ["*"]
         }
     ]
 }
