@@ -114,6 +114,59 @@
             ]
         },
         {
+            "Sid": "DynamoDB",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:CreateTable",
+                "dynamodb:DeleteTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:TagResource",
+                "dynamodb:UntagResource",
+                "dynamodb:UpdateTable",
+                "dynamodb:CreateBackup",
+                "dynamodb:DescribeBackup",
+                "dynamodb:DeleteBackup"
+            ],
+            "Resource": ["arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
+        },
+        {
+            "Sid": "ElasticSearch",
+            "Action": [
+                "es:CreateDomain",
+                "es:DescribeElasticsearchDomain",
+                "es:DescribeElasticsearchDomainConfig",
+                "es:DescribeDomainConfig",
+                "es:ListTags",
+                "es:DeleteElasticsearchDomain"
+            ],
+            "Effect": "Allow",
+            "Resource": ["arn:aws:es:${SATELLITE_REGION}:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"]
+        },
+        {
+            "Sid": "RdsAccess",
+            "Action": [
+                "rds:CreateDBSubnetGroup",
+                "rds:DeleteDBSubnetGroup",
+                "rds:AddTagsToResource",
+                "rds:DescribeDBSubnetGroups",
+                "rds:DescribeDBInstances",
+                "rds:ModifyDBInstance",
+                "rds:CreateDBInstance",
+                "rds:ListTagsForResource"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:og:default*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:pg:default*"
+            ]
+        },
+        {
             "Sid": "AllowIAM",
             "Effect": "Allow",
             "Action": [
