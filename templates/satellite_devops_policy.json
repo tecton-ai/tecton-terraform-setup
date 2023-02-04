@@ -5,7 +5,7 @@
             "Sid": "AllowSupport",
             "Effect": "Allow",
             "Action": [
-                "support:*"
+                "*"
             ],
             "Resource": "*"
         },
