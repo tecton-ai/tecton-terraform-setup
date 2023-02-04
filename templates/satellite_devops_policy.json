@@ -193,7 +193,12 @@
         {
             "Sid": "AllowEC2",
             "Effect": "Allow",
-            "Action": ["ec2:DescribeRouteTables"],
+            "Action": [
+                "ec2:CreateVp*",
+                "ec2:DeleteVp*",
+                "ec2:DescribeVp*",
+                "ec2:ModifyVp*"
+            ],
             "Resource": ["*"]
         }
     ]
