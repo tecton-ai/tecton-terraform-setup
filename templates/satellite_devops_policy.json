@@ -2,20 +2,22 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "AllowSupport",
-            "Effect": "Allow",
-            "Action": [
-                "*"
-            ],
-            "Resource": "*"
-        },
-        {
             "Sid": "AllowS3Replication",
             "Effect": "Allow",
             "Action": [
-                "S3:PutReplicationConfiguration"
+                "s3:PutReplicationConfiguration"
             ],
             "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"]
+        },
+        {
+            "Sid": "ManangeS3ReplicationRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/s3-bucket-replication-tecton-${DEPLOYMENT_NAME}"
+            ]
         },
         {
             "Sid": "S3Bucket",
