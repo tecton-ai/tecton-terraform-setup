@@ -212,6 +212,6 @@
                 "ec2:DescribeVpcs"
             ],
             "Resource": "*"
-        },
+        }
     ]
 }
