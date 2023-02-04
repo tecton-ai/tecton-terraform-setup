@@ -194,6 +194,7 @@
             "Sid": "ListActionsForEC2Resources",
             "Effect": "Allow",
             "Action": [
+                "ec2:Describe*",
                 "ec2:DescribeAccountAttributes",
                 "ec2:DescribeCapacityReservations",
                 "ec2:DescribeDhcpOptions",
