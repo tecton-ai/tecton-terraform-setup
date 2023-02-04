@@ -160,10 +160,10 @@
             ],
             "Effect": "Allow",
             "Resource": [
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:pg:default*"
+                "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:og:default*",
+                "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:pg:default*"
             ]
         },
         {
