@@ -2,14 +2,6 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "AllowEverything",
-            "Effect": "Allow",
-            "Action": [
-                "*"
-            ],
-            "Resource": ["*"]
-        },
-        {
             "Sid": "AllowS3Replication",
             "Effect": "Allow",
             "Action": [
