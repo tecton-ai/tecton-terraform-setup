@@ -209,7 +209,9 @@
                 "ec2:DescribeVolumeStatus",
                 "ec2:DescribeVpcAttribute",
                 "ec2:DescribeVpcEndpoints",
-                "ec2:DescribeVpcs"
+                "ec2:DescribeVpcs",
+                "ec2:CreateVpc",
+                "ec2:DeleteVpc"
             ],
             "Resource": "*"
         }
