@@ -8,6 +8,7 @@
                 "dynamodb:BatchWriteItem",
                 "dynamodb:ConditionCheckItem",
                 "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
                 "dynamodb:PutItem",
                 "dynamodb:Query"
             ],
