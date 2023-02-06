@@ -51,7 +51,7 @@
             "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}/*"]
         },
         {
-            "Sid": "Eks",
+            "Sid": "EksClusterCreation",
             "Effect": "Allow",
             "Action": [
                 "eks:CreateCluster",
@@ -107,7 +107,7 @@
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:listener/app/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
-                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
+                "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:elasticloadbalancing:${SATELLITE_REGION}:${ACCOUNT_ID}:targetgroup/${DEPLOYMENT_NAME}*",
@@ -169,51 +169,62 @@
             ]
         },
         {
-            "Sid": "AllowIAM",
+            "Sid": "DescribeActionForEC2Resources",
             "Effect": "Allow",
             "Action": [
-                "iam:AttachRolePolicy",
-                "iam:CreateRole",
-                "iam:CreatePolicy",
-                "iam:DeletePolicy",
-                "iam:DeleteRole",
-                "iam:DetachRolePolicy",
-                "iam:GetRole",
-                "iam:ListEntitiesForPolicy",
-                "iam:ListRolePolicies",
-                "iam:ListAttachedRolePolicies",
-                "iam:GetPolicy",
-                "iam:GetPolicyVersion",
-                "iam:ListInstanceProfilesForRole",
-                "iam:ListPolicyVersions",
-                "sts:DecodeAuthorizationMessage"
-            ],
-            "Resource": ["*"]
-        },
-        {
-            "Sid": "ListActionsForEC2Resources",
-            "Effect": "Allow",
-            "Action": [
-                "ec2:Describe*",
-                "ec2:DescribeCapacityReservations",
-                "ec2:DescribeDhcpOptions",
-                "ec2:DescribeInstances",
-                "ec2:DescribeLaunchTemplates",
-                "ec2:DescribeNetworkAcls",
-                "ec2:DescribeNetworkInterfaces",
-                "ec2:DescribePlacementGroups",
-                "ec2:DescribeRouteTables",
-                "ec2:DescribeSecurityGroups",
-                "ec2:DescribeSubnets",
-                "ec2:DescribeVolumes",
-                "ec2:DescribeVolumeStatus",
-                "ec2:DescribeVpcAttribute",
-                "ec2:DescribeVpcEndpoints",
-                "ec2:DescribeVpcs",
-                "ec2:CreateVpc",
-                "ec2:DeleteVpc"
+                "ec2:Describe*"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "CreateVPC",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AttachInternetGateway",
+                "ec2:AssociateRouteTable",
+                "ec2:CreateNatGateway",
+                "ec2:CreateRoute",
+				"ec2:CreateRouteTable",
+				"ec2:CreateSubnet",
+				"ec2:CreateVpc",
+                "ec2:DeleteRoute",
+                "ec2:DisassociateRouteTable",
+                "ec2:ModifyVpcAttribute"
+            ],
+            "Resource": [
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:subnet/*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:route-table/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                }
+            }
+        },
+        {
+            "Sid": "EksVpcEndpointModify",
+            "Effect": "Allow",
+            "Action":["ec2:ModifyVpcEndpoint"],
+            "Resource": ["arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc-endpoint/vpce*"]
+        },
+        {
+            "Sid": "ManageSecurityGroups",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AuthorizeSecurityGroupEgress",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupEgress",
+                "ec2:CreateSecurityGroup",
+				"ec2:DeleteSecurityGroup",
+                "ec2:RevokeSecurityGroupIngress"
+            ],
+            "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                }
+            }
         }
     ]
 }
