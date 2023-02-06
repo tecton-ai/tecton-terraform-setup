@@ -219,12 +219,7 @@
 				"ec2:DeleteSecurityGroup",
                 "ec2:RevokeSecurityGroupIngress"
             ],
-            "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*",
-            "Condition": {
-                "StringEquals": {
-                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
-                }
-            }
+            "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*"
         }
     ]
 }
