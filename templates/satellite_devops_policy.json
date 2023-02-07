@@ -195,12 +195,7 @@
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:subnet/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:route-table/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "aws:ResourceTag/tecton-owned": "true"
-                }
-            }
+            ]
         },
         {
             "Sid": "EksVpcEndpointModify",
