@@ -186,6 +186,7 @@
 				"ec2:CreateVpc",
                 "ec2:CreateTags",
                 "ec2:CreateNetworkAclEntry",
+                "ec2:DeleteInternetGateway",
                 "ec2:DeleteRoute",
                 "ec2:DisassociateRouteTable",
                 "ec2:DeleteRouteTable",
