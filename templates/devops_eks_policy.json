@@ -129,12 +129,7 @@
                 "arn:aws:ec2:*:*:launch-template/*",
                 "arn:aws:ec2:*:*:subnet/*",
                 "arn:aws:ec2:*:*:security-group/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "aws:ResourceTag/tecton-owned:": {"items":[{"value":"true"}]}}
-                }
-            }
+            ]
         },
         {
             "Sid": "CreateWithTaggedInstance",
