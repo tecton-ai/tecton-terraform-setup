@@ -92,12 +92,7 @@
             "Sid": "ConfigureLoadBalancer",
             "Effect": "Allow",
             "Action": [
-                "elasticloadbalancing:DescribeSSLPolicies",
-                "elasticloadbalancing:DescribeTargetGroups",
-                "elasticloadbalancing:DescribeTargetHealth",
-                "elasticloadbalancing:DescribeListeners",
-                "elasticloadbalancing:DescribeTargetGroupAttributes",
-                "elasticloadbalancing:DescribeAccountLimits",
+                "elasticloadbalancing:Describe*",
                 "elasticloadbalancing:DeregisterTargets",
                 "elasticloadbalancing:RegisterTargets",
                 "elasticloadbalancing:DeleteListener",
@@ -151,9 +146,7 @@
             "Sid": "ElasticSearch",
             "Action": [
                 "es:CreateDomain",
-                "es:DescribeElasticsearchDomain",
-                "es:DescribeElasticsearchDomainConfig",
-                "es:DescribeDomainConfig",
+                "es:Describe*",
                 "es:ListTags",
                 "es:DeleteElasticsearchDomain"
             ],
