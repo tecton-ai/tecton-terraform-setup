@@ -132,7 +132,7 @@
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:ResourceTag/tecton-owned:": "true"
+                    "${ACCOUNT_ID}:tecton-owned:": "true"
                 }
             }
         },
