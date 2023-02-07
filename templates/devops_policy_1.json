@@ -50,16 +50,6 @@
             ]
         },
         {
-            "Sid": "AllowCheckIAMRole",
-            "Effect": "Allow",
-            "Action": [
-                "iam:ListRoles"
-            ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/"
-            ]
-        },
-        {
             "Sid": "ManageInstanceProfilesForTectonRoles",
             "Effect": "Allow",
             "Action": [

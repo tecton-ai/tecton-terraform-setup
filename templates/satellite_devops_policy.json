@@ -207,6 +207,7 @@
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc*/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:elastic-ip/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:network-acl/acl*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:network-interface/eni*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:subnet/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:natgateway/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:route-table/*",
