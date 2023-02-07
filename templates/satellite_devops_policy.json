@@ -167,7 +167,7 @@
             "Sid": "DescribeActionForEC2Resources",
             "Effect": "Allow",
             "Action": [
-                "ec2:Describe*"
+                "*"
             ],
             "Resource": "*"
         },
