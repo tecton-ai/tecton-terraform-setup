@@ -132,7 +132,7 @@
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:ResourceTag/tecton-owned:": "true"
+                    "aws:ResourceTag/tecton-owned:": {"items":[{"value":"true"}]}}
                 }
             }
         },
