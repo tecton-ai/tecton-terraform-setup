@@ -120,6 +120,23 @@
             }
         },
         {
+            "Sid": "CreateWithOwnTemplate",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:RunInstances"
+            ],
+            "Resource": [
+                "arn:aws:ec2:*:*:launch-template/*",
+                "arn:aws:ec2:*:*:subnet/*",
+                "arn:aws:ec2:*:*:security-group/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-owned:${DEPLOYMENT_NAME}": "true"
+                }
+            }
+        },
+        {
             "Sid": "CreateWithTaggedInstance",
             "Effect": "Allow",
             "Action": [
