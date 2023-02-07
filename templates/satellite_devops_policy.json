@@ -213,7 +213,8 @@
             "Effect": "Allow",
             "Action":[
                 "ec2:CreateInternetGateway",
-                "ec2:DetachInternetGateway"
+                "ec2:DetachInternetGateway",
+                "ec2:CreateTags"
             ],
             "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:internet-gateway/*"
         },
