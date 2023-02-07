@@ -120,7 +120,7 @@
             }
         },
         {
-            "Sid": "CreateWithOwnTemplate",
+            "Sid": "CreateWithOwnedTemplate",
             "Effect": "Allow",
             "Action": [
                 "ec2:RunInstances"
@@ -132,7 +132,7 @@
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:ResourceTag/tecton-owned:${DEPLOYMENT_NAME}": "true"
+                    "aws:ResourceTag/tecton-owned:": "true"
                 }
             }
         },
