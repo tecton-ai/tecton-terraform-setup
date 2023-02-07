@@ -199,7 +199,8 @@
                 "ec2:DeleteVpc",
                 "ec2:DeleteVpcEndpointServiceConfigurations",
                 "ec2:AllocateAddress",
-                "ec2:DisassociateAddress"
+                "ec2:DisassociateAddress",
+                "ec2:ReleaseAddress"
             ],
             "Resource": [
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*",
