@@ -51,16 +51,6 @@
             "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}-${SATELLITE_REGION}/*"]
         },
         {
-            "Sid": "ManageElasticIp",
-            "Effect": "Allow",
-            "Action":[
-                "ec2:AllocateAddress",
-                "ec2:DisassociateAddress",
-                "ec2:CreateTags"
-            ],
-            "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:elastic-ip/*"
-        },
-        {
             "Sid": "EksClusterCreation",
             "Effect": "Allow",
             "Action": [
@@ -197,16 +187,21 @@
                 "ec2:DisassociateRouteTable",
                 "ec2:DeleteRouteTable",
                 "ec2:DeleteNatGateway",
+                "ec2:DeleteNetworkAclEntry",
                 "ec2:DeleteSubnet",
                 "ec2:ModifyVpcAttribute",
                 "ec2:ModifyVpcEndpoint",
                 "ec2:DeleteVpcEndpoints",
                 "ec2:DeleteVpc",
-                "ec2:DeleteVpcEndpointServiceConfigurations"
+                "ec2:DeleteVpcEndpointServiceConfigurations",
+                "ec2:AllocateAddress",
+                "ec2:DisassociateAddress"
             ],
             "Resource": [
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc*/*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:elastic-ip/*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:network-acl/acl*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:subnet/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:natgateway/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:route-table/*"
@@ -216,6 +211,7 @@
             "Sid": "InterneteGateway",
             "Effect": "Allow",
             "Action":[
+                "ec2:CreateInternetGateway",
                 "ec2:DetachInternetGateway"
             ],
             "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:internet-gateway/*",
@@ -232,7 +228,10 @@
 				"ec2:DeleteSecurityGroup",
                 "ec2:RevokeSecurityGroupIngress"
             ],
-            "Resource": "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*"
+            "Resource": [
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*"
+            ]
         }
     ]
 }
