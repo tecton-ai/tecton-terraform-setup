@@ -49,6 +49,18 @@
       ]
     },
     {
+      "Sid": "DiscoverOfflineLogDLQ",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ListQueues"
+      ],
+      "Resource": [
+        "arn:aws:sqs:${REGION}:${ACCOUNT_ID}:tecton-${DEPLOYMENT_NAME}*"
+      ]
+    },
+    {
       "Sid": "ListResourcesForDiscovery",
       "Effect": "Allow",
       "Action": [
