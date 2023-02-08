@@ -16,6 +16,19 @@
             "Resource": ["arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"]
         },
         {
+            "Sid": "DLQManagement",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:CreateQueue",
+                "sqs:TagQueue",
+                "sqs:ListQueues",
+                "sqs:GetQueueAttributes",
+                "sqs:DeleteQueue"
+            ],
+            "Resource": ["arn:aws:sqs:${REGION}:${ACCOUNT_ID}:tecton-${DEPLOYMENT_NAME}*"]
+        },
+        
+        {
             "Sid": "RolesAndPoliciesManagementForIngestAPI",
             "Effect": "Allow",
             "Action": [
