@@ -32,7 +32,7 @@
         "kinesis:DescribeStreamSummary"
       ],
       "Resource": [
-        "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+        "arn:aws:kinesis:${REGION}:${ACCOUNT_ID}:stream/tecton-${DEPLOYMENT_NAME}*"
       ]
     },
     {
@@ -42,7 +42,7 @@
         "sqs:SendMessage"
       ],
       "Resource": [
-        "arn:aws:sqs:${REGION}:${ACCOUNT_ID}:id:stream/tecton-${DEPLOYMENT_NAME}*"
+        "arn:aws:sqs:${REGION}:${ACCOUNT_ID}:tecton-${DEPLOYMENT_NAME}*"
       ]
     }
   ]
