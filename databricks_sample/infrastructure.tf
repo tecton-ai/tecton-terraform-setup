@@ -63,9 +63,9 @@ variable "enable_eks_ingress_vpc_endpoint" {
   type        = bool
 }
 
-variable "satellite_region" {
+variable "satellite_regions" {
   type        = string
-  description = "Satellite region for Tecton deployment."
+  description = "The satellite regions for Tecton deployment."
   default     = ""
 }
 
