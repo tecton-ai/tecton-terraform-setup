@@ -24,6 +24,12 @@ variable "eks_subnet_cidr_prefix" {
   description = "The CIDR block for the private and public subnets of the EKS module."
 }
 
+variable "eks_satellite_subnet_cidr_prefix" {
+  type        = string
+  default     = "10.64.0.0/16"
+  description = "The CIDR block for the private and public subnets of the EKS satellite module."
+}
+
 variable "spark_role_name" {
   type = string
 }
@@ -94,6 +100,10 @@ resource "random_id" "external_id" {
   byte_length = 16
 }
 
+locals {
+  satellite_region = split(",", var.satellite_regions)[0]
+}
+
 module "roles" {
   providers = {
     aws                    = aws
@@ -104,7 +114,7 @@ module "roles" {
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
   account_id                      = var.account_id
   region                          = var.region
-  satellite_regions               = var.satellite_regions
+  satellite_region                = local.satellite_region
   spark_role_name                 = var.spark_role_name
   databricks_account_id           = var.external_databricks_account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id
@@ -119,9 +129,12 @@ module "subnets" {
   source                 = "../eks/vpc_subnets"
   deployment_name        = var.deployment_name
   region                 = var.region
+  satellite_region       = local.satellite_region
   eks_subnet_cidr_prefix = var.eks_subnet_cidr_prefix
+  eks_satellite_subnet_cidr_prefix = var.eks_satellite_subnet_cidr_prefix
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
+  satellite_availability_zone_count = 3
 }
 
 module "security_groups" {
@@ -133,6 +146,7 @@ module "security_groups" {
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
   vpc_id                          = module.subnets.vpc_id
   allowed_CIDR_blocks             = var.allowed_CIDR_blocks
+  satellite_region                = local.satellite_region
   tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
 
   # Allow Tecton NLB to be public.

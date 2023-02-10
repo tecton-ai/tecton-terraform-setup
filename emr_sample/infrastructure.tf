@@ -47,6 +47,12 @@ variable "eks_subnet_cidr_prefix" {
   description = "The CIDR block for the private and public subnets of the EKS module."
 }
 
+variable "eks_satellite_subnet_cidr_prefix" {
+  type        = string
+  default     = "10.64.0.0/16"
+  description = "The CIDR block for the private and public subnets of the EKS satellite module."
+}
+
 variable "emr_subnet_cidr_prefix" {
   type        = string
   default     = "10.38.0.0/16"
@@ -95,6 +101,10 @@ variable "fargate_enabled" {
   type        = bool
 }
 
+locals {
+  satellite_region = split(",", var.satellite_regions)[0]
+}
+
 module "eks_subnets" {
   providers = {
     aws = aws
@@ -102,9 +112,12 @@ module "eks_subnets" {
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
   region          = var.region
+  satellite_region = local.satellite_region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
+  satellite_availability_zone_count = 3
   eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
+  eks_satellite_subnet_cidr_prefix = var.eks_satellite_subnet_cidr_prefix
 }
 
 module "eks_security_groups" {
@@ -169,7 +182,7 @@ module "roles" {
   account_id                      = var.account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id
   region                          = var.region
-  satellite_regions               = var.satellite_regions
+  satellite_region                = local.satellite_region
   create_emr_roles                = true
   elasticache_enabled             = var.elasticache_enabled
   external_id                     = random_id.external_id.id
