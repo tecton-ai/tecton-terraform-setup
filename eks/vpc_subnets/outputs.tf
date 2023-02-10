@@ -3,7 +3,6 @@ output "vpc_id" {
 }
 
 output "satellite_vpc_id" {
-  count = var.satellite_region == "" ? 0 : 1
   value = local.satellite_vpc_id
 }
 
