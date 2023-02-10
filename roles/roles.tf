@@ -2,7 +2,7 @@ locals {
   tags                                          = { "tecton-accessible:${var.deployment_name}" : "true" }
   satellite_region                              = split(",", var.satellite_regions)[0]
   fargate_kinesis_delivery_stream_arn           = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  fargate_satellite_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  fargate_satellite_kinesis_delivery_stream_arn = "arn:aws:firehose:${local.satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
 }
 
 # EKS [Common : Databricks and EMR]
@@ -232,7 +232,7 @@ data "template_file" "emr_access_policy_json" {
 
 # EKS [Common : Databricks and EMR]
 data "template_file" "satellite_ca_policy_json" {
-  count    = local.satellite_regions != "" ? 1 : 0
+  count    = var.satellite_regions != "" ? 1 : 0
   template = file("${path.module}/../templates/satellite_ca_policy.json")
   vars = {
     ACCOUNT_ID       = var.account_id
@@ -243,7 +243,7 @@ data "template_file" "satellite_ca_policy_json" {
 }
 
 data "template_file" "satellite_devops_policy_json" {
-  count    = local.satellite_regions != "" ? 1 : 0
+  count    = var.satellite_regions != "" ? 1 : 0
   template = file("${path.module}/../templates/satellite_devops_policy.json")
   vars = {
     ACCOUNT_ID             = var.account_id
@@ -931,7 +931,7 @@ resource "aws_iam_policy" "fargate_logging" {
 }
 
 # FARGATE SATELLITE [Common : Databricks and EMR]
-resource "aws_iam_policy" "fargate_satelite_logging" {
+resource "aws_iam_policy" "fargate_satellite_logging" {
   count  = var.fargate_enabled && var.satellite_regions != "" ? 1 : 0
   name   = "tecton-${var.deployment_name}-fargate-satellite-logging-to-kinesis-firehose"
   policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[0].json
