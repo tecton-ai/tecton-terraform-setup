@@ -47,13 +47,13 @@ output "eks_fargate_node_policy_name" {
 }
 
 output "fargate_satellite_region_kinesis_firehose_stream_role_name" {
-  value = var.fargate_enabled && var.satellite_regions != "" ? aws_iam_role.kinesis_firehose_satellite_stream[0].name : ""
+  value = var.fargate_enabled && var.satellite_region != "" ? aws_iam_role.kinesis_firehose_satellite_stream[0].name : ""
 }
 
 output "fargate_satellite_region_eks_fargate_pod_execution_role_name" {
-  value = var.fargate_enabled && var.satellite_regions != "" ? aws_iam_role.eks_fargate_satellite_pod_execution[0].name : ""
+  value = var.fargate_enabled && var.satellite_region != "" ? aws_iam_role.eks_fargate_satellite_pod_execution[0].name : ""
 }
 
 output "eks_fargate_satellite_region_node_policy_name" {
-  value = var.fargate_enabled && var.satellite_regions != "" ? aws_iam_policy.eks_fargate_satellite_node_policy[0].name : ""
+  value = var.fargate_enabled && var.satellite_region != "" ? aws_iam_policy.eks_fargate_satellite_node_policy[0].name : ""
 }
