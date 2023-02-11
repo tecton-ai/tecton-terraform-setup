@@ -149,6 +149,26 @@ module "eks_security_groups" {
   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
 }
 
+module "eks_satellite_security_groups" {
+  count = local.satellite_region == "" ? 0 : 1
+  providers = {
+    aws = aws
+  }
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  vpc_id                          = module.eks_satellite_subnets[0].vpc_id
+  allowed_CIDR_blocks             = var.allowed_CIDR_blocks
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
+
+  # Allow Tecton NLB to be public.
+  eks_ingress_load_balancer_public = true
+  nat_gateway_ips                  = module.eks_satellite_subnets[0].nat_gateway_ips
+  # Alternatively configure Tecton NLB to be private.
+  # eks_ingress_load_balancer_public = false
+  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
+}
+
 # EMR Subnets and Security Groups; Uses same VPC as EKS.
 # Make sure that the EKS and EMR CIDR blocks do not conflict.
 module "emr_subnets" {

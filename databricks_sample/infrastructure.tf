@@ -166,3 +166,23 @@ module "security_groups" {
   # eks_ingress_load_balancer_public = false
   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
 }
+
+module "security_groups" {
+  providers = {
+    aws = aws
+  }
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  vpc_id                          = module.subnets.vpc_id
+  allowed_CIDR_blocks             = var.allowed_CIDR_blocks
+  satellite_region                = local.satellite_region
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
+
+  # Allow Tecton NLB to be public.
+  eks_ingress_load_balancer_public = true
+  nat_gateway_ips                  = module.subnets.nat_gateway_ips
+  # Alternatively configure Tecton NLB to be private.
+  # eks_ingress_load_balancer_public = false
+  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
+}
