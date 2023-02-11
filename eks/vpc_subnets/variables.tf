@@ -20,6 +20,7 @@ variable "region" {
 variable "satellite_region" {
   type        = string
   description = "The satellite region for Tecton to use EKS in."
+  default     = ""
 }
 
 variable "eks_vpc_id" {
