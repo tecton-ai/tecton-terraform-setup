@@ -105,7 +105,7 @@ data "template_file" "devops_fargate_role_json" {
 
 # Fargate [Common : Databricks and EMR for satellite region]
 data "template_file" "devops_fargate_satellite_role_json" {
-  count    = var.fargate_enabled ? 1 : 0
+  count    = var.fargate_enabled && var.satellite_region != "" ? 1 : 0
   template = file("${path.module}/../templates/devops_fargate_satellite.json")
   vars = {
     ACCOUNT_ID         = var.account_id
