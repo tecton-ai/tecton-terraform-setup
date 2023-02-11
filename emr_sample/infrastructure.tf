@@ -117,7 +117,6 @@ locals {
 module "eks_subnets" {
   providers = {
     aws = aws
-    region = var.region
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
@@ -130,8 +129,7 @@ module "eks_subnets" {
 module "eks_satellite_subnets" {
   count = local.satellite_region == "" ? 0 : 1
   providers = {
-    aws = aws
-    region = local.satellite_region
+    aws = aws.satellite-aws
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
@@ -144,7 +142,6 @@ module "eks_satellite_subnets" {
 module "eks_security_groups" {
   providers = {
     aws = aws
-    region = var.region
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name
@@ -164,8 +161,7 @@ module "eks_security_groups" {
 module "eks_satellite_security_groups" {
   count = local.satellite_region == "" ? 0 : 1
   providers = {
-    aws = aws
-    region = local.satellite_region
+    aws = aws.satellite-aws
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name
@@ -217,7 +213,6 @@ module "roles" {
     # Specifying it is an artifact of the module interfaces, and does not actually create
     # any databricks resources when using `emr_sample`.
     aws.databricks-account = aws
-    region = var.region
   }
   count                           = (var.apply_layer > 1) ? 1 : 0
   source                          = "../roles"
