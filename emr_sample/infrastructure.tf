@@ -8,6 +8,15 @@ terraform {
 }
 
 provider "aws" {
+  region = var.region
+  assume_role {
+    role_arn = var.tecton_dataplane_account_role_arn
+  }
+}
+
+provider "satellite-aws" {
+  count = local.satellite_region == "" ? 0 : 1
+  region = var.satellite_region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
