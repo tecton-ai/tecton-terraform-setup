@@ -1,8 +1,7 @@
 locals {
   tags                                          = { "tecton-accessible:${var.deployment_name}" : "true" }
-  satellite_region                              = split(",", var.satellite_regions)[0]
   fargate_kinesis_delivery_stream_arn           = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  fargate_satellite_kinesis_delivery_stream_arn = "arn:aws:firehose:${local.satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  fargate_satellite_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
 }
 
 # EKS [Common : Databricks and EMR]
@@ -70,7 +69,7 @@ data "template_file" "eks_fargate_satellite_node" {
     ACCOUNT_ID          = var.account_id
     ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
     DEPLOYMENT_NAME     = var.deployment_name
-    REGION              = local.satellite_region
+    REGION              = var.satellite_region
   }
 }
 
@@ -87,7 +86,7 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
 resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
   count = var.fargate_enabled && var.satellite_regions != "" ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-${local.satellite_region}-eks-fargate-node-policy"
+  name   = "tecton-${var.deployment_name}-${var.satellite_region}-eks-fargate-node-policy"
   policy = data.template_file.eks_fargate_satellite_node[0].rendered
   tags   = local.tags
 }
@@ -112,7 +111,7 @@ data "template_file" "devops_fargate_satellite_role_json" {
     ACCOUNT_ID         = var.account_id
     DEPLOYMENT_NAME    = var.deployment_name
     REGION             = var.region
-    SATELLITE_REGION   = local.satellite_region
+    SATELLITE_REGION   = var.satellite_region
     FARGATE_POLICY_ARN = aws_iam_policy.eks_fargate_node_policy[0].arn
     SATELLITE_FARGATE_POLICY_ARN = aws_iam_policy.eks_fargate_satellite_node_policy[0].arn
   }
@@ -238,7 +237,7 @@ data "template_file" "satellite_ca_policy_json" {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
-    SATELLITE_REGION = local.satellite_region
+    SATELLITE_REGION = var.satellite_region
   }
 }
 
@@ -250,7 +249,7 @@ data "template_file" "satellite_devops_policy_json" {
     DEPLOYMENT_NAME        = var.deployment_name
     DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
     REGION                 = var.region
-    SATELLITE_REGION       = local.satellite_region
+    SATELLITE_REGION       = var.satellite_region
   }
 }
 
@@ -818,7 +817,7 @@ resource "aws_iam_role" "kinesis_firehose_stream" {
 # Resources to enable logs output to S3 in satellite region
 resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
   count              = var.fargate_enabled && var.satellite_regions != "" ? 1 : 0
-  name               = "tecton-${var.deployment_name}-${local.satellite_region}-fargate-kinesis-firehose"
+  name               = "tecton-${var.deployment_name}-${var.satellite_region}-fargate-kinesis-firehose"
   assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
 }
 
@@ -847,7 +846,7 @@ resource "aws_iam_policy" "fargate_logging_cross_account" {
 
 resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
   count  = var.fargate_enabled && var.satellite_regions != "" ? 1 : 0
-  name   = "tecton-${var.deployment_name}-${local.satellite_region}-fargate-cross-account-write"
+  name   = "tecton-${var.deployment_name}-${var.satellite_region}-fargate-cross-account-write"
   policy = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
 }
 
@@ -889,7 +888,7 @@ resource "aws_iam_role" "eks_fargate_pod_execution" {
 # FARGATE SATELLITE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_fargate_satellite_pod_execution" {
   count              = var.fargate_enabled && var.satellite_regions != "" ? 1 : 0
-  name               = "tecton-${var.deployment_name}-${local.satellite_region}-eks-fargate-pod-execution"
+  name               = "tecton-${var.deployment_name}-${var.satellite_region}-eks-fargate-pod-execution"
   assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
 }
 

@@ -10,9 +10,9 @@ variable "region" {
   type = string
 }
 
-variable "satellite_regions" {
+variable "satellite_region" {
   type        = string
-  description = "The satellite regions for Tecton deployment."
+  description = "The satellite region for Tecton deployment."
   default     = ""
 }
 
