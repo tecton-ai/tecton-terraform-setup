@@ -14,14 +14,6 @@ provider "aws" {
   }
 }
 
-provider "satellite-aws" {
-  count = var.satellite_regions == "" ? 0 : 1
-  region = local.satellite_region
-  assume_role {
-    role_arn = var.tecton_dataplane_account_role_arn
-  }
-}
-
 resource "random_id" "external_id" {
   byte_length = 16
 }
