@@ -76,7 +76,6 @@ variable "satellite_regions" {
 }
 
 provider "aws" {
-  region = var.region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
@@ -125,6 +124,7 @@ module "roles" {
 module "subnets" {
   providers = {
     aws = aws
+    region = var.region
   }
   source                 = "../eks/vpc_subnets"
   deployment_name        = var.deployment_name
@@ -151,6 +151,7 @@ module "satellite_subnets" {
 module "security_groups" {
   providers = {
     aws = aws
+    region = var.region
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name

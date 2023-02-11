@@ -8,7 +8,6 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
@@ -109,6 +108,7 @@ locals {
 module "eks_subnets" {
   providers = {
     aws = aws
+    region = var.region
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
@@ -135,6 +135,7 @@ module "eks_satellite_subnets" {
 module "eks_security_groups" {
   providers = {
     aws = aws
+    region = var.region
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name
@@ -151,25 +152,26 @@ module "eks_security_groups" {
   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
 }
 
-# module "eks_satellite_security_groups" {
-#   count = local.satellite_region == "" ? 0 : 1
-#   providers = {
-#     aws = aws
-#   }
-#   source                          = "../eks/security_groups"
-#   deployment_name                 = var.deployment_name
-#   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
-#   vpc_id                          = module.eks_satellite_subnets[0].vpc_id
-#   allowed_CIDR_blocks             = var.allowed_CIDR_blocks
-#   tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
+module "eks_satellite_security_groups" {
+  count = local.satellite_region == "" ? 0 : 1
+  providers = {
+    aws = aws
+    region = local.satellite_region
+  }
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  vpc_id                          = module.eks_satellite_subnets[0].vpc_id
+  allowed_CIDR_blocks             = var.allowed_CIDR_blocks
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
 
-#   # Allow Tecton NLB to be public.
-#   eks_ingress_load_balancer_public = true
-#   nat_gateway_ips                  = module.eks_satellite_subnets[0].nat_gateway_ips
-#   # Alternatively configure Tecton NLB to be private.
-#   # eks_ingress_load_balancer_public = false
-#   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
-# }
+  # Allow Tecton NLB to be public.
+  eks_ingress_load_balancer_public = true
+  nat_gateway_ips                  = module.eks_satellite_subnets[0].nat_gateway_ips
+  # Alternatively configure Tecton NLB to be private.
+  # eks_ingress_load_balancer_public = false
+  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix, var.emr_subnet_cidr_prefix]
+}
 
 # EMR Subnets and Security Groups; Uses same VPC as EKS.
 # Make sure that the EKS and EMR CIDR blocks do not conflict.
@@ -206,6 +208,7 @@ module "roles" {
     # Specifying it is an artifact of the module interfaces, and does not actually create
     # any databricks resources when using `emr_sample`.
     aws.databricks-account = aws
+    region = var.region
   }
   count                           = (var.apply_layer > 1) ? 1 : 0
   source                          = "../roles"
