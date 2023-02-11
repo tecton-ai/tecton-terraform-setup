@@ -75,12 +75,6 @@ variable "satellite_regions" {
   default     = ""
 }
 
-provider "aws" {
-  assume_role {
-    role_arn = var.tecton_dataplane_account_role_arn
-  }
-}
-
 variable "fargate_enabled" {
   default     = false
   description = "Enable fargate on cluster."
@@ -88,10 +82,25 @@ variable "fargate_enabled" {
 }
 
 provider "aws" {
+  region = var.region
+  assume_role {
+    role_arn = var.tecton_dataplane_account_role_arn
+  }
+}
+
+provider "aws" {
   alias  = "databricks-account"
   region = var.region
   assume_role {
     role_arn = var.external_databricks_account_role_arn
+  }
+}
+
+provider "aws" {
+  alias  = "satellite-aws"
+  region = local.satellite_region == "" ? var.region : local.satellite_region
+  assume_role {
+    role_arn = var.tecton_dataplane_account_role_arn
   }
 }
 
@@ -124,7 +133,6 @@ module "roles" {
 module "subnets" {
   providers = {
     aws = aws
-    region = var.region
   }
   source                 = "../eks/vpc_subnets"
   deployment_name        = var.deployment_name
@@ -137,8 +145,7 @@ module "subnets" {
 module "satellite_subnets" {
   count = local.satellite_region == "" ? 0 : 1
   providers = {
-    aws = aws
-    region = local.satellite_region
+    aws = aws.satellite_aws
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
@@ -171,8 +178,7 @@ module "security_groups" {
 
 module "satellite_security_groups" {
   providers = {
-    aws = satellite-aws
-    region = local.satellite_region
+    aws = aws.satellite-aws
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name
