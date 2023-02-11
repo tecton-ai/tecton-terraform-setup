@@ -112,12 +112,22 @@ module "eks_subnets" {
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
   region          = var.region
-  satellite_region = local.satellite_region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
   availability_zone_count = 3
-  satellite_availability_zone_count = 3
   eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
-  eks_satellite_subnet_cidr_prefix = var.eks_satellite_subnet_cidr_prefix
+}
+
+module "eks_satellite_subnets" {
+  count = local.satellite_region == "" ? 0 : 1
+  providers = {
+    aws = aws
+  }
+  source          = "../eks/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = local.satellite_region
+  # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+  availability_zone_count = 3
+  eks_subnet_cidr_prefix  = var.eks_satellite_subnet_cidr_prefix
 }
 
 module "eks_security_groups" {
