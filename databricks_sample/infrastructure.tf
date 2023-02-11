@@ -138,6 +138,7 @@ module "satellite_subnets" {
   count = local.satellite_region == "" ? 0 : 1
   providers = {
     aws = aws
+    region = local.satellite_region
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
@@ -167,9 +168,10 @@ module "security_groups" {
   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
 }
 
-module "security_groups" {
+module "satellite_security_groups" {
   providers = {
-    aws = aws
+    aws = satellite-aws
+    region = local.satellite_region
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name

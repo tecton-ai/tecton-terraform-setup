@@ -15,11 +15,11 @@ output "satellite_vpc_id" {
 }
 
 output "satellite_eks_subnet_ids" {
-  value = var.satellite_regions == "" ? "" : module.eks_satellite_subnets[0].eks_subnet_ids
+  value = var.satellite_regions == "" ? [""] : module.eks_satellite_subnets[0].eks_subnet_ids
 }
 
 output "satellite_public_subnet_ids" {
-  value = var.satellite_regions == "" ? "" : module.eks_satellite_subnets[0].public_subnet_ids
+  value = var.satellite_regions == "" ? [""] : module.eks_satellite_subnets[0].public_subnet_ids
 }
 
 output "security_group_ids" {
