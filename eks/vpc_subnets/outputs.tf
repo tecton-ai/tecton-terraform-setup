@@ -2,10 +2,6 @@ output "vpc_id" {
   value = local.vpc_id
 }
 
-output "satellite_vpc_id" {
-  value = local.satellite_vpc_id
-}
-
 output "az_name_to_nat_gateway_id" {
   value = zipmap(slice(data.aws_availability_zones.available.names, 0, var.availability_zone_count), aws_nat_gateway.nat_gateway[*].id)
 }
