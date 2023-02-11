@@ -26,6 +26,10 @@ output "public_subnet_ids" {
   value = module.eks_subnets.public_subnet_ids
 }
 
+output "satellite_vpc_id" {
+  value = module.eks_satellite_subnets[0].vpc_id
+}
+
 output "security_group_ids" {
   value = [module.eks_security_groups.eks_security_group_id, module.eks_security_groups.eks_worker_security_group_id, module.eks_security_groups.rds_security_group_id]
 }
