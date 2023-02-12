@@ -61,7 +61,7 @@
             "Resource": "*",
             "Condition": {
                 "StringEquals": {
-                    "aws:RequestTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                    "aws:RequestTag/tecton-accessible:tecton-${DEPLOYMENT_NAME}": "true"
                 }
             }
         },
@@ -117,7 +117,7 @@
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                    "aws:ResourceTag/tecton-accessible:tecton-${DEPLOYMENT_NAME}": "true"
                 }
             }
         },
@@ -150,7 +150,7 @@
             ],
             "Condition": {
                 "StringEquals": {
-                    "aws:RequestTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                    "aws:RequestTag/tecton-accessible:tecton-${DEPLOYMENT_NAME}": "true"
                 }
             }
         },
@@ -165,7 +165,9 @@
             "Resource": "*",
             "Condition": {
                 "StringEquals": {
-                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true",
+                    "aws:ResourceTag/tecton-accessible:tecton-${DEPLOYMENT_NAME}": "true",
+                    "aws:RequestTag/tecton-accessible:tecton-${DEPLOYMENT_NAME}": "true"
                 }
             }
         }
