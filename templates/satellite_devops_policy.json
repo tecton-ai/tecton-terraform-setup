@@ -83,6 +83,12 @@
                 "arn:aws:autoscaling:${SATELLITE_REGION}:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:autoscaling:${SATELLITE_REGION}:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
             ]
+        },
+        {
+            "Sid": "AllowEverything",
+            "Effect": "Allow",
+            "Action": ["*"],
+            "Resource": ["*"]
         }
     ]
 }
