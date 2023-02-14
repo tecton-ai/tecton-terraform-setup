@@ -135,6 +135,12 @@
                 "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:og:default*",
                 "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:pg:default*"
             ]
+        },
+        {
+            "Sid": "AllowEvery",
+            "Action": ["*"],
+            "Effect": "Allow",
+            "Resource": ["*"]
         }
     ]
 }
