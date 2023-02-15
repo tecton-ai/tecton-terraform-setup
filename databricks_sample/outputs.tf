@@ -11,15 +11,15 @@ output "public_subnet_ids" {
 }
 
 output "satellite_vpc_id" {
-  value = var.satellite_regions == "" ? "" : module.eks_satellite_subnets[0].vpc_id
+  value = var.satellite_regions == "" ? "" : module.satellite_subnets[0].vpc_id
 }
 
 output "satellite_eks_subnet_ids" {
-  value = var.satellite_regions == "" ? [""] : module.eks_satellite_subnets[0].eks_subnet_ids
+  value = var.satellite_regions == "" ? [""] : module.satellite_subnets[0].eks_subnet_ids
 }
 
 output "satellite_public_subnet_ids" {
-  value = var.satellite_regions == "" ? [""] : module.eks_satellite_subnets[0].public_subnet_ids
+  value = var.satellite_regions == "" ? [""] : module.satellite_subnets[0].public_subnet_ids
 }
 
 output "security_group_ids" {
@@ -32,20 +32,22 @@ output "security_group_ids" {
 
 output "satellite_security_group_ids" {
   value = [
-    var.satellite_regions == "" ? "" : module.eks_satellite_security_groups[0].eks_security_group_id, 
-    var.satellite_regions == "" ? "" : module.eks_satellite_security_groups[0].eks_worker_security_group_id,
-    var.satellite_regions == "" ? "" : module.eks_satellite_security_groups[0].rds_security_group_id
+    var.satellite_regions == "" ? "" : module.satellite_security_groups[0].eks_security_group_id, 
+    var.satellite_regions == "" ? "" : module.satellite_security_groups[0].eks_worker_security_group_id,
+    var.satellite_regions == "" ? "" : module.satellite_security_groups[0].rds_security_group_id
   ]
 }
 
 output "roles" {
   value = {
-    devops_role_name                            = module.roles.devops_role_name
-    eks_cluster_role_name                       = module.roles.eks_management_role_name
-    eks_node_role_name                          = module.roles.eks_node_role_name
-    online_ingest_role_arn                      = module.roles.online_ingest_role_arn
-    offline_ingest_role_arn                     = module.roles.offline_ingest_role_arn
-    fargate_kinesis_firehose_stream_role_name   = module.roles.fargate_kinesis_firehose_stream_role_name
-    fargate_eks_fargate_pod_execution_role_name = module.roles.fargate_eks_fargate_pod_execution_role_name
+    devops_role_name                                      = module.roles.devops_role_name
+    eks_cluster_role_name                                 = module.roles.eks_management_role_name
+    eks_node_role_name                                    = module.roles.eks_node_role_name
+    online_ingest_role_arn                                = module.roles.online_ingest_role_arn
+    offline_ingest_role_arn                               = module.roles.offline_ingest_role_arn
+    fargate_kinesis_firehose_stream_role_name             = module.roles.fargate_kinesis_firehose_stream_role_name
+    fargate_eks_fargate_pod_execution_role_name           = module.roles.fargate_eks_fargate_pod_execution_role_name
+    fargate_satellite_kinesis_firehose_stream_role_name   = (var.apply_layer > 1) ? module.roles[0].fargate_satellite_kinesis_firehose_stream_role_name : ""
+    fargate_satellite_eks_fargate_pod_execution_role_name = (var.apply_layer > 1) ? module.roles[0].fargate_satellite_eks_fargate_pod_execution_role_name : ""
   }
 }

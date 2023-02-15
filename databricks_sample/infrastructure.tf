@@ -89,18 +89,18 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias  = "databricks-account"
-  region = var.region
-  assume_role {
-    role_arn = var.external_databricks_account_role_arn
-  }
-}
-
-provider "aws" {
   alias  = "satellite-aws"
   region = local.satellite_region == "" ? var.region : local.satellite_region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
+  }
+}
+
+provider "aws" {
+  alias  = "databricks-account"
+  region = var.region
+  assume_role {
+    role_arn = var.external_databricks_account_role_arn
   }
 }
 
