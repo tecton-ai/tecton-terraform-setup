@@ -241,6 +241,7 @@ data "template_file" "satellite_ca_policy_json" {
   }
 }
 
+# DEVOPS [Common : Databricks and EMR]
 data "template_file" "satellite_devops_policy_json" {
   count    = var.satellite_region != "" ? 1 : 0
   template = file("${path.module}/../templates/satellite_devops_policy.json")
@@ -282,6 +283,7 @@ resource "aws_iam_policy" "satellite_devops_policy" {
   tags   = local.tags
 }
 
+# DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_ingest_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
@@ -326,7 +328,7 @@ resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
   role       = aws_iam_role.devops_role.name
 }
 
-
+# DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 

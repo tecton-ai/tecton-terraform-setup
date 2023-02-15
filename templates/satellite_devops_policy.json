@@ -89,16 +89,7 @@
             "Sid": "DynamoDB",
             "Effect": "Allow",
             "Action": [
-                "dynamodb:BatchGetItem",
-                "dynamodb:ConditionCheckItem",
-                "dynamodb:CreateTable",
-                "dynamodb:DeleteTable",
-                "dynamodb:DescribeTable",
-                "dynamodb:GetItem",
-                "dynamodb:Query",
-                "dynamodb:TagResource",
                 "dynamodb:UntagResource",
-                "dynamodb:UpdateTable",
                 "dynamodb:CreateBackup",
                 "dynamodb:DescribeBackup",
                 "dynamodb:DeleteBackup"

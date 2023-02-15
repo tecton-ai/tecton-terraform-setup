@@ -33,7 +33,6 @@ resource "aws_internet_gateway" "internet_gateway" {
   }
 }
 
-
 resource "aws_route_table" "public_subnet_route_table" {
   vpc_id = local.vpc_id
 
@@ -46,7 +45,6 @@ resource "aws_route_table" "public_subnet_route_table" {
     gateway_id = aws_internet_gateway.internet_gateway.id
   }
 }
-
 
 resource "aws_route_table_association" "public_subnet_route_table_association" {
   count          = var.availability_zone_count
