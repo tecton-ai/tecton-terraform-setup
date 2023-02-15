@@ -137,6 +137,23 @@
             ]
         },
         {
+            "Sid": "ManageSecurityGroups",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AuthorizeSecurityGroupEgress",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupEgress",
+                "ec2:CreateSecurityGroup",
+                "ec2:CreateTags",
+                "ec2:DeleteSecurityGroup",
+                "ec2:RevokeSecurityGroupIngress"
+            ],
+            "Resource": [
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*",
+                "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*"
+            ]
+        },
+        {
             "Sid": "EC2AllowDelete",
             "Effect": "Allow",
             "Action": [
