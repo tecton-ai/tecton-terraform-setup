@@ -154,14 +154,10 @@
             ]
         },
         {
-            "Sid": "EC2AllowDelete",
+            "Sid": "AllowTearDown",
             "Effect": "Allow",
             "Action": [
-                "ec2:DeleteLaunchTemplate",
-                "ec2:DeleteSecurityGroup",
-                "ec2:RevokeSecurityGroupEgress",
-                "ec2:RevokeSecurityGroupIngress",
-                "elasticloadbalancing:Describe*"
+                "*"
             ],
             "Resource": "*"
         }
