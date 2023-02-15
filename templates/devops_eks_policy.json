@@ -56,8 +56,7 @@
             "Sid": "EC2LaunchTemplatesManage",
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateLaunchTemplate",
-                "ec2:DeleteLaunchTemplate"
+                "ec2:CreateLaunchTemplate"
             ],
             "Resource": "*",
             "Condition": {

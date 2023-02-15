@@ -135,6 +135,14 @@
                 "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:og:default*",
                 "arn:aws:rds:${SATELLITE_REGION}:${ACCOUNT_ID}:pg:default*"
             ]
+        },
+        {
+            "Sid": "EC2LaunchTemplatesManage",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DeleteLaunchTemplate"
+            ],
+            "Resource": "*"
         }
     ]
 }
