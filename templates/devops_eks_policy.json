@@ -53,10 +53,11 @@
             }
         },
         {
-            "Sid": "EC2LaunchTemplatesCreate",
+            "Sid": "EC2LaunchTemplatesManage",
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateLaunchTemplate"
+                "ec2:CreateLaunchTemplate",
+                "ec2:DeleteLaunchTemplate"
             ],
             "Resource": "*",
             "Condition": {
