@@ -152,14 +152,6 @@
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:security-group/*",
                 "arn:aws:ec2:${SATELLITE_REGION}:${ACCOUNT_ID}:vpc/*"
             ]
-        },
-        {
-            "Sid": "AllowTearDown",
-            "Effect": "Allow",
-            "Action": [
-                "*"
-            ],
-            "Resource": "*"
         }
     ]
 }
