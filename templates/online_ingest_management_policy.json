@@ -18,7 +18,7 @@
 ]
     },
     {
-      "Sid": "DeployNewLambdaVersions",
+      "Sid": "DeployNewLambdaVersionsAndPurgeOldVersions",
       "Effect": "Allow",
       "Action": [
         "lambda:AddPermission",
@@ -29,7 +29,9 @@
         "lambda:UpdateFunctionCode",
         "lambda:GetFunction",
         "lambda:PublishLayerVersion",
-        "lambda:GetLayerVersion"
+        "lambda:GetLayerVersion",
+        "lambda:ListVersionsByFunction",
+        "lambda:DeleteFunction"  
       ],
       "Resource": [
         "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:tecton-*",
