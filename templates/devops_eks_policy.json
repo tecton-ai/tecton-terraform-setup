@@ -53,7 +53,7 @@
             }
         },
         {
-            "Sid": "EC2LaunchTemplatesManage",
+            "Sid": "EC2LaunchTemplatesCreate",
             "Effect": "Allow",
             "Action": [
                 "ec2:CreateLaunchTemplate"

@@ -137,7 +137,7 @@
             ]
         },
         {
-            "Sid": "EC2LaunchTemplatesManage",
+            "Sid": "EC2AllowDelete",
             "Effect": "Allow",
             "Action": [
                 "ec2:DeleteLaunchTemplate"
