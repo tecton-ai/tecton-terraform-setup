@@ -96,10 +96,10 @@ data "template_file" "eks_satellite_fargate_node" {
 
 # Fargate satellite [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
-  for_each = { for idx, r in var.satellite_regions : r => idx}
+  for_each = toset(var.satellite_regions)
 
   name   = "tecton-${var.deployment_name}-${each.key}-devops-fargate-policy"
-  policy = data.template_file.eks_satellite_fargate_node[each.value].rendered
+  policy = data.template_file.eks_satellite_fargate_node[each.key].rendered
   tags   = local.tags
 }
 
@@ -110,6 +110,7 @@ data "template_file" "devops_fargate_role_json" {
   vars = {
     ACCOUNT_ID              = var.account_id
     DEPLOYMENT_NAME         = var.deployment_name
+    REGION                  = var.region
     FARGATE_ROLES           = jsonencode(local.feature_server_roles)
     FARGATE_POLICY_ARNS     = jsonencode([aws_iam_policy.eks_fargate_node_policy[0].arn])
     FARGATE_KINESIS_STREAMS = jsonencode(concat(
