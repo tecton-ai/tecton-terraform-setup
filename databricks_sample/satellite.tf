@@ -1,0 +1,65 @@
+locals {
+  satellite_region = len(var.satellite_regions) > 0 ? var.satellite_regions[0] : var.region
+}
+
+provider "aws" {
+  alias  = "satellite-aws"
+  region = len(var.satellite_regions) > 0 ? local.satellite_region : var.region
+  assume_role {
+    role_arn = var.tecton_dataplane_account_role_arn
+  }
+}
+
+module "satellite_subnets" {
+  count = len(var.satellite_regions) > 0 ? 1 : 0
+  providers = {
+    aws = aws.satellite_aws
+  }
+  source          = "../eks/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = local.satellite_region
+  # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
+  availability_zone_count = 3
+  eks_subnet_cidr_prefix  = "10.64.0.0/16"
+}
+
+module "satellite_security_groups" {
+  count = len(var.satellite_regions) > 0 ? 1 : 0
+  providers = {
+    aws = aws.satellite-aws
+  }
+  source                          = "../eks/security_groups"
+  deployment_name                 = var.deployment_name
+  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
+  vpc_id                          = module.subnets.vpc_id
+  allowed_CIDR_blocks             = var.allowed_CIDR_blocks
+  satellite_region                = local.satellite_region
+  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
+
+  # Allow Tecton NLB to be public.
+  eks_ingress_load_balancer_public = true
+  nat_gateway_ips                  = module.subnets.nat_gateway_ips
+  # Alternatively configure Tecton NLB to be private.
+  # eks_ingress_load_balancer_public = false
+  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
+}
+
+output "satellite_vpc_id" {
+  value = len(var.satellite_regions) == 0 ? "" : module.satellite_subnets[0].vpc_id
+}
+
+output "satellite_eks_subnet_ids" {
+  value = len(var.satellite_regions) == 0 ? [] : module.satellite_subnets[0].eks_subnet_ids
+}
+
+output "satellite_public_subnet_ids" {
+  value = len(var.satellite_regions) == 0 ? [] : module.satellite_subnets[0].public_subnet_ids
+}
+
+output "satellite_security_group_ids" {
+  value = len(var.satellite_regions) == 0 ? [] : [
+    module.satellite_security_groups[0].eks_security_group_id, 
+    module.satellite_security_groups[0].eks_worker_security_group_id,
+    module.satellite_security_groups[0].rds_security_group_id
+  ]
+}

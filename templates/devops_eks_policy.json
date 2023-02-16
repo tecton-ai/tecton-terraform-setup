@@ -87,6 +87,7 @@
                 "eks:DeleteCluster"
             ],
             "Resource": [
+                
                 "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:eks:*:${ACCOUNT_ID}:cluster/${DEPLOYMENT_NAME}*",
                 "arn:aws:eks:*:${ACCOUNT_ID}:nodegroup/tecton-${DEPLOYMENT_NAME}*",
@@ -118,23 +119,6 @@
             "Condition": {
                 "StringEquals": {
                     "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
-                }
-            }
-        },
-        {
-            "Sid": "CreateWithOwnedTemplate",
-            "Effect": "Allow",
-            "Action": [
-                "ec2:RunInstances"
-            ],
-            "Resource": [
-                "arn:aws:ec2:*:*:launch-template/*",
-                "arn:aws:ec2:*:*:subnet/*",
-                "arn:aws:ec2:*:*:security-group/*"
-            ],
-            "Condition": {
-                "StringEquals": {
-                    "ec2:ResourceTag/tecton-owned": "true"
                 }
             }
         },

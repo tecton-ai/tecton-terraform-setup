@@ -10,10 +10,10 @@ variable "region" {
   type = string
 }
 
-variable "satellite_region" {
-  type        = string
+variable "satellite_regions" {
+  type        = list(string)
   description = "The satellite region for Tecton deployment."
-  default     = ""
+  default     = []
 }
 
 variable "tecton_assuming_account_id" {

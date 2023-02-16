@@ -24,12 +24,6 @@ variable "eks_subnet_cidr_prefix" {
   description = "The CIDR block for the private and public subnets of the EKS module."
 }
 
-variable "eks_satellite_subnet_cidr_prefix" {
-  type        = string
-  default     = "10.64.0.0/16"
-  description = "The CIDR block for the private and public subnets of the EKS satellite module."
-}
-
 variable "spark_role_name" {
   type = string
 }
@@ -70,27 +64,19 @@ variable "enable_eks_ingress_vpc_endpoint" {
 }
 
 variable "satellite_regions" {
-  type        = string
+  type        = list(string)
   description = "The satellite regions for Tecton deployment."
-  default     = ""
+  default     = []
 }
 
 variable "fargate_enabled" {
   default     = false
-  description = "Enable fargate on cluster."
+  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters."
   type        = bool
 }
 
 provider "aws" {
   region = var.region
-  assume_role {
-    role_arn = var.tecton_dataplane_account_role_arn
-  }
-}
-
-provider "aws" {
-  alias  = "satellite-aws"
-  region = local.satellite_region == "" ? var.region : local.satellite_region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
@@ -108,10 +94,6 @@ resource "random_id" "external_id" {
   byte_length = 16
 }
 
-locals {
-  satellite_region = split(",", var.satellite_regions)[0]
-}
-
 module "roles" {
   providers = {
     aws                    = aws
@@ -122,7 +104,7 @@ module "roles" {
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
   account_id                      = var.account_id
   region                          = var.region
-  satellite_region                = local.satellite_region
+  satellite_regions               = var.satellite_regions
   spark_role_name                 = var.spark_role_name
   databricks_account_id           = var.external_databricks_account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id
@@ -142,43 +124,10 @@ module "subnets" {
   availability_zone_count = 3
 }
 
-module "satellite_subnets" {
-  count = local.satellite_region == "" ? 0 : 1
-  providers = {
-    aws = aws.satellite_aws
-  }
-  source          = "../eks/vpc_subnets"
-  deployment_name = var.deployment_name
-  region          = local.satellite_region
-  # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
-  availability_zone_count = 3
-  eks_subnet_cidr_prefix  = var.eks_satellite_subnet_cidr_prefix
-}
-
 module "security_groups" {
   providers = {
     aws = aws
     region = var.region
-  }
-  source                          = "../eks/security_groups"
-  deployment_name                 = var.deployment_name
-  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
-  vpc_id                          = module.subnets.vpc_id
-  allowed_CIDR_blocks             = var.allowed_CIDR_blocks
-  satellite_region                = local.satellite_region
-  tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
-
-  # Allow Tecton NLB to be public.
-  eks_ingress_load_balancer_public = true
-  nat_gateway_ips                  = module.subnets.nat_gateway_ips
-  # Alternatively configure Tecton NLB to be private.
-  # eks_ingress_load_balancer_public = false
-  # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
-}
-
-module "satellite_security_groups" {
-  providers = {
-    aws = aws.satellite-aws
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name

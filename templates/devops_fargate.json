@@ -11,15 +11,10 @@
                 "iam:DetachRolePolicy",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
-            ],
+            "Resource": ${FARGATE_ROLES},
             "Condition": {
                 "StringEquals": {
-                    "iam:PolicyARN":
-                        [
-                            "${FARGATE_POLICY_ARN}"
-                        ]
+                    "iam:PolicyARN": ${FARGATE_POLICY_ARNS}
                 }
             }
         },
@@ -33,9 +28,7 @@
                 "iam:TagRole",
                 "iam:DeleteRole"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
-            ]
+            "Resource": ${FARGATE_ROLES}
         },
         {
             "Sid": "KinesisStream",
@@ -48,7 +41,7 @@
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams"
             ],
-            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
+            "Resource": ${FARGATE_KINESIS_STREAMS}
         },
         {
             "Sid": "FargateProfile",
