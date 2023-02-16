@@ -117,7 +117,7 @@ data "template_file" "devops_fargate_role_json" {
     FARGATE_POLICY_ARNS     = jsonencode(
       concat(
         [aws_iam_policy.eks_fargate_node_policy[0].arn],
-        [for region in aws_iam_policy.eks_fargate_satellite_node_policy: aws_iam_policy.eks_fargate_satellite_node_policy[region].arn]
+        [aws_iam_policy.eks_fargate_satellite_node_policy.*.arn]
       )
     )
   }
