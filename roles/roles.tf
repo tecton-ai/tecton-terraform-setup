@@ -108,10 +108,10 @@ data "template_file" "devops_fargate_role_json" {
   count    = var.fargate_enabled ? 1 : 0
   template = file("${path.module}/../templates/devops_fargate.json")
   vars = {
-    ACCOUNT_ID         = var.account_id
-    DEPLOYMENT_NAME    = var.deployment_name
-    FARGATE_ROLES      = jsonencode(local.feature_server_roles)
-    FARGATE_POLICY_ARN  = jsonencode([aws_iam_policy.eks_fargate_node_policy[0].arn])
+    ACCOUNT_ID              = var.account_id
+    DEPLOYMENT_NAME         = var.deployment_name
+    FARGATE_ROLES           = jsonencode(local.feature_server_roles)
+    FARGATE_POLICY_ARNS     = jsonencode([aws_iam_policy.eks_fargate_node_policy[0].arn])
     FARGATE_KINESIS_STREAMS = jsonencode(concat(
       ["arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream*"],
       [ for satellite_region in var.satellite_regions: "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-${satellite_region}-fargate-log-delivery-stream*"]
@@ -921,7 +921,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
     ]
     effect = "Allow"
     resources = [
-      local.fargate_satellite_kinesis_delivery_stream_arn
+      local.fargate_satellite_kinesis_delivery_stream_arn[0]
     ]
   }
 }
