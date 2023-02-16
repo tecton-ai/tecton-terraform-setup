@@ -1,9 +1,7 @@
 locals {
   tags                                          = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn           = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  fargate_satellite_kinesis_delivery_stream_arn = [ 
-    for satellite_region in var.satellite_regions : "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  ]
+
   satellite_feature_server_roles = [
     for satellite_region in var.satellite_regions : "arn:aws:iam::${var.account_id}:role/tecton-${var.deployment_name}-${satellite_region}-fargate-fs"
   ]
@@ -34,28 +32,6 @@ locals {
   s3_objects = [
     for bucket in local.s3_buckets : "${bucket}/*"
   ]
-  load_balancers = flatten([
-    for region in local.all_regions:
-      [
-        "arn:aws:elasticloadbalancing:${region}:${var.account_id}:listener/net/tecton-${var.deployment_name}*",
-        "arn:aws:elasticloadbalancing:${region}:${var.account_id}:listener/app/tecton-${var.deployment_name}*",
-        "arn:aws:elasticloadbalancing:${region}:${var.account_id}:loadbalancer/net/${var.deployment_name}*",
-        "arn:aws:elasticloadbalancing:${region}:${var.account_id}:loadbalancer/app/${var.deployment_name}*",
-        "arn:aws:elasticloadbalancing:${region}:${var.account_id}:targetgroup/tecton-${var.deployment_name}*",
-        "arn:aws:autoscaling:${region}:${var.account_id}:autoScalingGroup::autoScalingGroupName/tecton-${var.deployment_name}*",
-        "arn:aws:autoscaling:${region}:${var.account_id}:autoScalingGroup:*:autoScalingGroupName/eks-*"
-      ]
-  ])
-  elastic_search_domains = [for region in local.all_regions: "arn:aws:es:${region}:${var.account_id}:domain/tecton-${var.deployment_name}"]
-  rds_access = flatten([
-    for region in local.all_regions:
-      [
-        "arn:aws:rds:${region}:${var.account_id}:db:tecton-${var.deployment_name}*",
-        "arn:aws:rds:${region}:${var.account_id}:subgrp:tecton-${var.deployment_name}*",
-        "arn:aws:rds:${region}:${var.account_id}:og:default*",
-        "arn:aws:rds:${region}:${var.account_id}:pg:default*"
-      ]
-  ])
   security_groups = flatten([
     for region in var.satellite_regions:
       [
@@ -84,7 +60,6 @@ data "template_file" "devops_policy_json_1" {
     DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
     S3_BUCKETS             = jsonencode(local.s3_buckets)
     S3_OBJECTS             = jsonencode(local.s3_objects)
-    LOAD_BALANCERS         = jsonencode(local.load_balancers)
   }
 }
 
@@ -94,9 +69,6 @@ data "template_file" "devops_policy_json_2" {
   vars = {
     ACCOUNT_ID             = var.account_id
     DEPLOYMENT_NAME        = var.deployment_name
-    DYNAMO_TABLES          = jsonencode(local.global_dynamo_tables)
-    ELASTIC_SEARCH_DOMAINS = jsonencode(local.elastic_search_domains)
-    RDS_ACCESS             = jsonencode(local.rds_access)
   }
 }
 
@@ -134,28 +106,6 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
   tags   = local.tags
 }
 
-# Fargate satellite [Common : Databricks and EMR]
-data "template_file" "eks_satellite_fargate_node" {
-  for_each = toset(var.satellite_regions)
-
-  template = file("${path.module}/../templates/fargate_eks_role.json")
-  vars = {
-    ACCOUNT_ID          = var.account_id
-    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-    DEPLOYMENT_NAME     = var.deployment_name
-    REGION              = each.value
-  }
-}
-
-# Fargate satellite [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
-  for_each = toset(var.satellite_regions)
-
-  name   = "tecton-${var.deployment_name}-${each.key}-devops-node-policy"
-  policy = data.template_file.eks_satellite_fargate_node[each.key].rendered
-  tags   = local.tags
-}
-
 # Fargate [Common : Databricks and EMR]
 data "template_file" "devops_fargate_role_json" {
   count    = var.fargate_enabled ? 1 : 0
@@ -163,13 +113,13 @@ data "template_file" "devops_fargate_role_json" {
   vars = {
     ACCOUNT_ID              = var.account_id
     DEPLOYMENT_NAME         = var.deployment_name
-    FARGATE_CLUSTERS        = jsonencode(concat(local.fargate_profiles, local.fargate_clusters))
     FARGATE_ROLES           = jsonencode(local.feature_server_roles)
-    FARGATE_POLICY_ARNS     = jsonencode([aws_iam_policy.eks_fargate_node_policy[0].arn])
-    FARGATE_KINESIS_STREAMS = jsonencode(concat(
-      ["arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream*"],
-      [ for satellite_region in var.satellite_regions: "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-${satellite_region}-fargate-log-delivery-stream*"]
-    ))
+    FARGATE_POLICY_ARNS     = jsonencode(
+      concat(
+        [aws_iam_policy.eks_fargate_node_policy[0].arn],
+        [for region in aws_iam_policy.eks_fargate_satellite_node_policy: aws_iam_policy.eks_fargate_satellite_node_policy[region].arn]
+      )
+    )
   }
 }
 
@@ -1016,4 +966,34 @@ resource "aws_iam_role_policy_attachment" "fargate_satellite_pod_execution" {
   count      = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
   role       = aws_iam_role.eks_fargate_satellite_pod_execution[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+}
+
+
+##### Below are all the resources brought up for satellite cluster #####
+locals {
+  fargate_satellite_kinesis_delivery_stream_arn = [ 
+    for satellite_region in var.satellite_regions : "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  ]
+}
+
+# Fargate satellite [Common : Databricks and EMR]
+data "template_file" "eks_satellite_fargate_node" {
+  for_each = toset(var.satellite_regions)
+
+  template = file("${path.module}/../templates/fargate_eks_role.json")
+  vars = {
+    ACCOUNT_ID          = var.account_id
+    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+    DEPLOYMENT_NAME     = var.deployment_name
+    REGION              = each.value
+  }
+}
+
+# Fargate satellite [Common : Databricks and EMR]
+resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
+  for_each = toset(var.satellite_regions)
+
+  name   = "tecton-${var.deployment_name}-${each.key}-devops-node-policy"
+  policy = data.template_file.eks_satellite_fargate_node[each.key].rendered
+  tags   = local.tags
 }

@@ -41,7 +41,7 @@
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams"
             ],
-            "Resource": ${FARGATE_KINESIS_STREAMS}
+            "Resource": ["arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
         },
         {
             "Sid": "FargateProfile",
@@ -52,7 +52,10 @@
                 "eks:DeleteFargateProfile",
                 "eks:TagResource"
             ],
-            "Resource": ${FARGATE_CLUSTERS}
+            "Resource": [
+                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
+            ]
         },
         {
             "Sid": "CreateGetTagOIDCProvider",

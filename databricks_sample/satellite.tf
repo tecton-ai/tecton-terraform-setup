@@ -4,7 +4,7 @@ locals {
 
 provider "aws" {
   alias  = "satellite-aws"
-  region = length(var.satellite_regions) > 0 ? local.satellite_region : var.region
+  region = local.satellite_region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
