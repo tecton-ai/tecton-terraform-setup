@@ -47,7 +47,7 @@ output "eks_fargate_node_policy_name" {
 }
 
 output "fargate_satellite_kinesis_firehose_stream_role_name" {
-  value = aws_iam_role.kinesis_firehose_satellite_stream[0].name
+  value = {for region, v in aws_iam_role.kinesis_firehose_satellite_stream: region => v.name }
 }
 
 output "fargate_satellite_eks_fargate_pod_execution_role_name" {
