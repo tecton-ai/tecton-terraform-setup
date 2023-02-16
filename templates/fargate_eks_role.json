@@ -19,7 +19,7 @@
           "dynamodb:Query",
           "dynamodb:Scan"
         ],
-        "Resource": ${DYNAMO_TABLES}
+        "Resource": ["arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
       },
       {
         "Sid": "ReadWriteTectonS3BucketsPolicies",

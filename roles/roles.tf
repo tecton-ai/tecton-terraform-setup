@@ -60,15 +60,6 @@ data "template_file" "devops_ingest_policy_json" {
 }
 
 # Fargate [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_fargate_node_policy" {
-  count = var.fargate_enabled ? 1 : 0
-
-  name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
-  policy = data.template_file.eks_fargate_node[0].rendered
-  tags   = local.tags
-}
-
-# Fargate [Common : Databricks and EMR]
 data "template_file" "eks_fargate_node" {
   count = var.fargate_enabled ? 1 : 0
 
@@ -77,11 +68,39 @@ data "template_file" "eks_fargate_node" {
     ACCOUNT_ID          = var.account_id
     ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
     DEPLOYMENT_NAME     = var.deployment_name
-    DYNAMO_TABLES       = jsonencode(concat(
-      local.dynamo_tables, 
-      ["arn:aws:dynamodb:${var.region}:${var.account_id}:table/tecton-${var.deployment_name}*"]
-    ))
+    REGION              = var.region
   }
+}
+
+# Fargate [Common : Databricks and EMR]
+resource "aws_iam_policy" "eks_fargate_node_policy" {
+  count = var.fargate_enabled ? 1 : 0
+
+  name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
+  policy = data.template_file.eks_fargate_node[0].rendered
+  tags   = local.tags
+}
+
+# Fargate satellite [Common : Databricks and EMR]
+data "template_file" "eks_satellite_fargate_node" {
+  for_each = toset(var.satellite_regions)
+
+  template = file("${path.module}/../templates/fargate_eks_role.json")
+  vars = {
+    ACCOUNT_ID          = var.account_id
+    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+    DEPLOYMENT_NAME     = var.deployment_name
+    REGION              = each.value
+  }
+}
+
+# Fargate satellite [Common : Databricks and EMR]
+resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
+  for_each = toset(var.satellite_regions)
+
+  name   = "tecton-${var.deployment_name}-${each.value}-devops-fargate-policy"
+  policy = data.template_file.eks_satellite_fargate_node[].rendered
+  tags   = local.tags
 }
 
 # Fargate [Common : Databricks and EMR]
