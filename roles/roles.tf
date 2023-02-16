@@ -70,7 +70,6 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
 
 # Fargate [Common : Databricks and EMR for satellite region]
 resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
-  count = var.fargate_enabled ? 1 : 0
   for_each = toset(var.satellite_regions)
 
   name   = "tecton-${var.deployment_name}-${each}-eks-fargate-node-policy"
