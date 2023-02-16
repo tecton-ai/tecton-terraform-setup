@@ -68,15 +68,6 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
   tags   = local.tags
 }
 
-# Fargate [Common : Databricks and EMR for satellite region]
-resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
-  for_each = toset(var.satellite_regions)
-
-  name   = "tecton-${var.deployment_name}-${each.value}-eks-fargate-node-policy"
-  policy = data.template_file.eks_fargate_satellite_node[0].rendered
-  tags   = local.tags
-}
-
 # Fargate [Common : Databricks and EMR]
 data "template_file" "eks_fargate_node" {
   count = var.fargate_enabled ? 1 : 0
@@ -100,11 +91,8 @@ data "template_file" "devops_fargate_role_json" {
   vars = {
     ACCOUNT_ID         = var.account_id
     DEPLOYMENT_NAME    = var.deployment_name
-    FARGATE_ROLES      = jsonencode(local.fargate_roles)
-    FARGATE_POLICY_ARN  = jsonencode(concat(
-      [aws_iam_policy.eks_fargate_node_policy[0].arn],
-      aws_iam_policy.eks_fargate_satellite_node_policy[*].arn
-    ))
+    FARGATE_ROLES      = jsonencode(local.feature_server_roles)
+    FARGATE_POLICY_ARN  = jsonencode([aws_iam_policy.eks_fargate_node_policy[0].arn])
     FARGATE_KINESIS_STREAMS = jsonencode(concat(
       ["arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream*"],
       [ for satellite_region in var.satellite_regions: "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-${satellite_region}-fargate-log-delivery-stream*"]
