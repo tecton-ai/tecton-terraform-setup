@@ -41,7 +41,9 @@
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams"
             ],
-            "Resource": ["arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
+            "Resource": [
+                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"
+            ]
         },
         {
             "Sid": "FargateProfile",
