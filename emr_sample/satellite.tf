@@ -1,5 +1,5 @@
 locals {
-  satellite_region = len(var.satellite_regions) > 0 ? var.satellite_regions[0] : var.region
+  satellite_region = length(var.satellite_regions) > 0 ? var.satellite_regions[0] : var.region
 }
 
 provider "aws" {
@@ -11,7 +11,7 @@ provider "aws" {
 }
 
 module "eks_satellite_subnets" {
-  count = len(var.satellite_regions) > 0 ? 1 : 0
+  count = length(var.satellite_regions) > 0 ? 1 : 0
   providers = {
     aws = aws.satellite-aws
   }
@@ -24,7 +24,7 @@ module "eks_satellite_subnets" {
 }
 
 module "eks_satellite_security_groups" {
-  count = len(var.satellite_regions) > 0 ? 1 : 0
+  count = length(var.satellite_regions) > 0 ? 1 : 0
   providers = {
     aws = aws.satellite-aws
   }
@@ -44,19 +44,19 @@ module "eks_satellite_security_groups" {
 }
 
 output "satellite_vpc_id" {
-  value = len(var.satellite_regions) == 0 ? "" : module.eks_satellite_subnets[0].vpc_id
+  value = length(var.satellite_regions) == 0 ? "" : module.eks_satellite_subnets[0].vpc_id
 }
 
 output "satellite_eks_subnet_ids" {
-  value = len(var.satellite_regions) == 0 ? [] : module.eks_satellite_subnets[0].eks_subnet_ids
+  value = length(var.satellite_regions) == 0 ? [] : module.eks_satellite_subnets[0].eks_subnet_ids
 }
 
 output "satellite_public_subnet_ids" {
-  value = len(var.satellite_regions) == 0 ? [] : module.eks_satellite_subnets[0].public_subnet_ids
+  value = length(var.satellite_regions) == 0 ? [] : module.eks_satellite_subnets[0].public_subnet_ids
 }
 
 output "satellite_security_group_ids" {
-  value = len(var.satellite_regions) == 0 ? [] : [
+  value = length(var.satellite_regions) == 0 ? [] : [
     module.eks_satellite_security_groups[0].eks_security_group_id, 
     module.eks_satellite_security_groups[0].eks_worker_security_group_id,
     module.eks_satellite_security_groups[0].rds_security_group_id

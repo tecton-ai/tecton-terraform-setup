@@ -7,12 +7,12 @@ locals {
   dynamo_tables = [
     for satellite_region in var.satellite_regions : "arn:aws:dynamodb:${satellite_region}:${var.account_id}:table/tecton-${var.deployment_name}*"
   ]
-  satellite_execution_roles = [
+  satellite_feature_server_roles = [
     for satellite_region in var.satellite_regions : "arn:aws:iam::${var.account_id}:role/tecton-${var.deployment_name}-${satellite_region}-fargate-fs"
   ]
-  fargate_roles = concat(
+  feature_server_roles = concat(
       ["arn:aws:iam::${var.region}:role/tecton-${var.deployment_name}-fargate-fs"],
-      satellite_execution_roles
+      local.satellite_feature_server_roles
   )
 }
 
@@ -72,7 +72,7 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
 resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
   for_each = toset(var.satellite_regions)
 
-  name   = "tecton-${var.deployment_name}-${each}-eks-fargate-node-policy"
+  name   = "tecton-${var.deployment_name}-${each.value}-eks-fargate-node-policy"
   policy = data.template_file.eks_fargate_satellite_node[0].rendered
   tags   = local.tags
 }
@@ -232,7 +232,7 @@ data "template_file" "satellite_ca_policy_json" {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
-    SATELLITE_REGION = var.satellite_region[0]
+    SATELLITE_REGION = var.satellite_regions[0]
   }
 }
 
@@ -245,7 +245,7 @@ data "template_file" "satellite_devops_policy_json" {
     DEPLOYMENT_NAME        = var.deployment_name
     DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
     REGION                 = var.region
-    SATELLITE_REGION       = var.satellite_region[0]
+    SATELLITE_REGION       = var.satellite_regions[0]
   }
 }
 
