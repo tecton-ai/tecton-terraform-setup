@@ -19,7 +19,7 @@
                 "dynamodb:DescribeBackup",
                 "dynamodb:DeleteBackup"
             ],
-            "Resource": ["arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
+            "Resource": ${DYNAMO_TABLES}
         },
         {
             "Sid": "DynamoDBGlobal",
@@ -73,7 +73,7 @@
                 "es:DeleteElasticsearchDomain"
             ],
             "Effect": "Allow",
-            "Resource": ["arn:aws:es:${REGION}:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"]
+            "Resource": ${ELASTIC_SEARCH_DOMAINS}
         },
         {
             "Sid": "CreateTectonHostedZoneForElasticSearch",
@@ -112,12 +112,7 @@
                 "rds:ListTagsForResource"
             ],
             "Effect": "Allow",
-            "Resource": [
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:pg:default*"
-            ]
+            "Resource": ${RDS_ACCESS}
         },
         {
             "Sid": "CreateCertificateForTectonAIDomain",

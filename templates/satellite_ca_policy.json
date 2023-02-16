@@ -18,10 +18,7 @@
                 "dynamodb:TagResource",
                 "dynamodb:UpdateTable"
             ],
-            "Resource": [
-                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
-            ]
+            "Resource": ${GLOBAL_DYNAMO_TBLES}
         },
         {
             "Sid": "DynamoDBCrossRegion",
@@ -32,9 +29,7 @@
                 "dynamodb:UpdateItem",
                 "dynamodb:DeleteTableReplica"
             ],
-            "Resource": [
-                "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
-            ]
+            "Resource": ${SATELLITE_DYNAMO_TABLES}
         }
     ]
 }

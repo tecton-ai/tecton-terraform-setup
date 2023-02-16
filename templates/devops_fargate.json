@@ -52,10 +52,7 @@
                 "eks:DeleteFargateProfile",
                 "eks:TagResource"
             ],
-            "Resource": [
-                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
-            ]
+            "Resource": ${FARGATE_CLUSTERS}
         },
         {
             "Sid": "CreateGetTagOIDCProvider",
