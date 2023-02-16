@@ -34,7 +34,7 @@ locals {
   s3_objects = [
     for bucket in local.s3_buckets : "${bucket}/*"
   ]
-  load_balancers = concat([
+  load_balancers = flatten([
     for region in local.all_regions:
       [
         "arn:aws:elasticloadbalancing:${region}:${var.account_id}:listener/net/tecton-${var.deployment_name}*",
@@ -47,7 +47,7 @@ locals {
       ]
   ])
   elastic_search_domains = [for region in local.all_regions: "arn:aws:es:${region}:${var.account_id}:domain/tecton-${var.deployment_name}"]
-  rds_access = concat([
+  rds_access = flatten([
     for region in local.all_regions:
       [
         "arn:aws:rds:${region}:${var.account_id}:db:tecton-${var.deployment_name}*",
@@ -56,8 +56,8 @@ locals {
         "arn:aws:rds:${region}:${var.account_id}:pg:default*"
       ]
   ])
-  security_groups = concat([
-    for region in local.satellite_region:
+  security_groups = flatten([
+    for region in var.satellite_regions:
       [
         "arn:aws:ec2:${region}:${var.account_id}:security-group/*",
         "arn:aws:ec2:${region}:${var.account_id}:vpc/*"
