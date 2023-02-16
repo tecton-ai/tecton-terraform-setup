@@ -235,14 +235,6 @@ resource "aws_iam_policy" "devops_policy_2" {
   tags   = local.tags
 }
 
-# DEVOPS [Common: Databricks and EMR]
-resource "aws_iam_policy" "satellite_devops_policy" {
-  count  = length(var.satellite_regions) > 0 ? 1 : 0
-  name   = "tecton-${var.deployment_name}-satellite-devops-policy"
-  policy = data.template_file.satellite_devops_policy_json[0].rendered
-  tags   = local.tags
-}
-
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_ingest_policy" {
   count = var.enable_ingest_api ? 1 : 0
@@ -439,27 +431,6 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
   provider   = aws.databricks-account
   policy_arn = aws_iam_policy.common_spark_policy.arn
   role       = var.create_emr_roles ? (var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role") : var.spark_role_name
-}
-
-resource "aws_iam_policy" "satellite_ca_policy" {
-  count = length(var.satellite_regions) > 0 ? 1 : 0
-  name  = "tecton-satellite-ca-policy"
-  policy = data.template_file.satellite_ca_policy_json[0].rendered
-  tags = local.tags
-}
-
-# Spark Common : Databricks and EMR
-resource "aws_iam_role_policy_attachment" "satellite_devops_policy_attachment" {
-  count      = length(var.satellite_regions) > 0? 1 : 0
-  policy_arn = aws_iam_policy.satellite_devops_policy[0].arn
-  role       = aws_iam_role.devops_role.name
-}
-
-# Spark Common : Databricks and EMR
-resource "aws_iam_role_policy_attachment" "satellite_ca_policy_attachment" {
-  count      = length(var.satellite_regions) > 0 ? 1 : 0
-  policy_arn = aws_iam_policy.satellite_ca_policy[0].arn
-  role       = aws_iam_role.eks_node_role.name
 }
 
 # Ingest API - Common for Databricks and EMR.
@@ -677,20 +648,6 @@ resource "aws_iam_role_policy_attachment" "emr_spark_policy_attachment" {
   role       = aws_iam_role.emr_spark_role[0].name
 }
 
-# CROSS-ACCOUNT ACCESS FOR SATELLITE SERVING
-resource "aws_iam_policy" "cross_account_satellite_region_policy" {
-  count = length(var.satellite_regions) > 0 ? 1 : 0
-  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy"
-  policy = file("${path.module}/../templates/satellite_serving_dynamodb_policy.json")
-  tags = local.tags
-}
-
-resource "aws_iam_role_policy_attachment" "cross_account_satellite_region_policy_attachment" {
-  count      = length(var.satellite_regions) > 0 ? 1 : 0
-  policy_arn = aws_iam_policy.cross_account_satellite_region_policy[0].arn
-  role       = aws_iam_role.eks_node_role.name
-}
-
 # SPARK ROLE SSM POLICY ATTACHMENT: EMR
 resource "aws_iam_role_policy_attachment" "emr_ssm_policy_attachment" {
   count      = var.create_emr_roles ? 1 : 0
@@ -843,33 +800,11 @@ data "aws_iam_policy_document" "fargate_logging_policy" {
   }
 }
 
-# FARGATE SATELLITE [Common : Databricks and EMR]
-data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
-  count   = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  version = "2012-10-17"
-  statement {
-    actions = [
-      "firehose:PutRecordBatch",
-    ]
-    effect = "Allow"
-    resources = [
-      local.fargate_satellite_kinesis_delivery_stream_arn[0]
-    ]
-  }
-}
-
 # FARGATE [Common : Databricks and EMR]
 resource "aws_iam_policy" "fargate_logging" {
   count  = var.fargate_enabled ? 1 : 0
   name   = "tecton-${var.deployment_name}-fargate-logging-to-kinesis-firehose"
   policy = data.aws_iam_policy_document.fargate_logging_policy[0].json
-}
-
-# FARGATE SATELLITE [Common : Databricks and EMR]
-resource "aws_iam_policy" "fargate_satellite_logging" {
-  count  = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  name   = "tecton-${var.deployment_name}-fargate-satellite-logging-to-kinesis-firehose"
-  policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[0].json
 }
 
 # FARGATE [Common : Databricks and EMR]
@@ -879,24 +814,10 @@ resource "aws_iam_role_policy_attachment" "logging" {
   policy_arn = aws_iam_policy.fargate_logging[0].arn
 }
 
-# FARGATE SATELLITE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "satellite_logging" {
-  count      = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  role       = aws_iam_role.eks_fargate_satellite_pod_execution[0].name
-  policy_arn = aws_iam_policy.fargate_satellite_logging[0].arn
-}
-
 # FARGATE [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-}
-
-# FARGATE SATELLITE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "fargate_satellite_pod_execution" {
-  count      = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  role       = aws_iam_role.eks_fargate_satellite_pod_execution[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
 
@@ -933,6 +854,36 @@ data "template_file" "satellite_ca_policy_json" {
   }
 }
 
+# EKS [Common : Databricks and EMR]
+resource "aws_iam_policy" "satellite_ca_policy" {
+  count = length(var.satellite_regions) > 0 ? 1 : 0
+  name  = "tecton-satellite-ca-policy"
+  policy = data.template_file.satellite_ca_policy_json[0].rendered
+  tags = local.tags
+}
+
+# EKS [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "satellite_ca_policy_attachment" {
+  count      = length(var.satellite_regions) > 0 ? 1 : 0
+  policy_arn = aws_iam_policy.satellite_ca_policy[0].arn
+  role       = aws_iam_role.eks_node_role.name
+}
+
+# EKS [Common : Databricks and EMR]
+resource "aws_iam_policy" "cross_account_satellite_region_policy" {
+  count = length(var.satellite_regions) > 0 ? 1 : 0
+  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy"
+  policy = file("${path.module}/../templates/satellite_serving_dynamodb_policy.json")
+  tags = local.tags
+}
+
+# EKS [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "cross_account_satellite_region_policy_attachment" {
+  count      = length(var.satellite_regions) > 0 ? 1 : 0
+  policy_arn = aws_iam_policy.cross_account_satellite_region_policy[0].arn
+  role       = aws_iam_role.eks_node_role.name
+}
+
 # DEVOPS [Common : Databricks and EMR]
 data "template_file" "satellite_devops_policy_json" {
   count    = length(var.satellite_regions) > 0 ? 1 : 0
@@ -942,6 +893,21 @@ data "template_file" "satellite_devops_policy_json" {
     DEPLOYMENT_NAME = var.deployment_name
     SECURITY_GROUPS = jsonencode(local.security_groups)
   }
+}
+
+# DEVOPS [Common: Databricks and EMR]
+resource "aws_iam_policy" "satellite_devops_policy" {
+  count  = length(var.satellite_regions) > 0 ? 1 : 0
+  name   = "tecton-${var.deployment_name}-satellite-devops-policy"
+  policy = data.template_file.satellite_devops_policy_json[0].rendered
+  tags   = local.tags
+}
+
+# DEVOPS [Common: Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "satellite_devops_policy_attachment" {
+  count      = length(var.satellite_regions) > 0? 1 : 0
+  policy_arn = aws_iam_policy.satellite_devops_policy[0].arn
+  role       = aws_iam_role.devops_role.name
 }
 
 # Fargate satellite [Common : Databricks and EMR]
@@ -966,7 +932,7 @@ resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
   tags   = local.tags
 }
 
-# Resources to enable logs output to S3 in satellite region
+# Fargate satellite [Common : Databricks and EMR]
 resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
   for_each           = toset(var.satellite_regions)
 
@@ -974,6 +940,14 @@ resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
   assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
 }
 
+# Fargate satellite [Common : Databricks and EMR]
+resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
+  for_each = toset(var.satellite_regions)
+  name     = "tecton-${var.deployment_name}-${each.key}-fargate-cross-account-write"
+  policy   = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
+}
+
+# Fargate satellite [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "fargate_logging_write" {
   for_each   = toset(var.satellite_regions)
 
@@ -981,15 +955,45 @@ resource "aws_iam_role_policy_attachment" "fargate_logging_write" {
   policy_arn = aws_iam_policy.fargate_logging_satellite_cross_account[each.key].arn
 }
 
-resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
-  for_each = toset(var.satellite_regions)
-  name     = "tecton-${var.deployment_name}-${each.key}-fargate-cross-account-write"
-  policy   = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
-}
-
 # FARGATE SATELLITE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_fargate_satellite_pod_execution" {
   for_each           = toset(var.satellite_regions)
   name               = "tecton-${var.deployment_name}-${each.key}-eks-fargate-pod-execution"
   assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
+}
+
+# FARGATE SATELLITE [Common : Databricks and EMR]
+data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
+  for_each = toset(var.satellite_regions)
+  version  = "2012-10-17"
+  statement {
+    actions = [
+      "firehose:PutRecordBatch",
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:firehose:${each.key}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+    ]
+  }
+}
+
+# FARGATE SATELLITE [Common : Databricks and EMR]
+resource "aws_iam_policy" "fargate_satellite_logging" {
+  for_each = toset(var.satellite_regions)
+  name   = "tecton-${var.deployment_name}-${each.key}-fargate-satellite-logging-to-kinesis-firehose"
+  policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[each.key].json
+}
+
+# FARGATE SATELLITE [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "satellite_logging" {
+  for_each   = toset(var.satellite_regions)
+  role       = aws_iam_role.eks_fargate_satellite_pod_execution[each.key].name
+  policy_arn = aws_iam_policy.fargate_satellite_logging[each.key].arn
+}
+
+# FARGATE SATELLITE [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "fargate_satellite_pod_execution" {
+  for_each   = toset(var.satellite_regions)
+  role       = aws_iam_role.eks_fargate_satellite_pod_execution[each.key].name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
