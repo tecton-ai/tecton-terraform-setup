@@ -1,27 +1,13 @@
 locals {
-  tags                                          = { "tecton-accessible:${var.deployment_name}" : "true" }
-  fargate_kinesis_delivery_stream_arn           = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-
+  tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
+  fargate_kinesis_delivery_stream_arn = "arn:aws:firehose:${var.region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+  all_regions                         = concat(var.satellite_regions, [var.region])
   satellite_feature_server_roles = [
     for satellite_region in var.satellite_regions : "arn:aws:iam::${var.account_id}:role/tecton-${var.deployment_name}-${satellite_region}-fargate-fs"
   ]
   feature_server_roles = concat(
       ["arn:aws:iam::${var.account_id}:role/tecton-${var.deployment_name}-fargate-fs"],
       local.satellite_feature_server_roles
-  )
-  all_regions = concat(var.satellite_regions, [var.region])
-  fargate_profiles = [
-    for region in  local.all_regions: "arn:aws:eks:${region}:${var.account_id}:fargateprofile/tecton-${var.deployment_name}*"
-  ]
-  fargate_clusters = [
-    for region in local.all_regions : "arn:aws:eks:${region}:${var.account_id}:cluster/tecton-${var.deployment_name}*"
-  ]
-  satellite_dynamo_tables = [
-    for region in var.satellite_regions : "arn:aws:dynamodb:${region}:${var.account_id}:table/tecton-${var.deployment_name}*"
-  ]
-  global_dynamo_tables = concat(
-    local.satellite_dynamo_tables,
-    ["arn:aws:dynamodb:${var.region}:${var.account_id}:table/tecton-${var.deployment_name}*"]
   )
   s3_buckets = concat(
     [
@@ -32,13 +18,6 @@ locals {
   s3_objects = [
     for bucket in local.s3_buckets : "${bucket}/*"
   ]
-  security_groups = flatten([
-    for region in var.satellite_regions:
-      [
-        "arn:aws:ec2:${region}:${var.account_id}:security-group/*",
-        "arn:aws:ec2:${region}:${var.account_id}:vpc/*"
-      ]
-  ])
 }
 
 # EKS [Common : Databricks and EMR]
@@ -232,27 +211,6 @@ data "template_file" "emr_access_policy_json" {
     REGION           = var.region
     EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
     SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
-  }
-}
-
-# EKS [Common : Databricks and EMR]
-data "template_file" "satellite_ca_policy_json" {
-  count    = length(var.satellite_regions) > 0 ? 1 : 0
-  template = file("${path.module}/../templates/satellite_ca_policy.json")
-  vars = {
-    SATELLITE_DYNAMO_TABLES = jsonencode(local.satellite_dynamo_tables)
-    GLOBAL_DYNAMO_TBLES     = jsonencode(local.global_dynamo_tables)
-  }
-}
-
-# DEVOPS [Common : Databricks and EMR]
-data "template_file" "satellite_devops_policy_json" {
-  count    = length(var.satellite_regions) > 0 ? 1 : 0
-  template = file("${path.module}/../templates/satellite_devops_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    SECURITY_GROUPS = jsonencode(local.security_groups)
   }
 }
 
@@ -818,13 +776,6 @@ resource "aws_iam_role" "kinesis_firehose_stream" {
   assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
 }
 
-# Resources to enable logs output to S3 in satellite region
-resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
-  count              = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  name               = "tecton-${var.deployment_name}-${var.satellite_regions[0]}-fargate-kinesis-firehose"
-  assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
-}
-
 # FARGATE [Common : Databricks and EMR]
 data "aws_iam_policy_document" "fargate_logging_cross_account_write" {
   count   = var.fargate_enabled ? 1 : 0
@@ -848,22 +799,10 @@ resource "aws_iam_policy" "fargate_logging_cross_account" {
   policy = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
 }
 
-resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
-  count  = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  name   = "tecton-${var.deployment_name}-${var.satellite_regions[0]}-fargate-cross-account-write"
-  policy = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
-}
-
 resource "aws_iam_role_policy_attachment" "logging_write" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.kinesis_firehose_stream[0].name
   policy_arn = aws_iam_policy.fargate_logging_cross_account[0].arn
-}
-
-resource "aws_iam_role_policy_attachment" "fargate_logging_write" {
-  count      = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  role       = aws_iam_role.kinesis_firehose_satellite_stream[0].name
-  policy_arn = aws_iam_policy.fargate_logging_satellite_cross_account[0].arn
 }
 
 # FARGATE [Common : Databricks and EMR]
@@ -886,13 +825,6 @@ data "aws_iam_policy_document" "eks_fargate_assume_role" {
 resource "aws_iam_role" "eks_fargate_pod_execution" {
   count              = var.fargate_enabled ? 1 : 0
   name               = "tecton-${var.deployment_name}-eks-fargate-pod-execution"
-  assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
-}
-
-# FARGATE SATELLITE [Common : Databricks and EMR]
-resource "aws_iam_role" "eks_fargate_satellite_pod_execution" {
-  count              = var.fargate_enabled && length(var.satellite_regions) > 0 ? 1 : 0
-  name               = "tecton-${var.deployment_name}-${var.satellite_regions[0]}-eks-fargate-pod-execution"
   assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
 }
 
@@ -968,12 +900,48 @@ resource "aws_iam_role_policy_attachment" "fargate_satellite_pod_execution" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
 
-
+########################################################################
 ##### Below are all the resources brought up for satellite cluster #####
+########################################################################
 locals {
   fargate_satellite_kinesis_delivery_stream_arn = [ 
     for satellite_region in var.satellite_regions : "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
   ]
+  satellite_dynamo_tables = [
+    for region in var.satellite_regions : "arn:aws:dynamodb:${region}:${var.account_id}:table/tecton-${var.deployment_name}*"
+  ]
+  global_dynamo_tables = concat(
+    local.satellite_dynamo_tables,
+    ["arn:aws:dynamodb:${var.region}:${var.account_id}:table/tecton-${var.deployment_name}*"]
+  )
+  security_groups = flatten([
+    for region in var.satellite_regions:
+      [
+        "arn:aws:ec2:${region}:${var.account_id}:security-group/*",
+        "arn:aws:ec2:${region}:${var.account_id}:vpc/*"
+      ]
+  ])
+}
+
+# EKS [Common : Databricks and EMR]
+data "template_file" "satellite_ca_policy_json" {
+  count    = length(var.satellite_regions) > 0 ? 1 : 0
+  template = file("${path.module}/../templates/satellite_ca_policy.json")
+  vars = {
+    SATELLITE_DYNAMO_TABLES = jsonencode(local.satellite_dynamo_tables)
+    GLOBAL_DYNAMO_TBLES     = jsonencode(local.global_dynamo_tables)
+  }
+}
+
+# DEVOPS [Common : Databricks and EMR]
+data "template_file" "satellite_devops_policy_json" {
+  count    = length(var.satellite_regions) > 0 ? 1 : 0
+  template = file("${path.module}/../templates/satellite_devops_policy.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    DEPLOYMENT_NAME = var.deployment_name
+    SECURITY_GROUPS = jsonencode(local.security_groups)
+  }
 }
 
 # Fargate satellite [Common : Databricks and EMR]
@@ -996,4 +964,32 @@ resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
   name   = "tecton-${var.deployment_name}-${each.key}-devops-node-policy"
   policy = data.template_file.eks_satellite_fargate_node[each.key].rendered
   tags   = local.tags
+}
+
+# Resources to enable logs output to S3 in satellite region
+resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
+  for_each           = toset(var.satellite_regions)
+
+  name               = "tecton-${var.deployment_name}-${each.key}-fargate-kinesis-firehose"
+  assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "fargate_logging_write" {
+  for_each   = toset(var.satellite_regions)
+
+  role       = aws_iam_role.kinesis_firehose_satellite_stream[each.key].name
+  policy_arn = aws_iam_policy.fargate_logging_satellite_cross_account[each.key].arn
+}
+
+resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
+  for_each = toset(var.satellite_regions)
+  name     = "tecton-${var.deployment_name}-${each.key}-fargate-cross-account-write"
+  policy   = data.aws_iam_policy_document.fargate_logging_cross_account_write[0].json
+}
+
+# FARGATE SATELLITE [Common : Databricks and EMR]
+resource "aws_iam_role" "eks_fargate_satellite_pod_execution" {
+  for_each           = toset(var.satellite_regions)
+  name               = "tecton-${var.deployment_name}-${each.key}-eks-fargate-pod-execution"
+  assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
 }
