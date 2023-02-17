@@ -34,6 +34,9 @@ output "offline_ingest_role_arn" {
   value = aws_iam_role.online_ingest_role[0].arn
 }
 
+########################################################################
+################ Below are all the output up for fargate ###############
+########################################################################
 output "fargate_kinesis_firehose_stream_role_name" {
   value = var.fargate_enabled ? aws_iam_role.kinesis_firehose_stream[0].name : ""
 }
@@ -46,6 +49,9 @@ output "eks_fargate_node_policy_name" {
   value = var.fargate_enabled ? aws_iam_policy.eks_fargate_node_policy[0].name : ""
 }
 
+########################################################################
+########### Below are all the output up for satellite cluster ##########
+########################################################################
 output "fargate_satellite_kinesis_firehose_stream_role_name" {
   value = {for region, v in aws_iam_role.kinesis_firehose_satellite_stream: region => v.name }
 }

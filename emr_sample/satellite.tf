@@ -63,11 +63,12 @@ output "satellite_security_group_ids" {
   ]
 }
 
-output "satellite_fargate_role" {
-  value = length(var.satellite_regions) == 0 ? [] : [
-    module.roles[0].fargate_satellite_kinesis_firehose_stream_role_name[local.satellite_region],
-    module.roles[0].fargate_satellite_eks_fargate_pod_execution_role_name[local.satellite_region]
-  ]
+output "satellite_fargate_kinesis_firehose_role" {
+  value = length(var.satellite_regions) == 0 ? "" : module.roles[0].fargate_satellite_kinesis_firehose_stream_role_name[local.satellite_region]
+}
+
+output "satellite_fargate_pod_execution_role" {
+  value = length(var.satellite_regions) == 0 ? "" : module.roles[0].fargate_satellite_eks_fargate_pod_execution_role_name[local.satellite_region]
 }
 
 output "satellite_fargate_node_policy" {
