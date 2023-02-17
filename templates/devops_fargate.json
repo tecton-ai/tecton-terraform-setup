@@ -9,7 +9,8 @@
                 "iam:AttachRolePolicy",
                 "iam:DescribeRole",
                 "iam:DetachRolePolicy",
-                "iam:DeleteRolePolicy"
+                "iam:DeleteRolePolicy",
+                "iam:UpdateAssumeRolePolicy"
             ],
             "Resource": ${FARGATE_ROLES},
             "Condition": {
