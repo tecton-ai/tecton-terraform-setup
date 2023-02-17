@@ -27,7 +27,5 @@ output "roles" {
     offline_ingest_role_arn                               = module.roles.offline_ingest_role_arn
     fargate_kinesis_firehose_stream_role_name             = module.roles.fargate_kinesis_firehose_stream_role_name
     fargate_eks_fargate_pod_execution_role_name           = module.roles.fargate_eks_fargate_pod_execution_role_name
-    fargate_satellite_kinesis_firehose_stream_role_name   = module.roles.fargate_satellite_kinesis_firehose_stream_role_name
-    fargate_satellite_eks_fargate_pod_execution_role_name = module.roles.fargate_satellite_eks_fargate_pod_execution_role_name
   }
 }

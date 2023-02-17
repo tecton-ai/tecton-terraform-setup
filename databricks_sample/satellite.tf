@@ -63,3 +63,16 @@ output "satellite_security_group_ids" {
     module.satellite_security_groups[0].rds_security_group_id
   ]
 }
+
+output "satellite_fargate_role" {
+  value = length(var.satellite_region) == 0 ? [] : [
+    module.roles.fargate_satellite_kinesis_firehose_stream_role_name[satellite_region],
+    module.roles.fargate_satellite_eks_fargate_pod_execution_role_name[satellite_region]
+  ]
+}
+
+output "satellite_fargate_node_policy" {
+  value = length(var.satellite_region) == 0 ? [] : [
+    module.roles.eks_fargate_satellite_node_policy_name[satellite_region]
+  ]
+}

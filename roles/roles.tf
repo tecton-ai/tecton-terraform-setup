@@ -927,7 +927,7 @@ data "template_file" "eks_satellite_fargate_node" {
 resource "aws_iam_policy" "eks_fargate_satellite_node_policy" {
   for_each = toset(var.satellite_regions)
 
-  name   = "tecton-${var.deployment_name}-${each.key}-devops-node-policy"
+  name   = "tecton-${var.deployment_name}-${each.key}-eks-fargate-node-policy"
   policy = data.template_file.eks_satellite_fargate_node[each.key].rendered
   tags   = local.tags
 }
