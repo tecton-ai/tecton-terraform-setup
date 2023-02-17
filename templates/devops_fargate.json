@@ -42,7 +42,8 @@
                 "firehose:ListDeliveryStreams"
             ],
             "Resource": [
-                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"
+                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*",
+                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-*-fargate-log-delivery-stream*"
             ]
         },
         {

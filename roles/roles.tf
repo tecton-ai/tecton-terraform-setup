@@ -825,9 +825,6 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
 ##### Below are all the resources brought up for satellite cluster #####
 ########################################################################
 locals {
-  fargate_satellite_kinesis_delivery_stream_arn = [ 
-    for satellite_region in var.satellite_regions : "arn:aws:firehose:${satellite_region}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
-  ]
   satellite_dynamo_tables = [
     for region in var.satellite_regions : "arn:aws:dynamodb:${region}:${var.account_id}:table/tecton-${var.deployment_name}*"
   ]
@@ -972,7 +969,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:firehose:${each.key}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-fargate-log-delivery-stream"
+      "arn:aws:firehose:${each.key}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-${each.key}-fargate-log-delivery-stream"
     ]
   }
 }
