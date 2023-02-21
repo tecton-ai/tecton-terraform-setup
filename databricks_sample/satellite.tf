@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 module "satellite_subnets" {
-  count = length(var.satellite_regions) > 0 ? 1 : 0
+  count = local.is_this_satellite_region_enabled ? 1 : 0
   providers = {
     aws = aws.satellite_aws
   }
@@ -26,7 +26,7 @@ module "satellite_subnets" {
 }
 
 module "satellite_security_groups" {
-  count = length(var.satellite_regions) > 0 ? 1 : 0
+  count = local.is_this_satellite_region_enabled ? 1 : 0
   providers = {
     aws = aws.satellite-aws
   }
@@ -40,7 +40,7 @@ module "satellite_security_groups" {
 
   # Allow Tecton NLB to be public.
   eks_ingress_load_balancer_public = true
-  nat_gateway_ips                  = module.subnets.nat_gateway_ips
+  nat_gateway_ips                  = module.satellite_subnets[0].nat_gateway_ips
   # Alternatively configure Tecton NLB to be private.
   # eks_ingress_load_balancer_public = false
   # vpc_cidr_blocks                  = [var.eks_subnet_cidr_prefix]
