@@ -61,5 +61,5 @@ output "fargate_satellite_eks_fargate_pod_execution_role_name" {
 }
 
 output "eks_fargate_satellite_node_policy_name" {
-  value = { for region, v in aws_iam_policy.eks_fargate_satellite_node_policy: region => v.name }
+  value = { for region, v in aws_iam_policy.eks_fargate_satellite_node: region => v.name }
 }
