@@ -853,7 +853,7 @@ resource "aws_iam_policy" "satellite_ca" {
 }
 
 # EKS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "satellite_ca" {
+resource "aws_iam_role_policy_attachment" "satellite_ca_node" {
   count      = local.is_satellite_regions_enabled ? 1 : 0
   policy_arn = aws_iam_policy.satellite_ca[0].arn
   role       = aws_iam_role.eks_node_role.name
