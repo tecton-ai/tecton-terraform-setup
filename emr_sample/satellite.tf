@@ -76,5 +76,5 @@ output "satellite_fargate_pod_execution_role" {
 output "satellite_fargate_node_policy" {
   value = local.is_this_satellite_region_enabled ? [
     module.roles[0].eks_fargate_satellite_node_policy_name[local.satellite_region]
-  ] : ""
+  ] : []
 }

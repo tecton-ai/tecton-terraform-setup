@@ -67,11 +67,11 @@ output "satellite_security_group_ids" {
 }
 
 output "satellite_fargate_kinesis_firehose_role" {
-  value = local.is_this_satellite_region_enabled ? module.roles.fargate_satellite_kinesis_firehose_stream_role_name[local.satellite_region] : []
+  value = local.is_this_satellite_region_enabled ? module.roles.fargate_satellite_kinesis_firehose_stream_role_name[local.satellite_region] : ""
 }
 
 output "satellite_fargate_pod_execution_role" {
-  value = local.is_this_satellite_region_enabled ? module.roles.fargate_satellite_eks_fargate_pod_execution_role_name[local.satellite_region] : []
+  value = local.is_this_satellite_region_enabled ? module.roles.fargate_satellite_eks_fargate_pod_execution_role_name[local.satellite_region] : ""
 }
 
 output "satellite_fargate_node_policy" {
