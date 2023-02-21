@@ -1,5 +1,7 @@
 locals {
-  satellite_region = length(var.satellite_regions) > 0 ? var.satellite_regions[0] : var.region
+  # only one satellite region supported in this example. Others may be added if required. Contact Tecton support for more information.
+  is_this_satellite_region_enabled = length(var.satellite_regions) > 0 
+  satellite_region = local.is_this_satellite_region_enabled ? var.satellite_regions[0] : var.region
 }
 
 provider "aws" {
@@ -31,7 +33,7 @@ module "satellite_security_groups" {
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
-  vpc_id                          = module.subnets.vpc_id
+  vpc_id                          = module.satellite_subnets[0].vpc_id
   allowed_CIDR_blocks             = var.allowed_CIDR_blocks
   satellite_region                = local.satellite_region
   tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
@@ -45,35 +47,35 @@ module "satellite_security_groups" {
 }
 
 output "satellite_vpc_id" {
-  value = length(var.satellite_regions) == 0 ? "" : module.satellite_subnets[0].vpc_id
+  value = local.is_this_satellite_region_enabled ? module.satellite_subnets[0].vpc_id: ""
 }
 
 output "satellite_eks_subnet_ids" {
-  value = length(var.satellite_regions) == 0 ? [] : module.satellite_subnets[0].eks_subnet_ids
+  value = local.is_this_satellite_region_enabled ? module.satellite_subnets[0].eks_subnet_ids : []
 }
 
 output "satellite_public_subnet_ids" {
-  value = length(var.satellite_regions) == 0 ? [] : module.satellite_subnets[0].public_subnet_ids
+  value = local.is_this_satellite_region_enabled ? module.satellite_subnets[0].public_subnet_ids: []
 }
 
 output "satellite_security_group_ids" {
-  value = length(var.satellite_regions) == 0 ? [] : [
+  value = local.is_this_satellite_region_enabled ? [
     module.satellite_security_groups[0].eks_security_group_id, 
     module.satellite_security_groups[0].eks_worker_security_group_id,
     module.satellite_security_groups[0].rds_security_group_id
-  ]
+  ] : []
 }
 
 output "satellite_fargate_kinesis_firehose_role" {
-  value = length(var.satellite_regions) == 0 ? "" : module.roles.fargate_satellite_kinesis_firehose_stream_role_name[local.satellite_region]
+  value = local.is_this_satellite_region_enabled ? module.roles.fargate_satellite_kinesis_firehose_stream_role_name[local.satellite_region] : []
 }
 
 output "satellite_fargate_pod_execution_role" {
-  value = length(var.satellite_regions) == 0 ? "" : module.roles.fargate_satellite_eks_fargate_pod_execution_role_name[local.satellite_region]
+  value = local.is_this_satellite_region_enabled ? module.roles.fargate_satellite_eks_fargate_pod_execution_role_name[local.satellite_region] : []
 }
 
 output "satellite_fargate_node_policy" {
-  value = length(var.satellite_regions) == 0 ? [] : [
+  value = local.is_this_satellite_region_enabled ? [
     module.roles.eks_fargate_satellite_node_policy_name[local.satellite_region]
-  ]
+  ] : []
 }

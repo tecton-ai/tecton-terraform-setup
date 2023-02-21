@@ -34,7 +34,7 @@ variable "region" {
 
 variable "satellite_regions" {
   type        = list(string)
-  description = "The satellite regions for Tecton deployment."
+  description = "The satellite regions for Tecton deployment. Only enable this if instructed to by Tecton support. Only the first element (region) is used today. See satellite.tf for more info."
   default     = []
 }
 
@@ -92,7 +92,7 @@ variable "enable_eks_ingress_vpc_endpoint" {
 
 variable "fargate_enabled" {
   default     = false
-  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters."
+  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters, if `var.satellite_regions` specified."
   type        = bool
 }
 

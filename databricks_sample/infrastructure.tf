@@ -71,7 +71,7 @@ variable "satellite_regions" {
 
 variable "fargate_enabled" {
   default     = false
-  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters."
+  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters, if `var.satellite_regions` specified."
   type        = bool
 }
 
@@ -127,7 +127,6 @@ module "subnets" {
 module "security_groups" {
   providers = {
     aws = aws
-    region = var.region
   }
   source                          = "../eks/security_groups"
   deployment_name                 = var.deployment_name
