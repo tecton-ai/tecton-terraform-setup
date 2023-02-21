@@ -896,7 +896,7 @@ resource "aws_iam_policy" "satellite_devops" {
 # DEVOPS [Common: Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "satellite_devops" {
   count      = local.is_satellite_regions_enabled ?  1 : 0
-  policy_arn = aws_iam_policy.satellite_devops
+  policy_arn = aws_iam_policy.satellite_devops[0].arn
   role       = aws_iam_role.devops_role.name
 }
 
