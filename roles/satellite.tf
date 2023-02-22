@@ -4,12 +4,95 @@
 locals {
   is_satellite_regions_enabled = length(var.satellite_regions) > 0 
   security_groups = flatten([
-    for region in var.satellite_regions:
-      [
-        "arn:aws:ec2:${region}:${var.account_id}:security-group/*",
-        "arn:aws:ec2:${region}:${var.account_id}:vpc/*"
-      ]
+    formatlist("arn:aws:ec2:%s:%s:security-group/*", var.satellite_regions, var.account_id),
+    formatlist("arn:aws:ec2:%s:%s:vpc/*", var.satellite_regions, var.account_id)
   ])
+}
+
+# EKS MANAGEMENT [Common : Databricks and EMR]
+resource "aws_iam_role" "eks_management_satellite" {
+  for_each           = toset(var.satellite_regions)
+  name               = format("tecton-%s-%s-eks-management-role", var.deployment_name, each.value)
+  tags               = local.tags
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "eks.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
+}
+
+# EKS MANAGEMENT [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "eks_management_satellite" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+  ])
+  policy_arn = each.value
+  role       = aws_iam_role.eks_satellite_management[*].name
+}
+
+# EKS VPC Management [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "tecton-eks-cluster-satellite-AmazonEKSVPCResourceController" {
+  for_each   = toset(var.satellite_regions)
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  role       = aws_iam_role.eks_management_satellite[each.value].name
+}
+
+# EKS NODE [Common : Databricks and EMR]
+resource "aws_iam_role" "eks_node_satellite" {
+  for_each           = toset(var.satellite_regions)
+  name               = "tecton-${var.deployment_name}-${each.value}-eks-worker-role"
+  tags               = local.tags
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
+}
+
+# EKS NODE [Common : Databricks and EMR]
+resource "aws_iam_policy" "eks_node_satellite" {
+  for_each = toset(var.satellite_regions)
+  name     = "tecton-${var.deployment_name}-${each.value}-eks-worker-policy"
+  policy   = data.template_file.eks_policy_json.rendered
+  tags     = local.tags
+}
+
+# EKS NODE [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "eks_node_satellite" {
+  for_each   = toset(var.satellite_regions)
+  policy_arn = aws_iam_policy.eks_node_satellite[each.key].arn
+  role       = aws_iam_role.eks_node_role.name
+}
+
+# EKS NODE [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "eks_node_satellite_policy" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+  ])
+  policy_arn = each.value
+  role       = aws_iam_role.eks_node_satellite[*].name
 }
 
 # EKS [Common : Databricks and EMR]
@@ -95,7 +178,7 @@ data "template_file" "eks_satellite_fargate_node" {
 resource "aws_iam_policy" "eks_fargate_satellite_node" {
   for_each = toset(var.satellite_regions)
 
-  name   = "tecton-${var.deployment_name}-${each.key}-eks-fargate"
+  name   = "tecton-${var.deployment_name}-${each.key}-eks-fargate-node"
   policy = data.template_file.eks_satellite_fargate_node[each.key].rendered
   tags   = local.tags
 }
@@ -164,4 +247,27 @@ resource "aws_iam_role_policy_attachment" "fargate_satellite_pod_execution" {
   for_each   = toset(var.satellite_regions)
   role       = aws_iam_role.eks_fargate_satellite_pod_execution[each.key].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+}
+
+#########################################
+########### Satellite cluster ###########
+#########################################
+output "fargate_satellite_kinesis_firehose_stream_role_name" {
+  value = {for region, v in aws_iam_role.kinesis_firehose_satellite_stream: region => v.name }
+}
+
+output "fargate_satellite_eks_fargate_pod_execution_role_name" {
+  value = {for region, v in aws_iam_role.eks_fargate_satellite_pod_execution: region => v.name }
+}
+
+output "eks_fargate_satellite_node_policy_name" {
+  value = { for region, v in aws_iam_policy.eks_fargate_satellite_node: region => v.name }
+}
+
+output "eks_satellite_node_role_name" {
+  value = {for region, v in aws_iam_role.eks_management_satellite: region => v.name}
+}
+
+output "eks_satellite_management_role_name" {
+  value = {for region, v in aws_iam_role.eks_node_satellite: region => v.name}
 }

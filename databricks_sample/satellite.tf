@@ -79,3 +79,11 @@ output "satellite_fargate_node_policy" {
     module.roles.eks_fargate_satellite_node_policy_name[local.satellite_region]
   ] : []
 }
+
+output "satellite_eks_node_role" {
+  value = local.is_this_satellite_region_enabled ? module.roles.eks_satellite_node_role_name[local.satellite_region] : ""
+}
+
+output "satellite_eks_management_role" {
+  value = local.is_this_satellite_region_enabled ? module.roles.eks_satellite_management_role_name[local.satellite_region] : ""
+}

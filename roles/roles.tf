@@ -7,13 +7,13 @@ locals {
     var.deployment_name
   )
   all_regions                         = concat(var.satellite_regions, [var.region])
-  satellite_feature_server_roles = formatlist("arn:aws:iam::${var.account_id}:role/tecton-${var.deployment_name}-%s-fargate-fs", var.satellite_regions)
+  satellite_feature_server_roles = formatlist("arn:aws:iam::%s:role/tecton-%s-%s-fargate-fs", var.account_id, var.deployment_name, var.satellite_regions)
   feature_server_roles = concat(
       [format("arn:aws:iam::%s:role/tecton-%s-fargate-fs", var.account_id, var.deployment_name)],
       local.satellite_feature_server_roles
   )
   s3_buckets = concat(
-    formatlist("arn:aws:s3:::tecton-${var.deployment_name}-%s", var.satellite_regions),
+    formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
     ["arn:aws:s3:::tecton-${var.deployment_name}"]
   )
   s3_objects = formatlist("%s/*", local.s3_buckets)
