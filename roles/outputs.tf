@@ -11,11 +11,11 @@ output "emr_master_role_name" {
 }
 
 output "emr_spark_instance_profile_arn" {
-  value = var.create_emr_roles ? aws_iam_instance_profile.emr_spark_role[0].arn : null
+  value = var.create_emr_roles ? aws_iam_instance_profile.emr_spark_instance_profile[0].arn : null
 }
 
 output "devops_role_name" {
-  value = aws_iam_role.devops.name
+  value = aws_iam_role.devops_role.name
 }
 
 output "eks_node_role_name" {

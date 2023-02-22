@@ -235,7 +235,7 @@ resource "aws_iam_policy" "devops_policy_2" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_ingest_role" {
+resource "aws_iam_policy" "devops_ingest_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-ingest-policy"
@@ -244,7 +244,7 @@ resource "aws_iam_policy" "devops_ingest_role" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_eks_role" {
+resource "aws_iam_policy" "devops_eks_policy" {
   name   = "tecton-${var.deployment_name}-devops-eks-policy"
   policy = data.template_file.devops_eks_policy_json.rendered
   tags   = local.tags
@@ -283,7 +283,7 @@ resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
 resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.devops_ingest_role[0].arn
+  policy_arn = aws_iam_policy.devops_ingest_policy[0].arn
   role       = aws_iam_role.devops_role.name
 }
 
@@ -297,7 +297,7 @@ resource "aws_iam_role_policy_attachment" "devops_fargate" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_policy_attachment" {
-  policy_arn = aws_iam_policy.devops_eks.arn
+  policy_arn = aws_iam_policy.devops_eks_policy.arn
   role       = aws_iam_role.devops_role.name
 }
 
@@ -472,7 +472,7 @@ data "template_file" "online_ingest_role_json" {
   }
 }
 
-resource "aws_iam_policy" "online_ingest_role" {
+resource "aws_iam_policy" "online_ingest_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-online-ingest"
@@ -541,7 +541,7 @@ resource "aws_iam_role_policy_attachment" "offline_lambda_role_vpc" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-  role       = aws_iam_role.offline_ingest[0].name
+  role       = aws_iam_role.offline_ingest_role[0].name
 }
 
 
@@ -662,7 +662,7 @@ resource "aws_iam_instance_profile" "emr_spark_instance_profile" {
 }
 
 # SPARK MASTER NODE ROLE : EMR
-resource "aws_iam_role" "emr_master" {
+resource "aws_iam_role" "emr_master_role" {
   count              = var.create_emr_roles ? 1 : 0
   name               = "tecton-${var.deployment_name}-emr-master-role"
   tags               = local.tags
