@@ -133,7 +133,6 @@ module "security_groups" {
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
   vpc_id                          = module.subnets.vpc_id
   allowed_CIDR_blocks             = var.allowed_CIDR_blocks
-  satellite_region                = local.satellite_region
   tags                            = { "tecton-accessible:${var.deployment_name}" : "true" }
 
   # Allow Tecton NLB to be public.
