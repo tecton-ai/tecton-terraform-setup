@@ -810,7 +810,7 @@ resource "aws_iam_policy" "fargate_logging" {
 resource "aws_iam_role_policy_attachment" "fargate_logging" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
-  policy_arn = aws_iam_policy.fargate_logging_policy[0].arn
+  policy_arn = aws_iam_policy.fargate_logging[0].arn
 }
 
 # FARGATE [Common : Databricks and EMR]
