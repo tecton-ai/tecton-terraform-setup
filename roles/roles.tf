@@ -102,7 +102,7 @@ data "template_file" "devops_fargate_role_json" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_fargate" {
+resource "aws_iam_policy" "devops_fargate_policy" {
   count = var.fargate_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-fargate-policy"
@@ -288,10 +288,10 @@ resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_fargate" {
+resource "aws_iam_role_policy_attachment" "devops_fargate_policy_attachment" {
   count = var.fargate_enabled ? 1 : 0
 
-  policy_arn = aws_iam_policy.devops_fargate[0].arn
+  policy_arn = aws_iam_policy.devops_fargate_policy[0].arn
   role       = aws_iam_role.devops_role.name
 }
 
@@ -337,7 +337,7 @@ POLICY
 }
 
 # EKS MANAGEMENT [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "eks_management_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "eks_management_policy" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -807,7 +807,7 @@ resource "aws_iam_policy" "fargate_logging" {
 }
 
 # FARGATE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "fargate_logging" {
+resource "aws_iam_role_policy_attachment" "logging" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
   policy_arn = aws_iam_policy.fargate_logging[0].arn
