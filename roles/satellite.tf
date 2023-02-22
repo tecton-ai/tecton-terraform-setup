@@ -32,11 +32,11 @@ POLICY
 
 # EKS MANAGEMENT [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "eks_management_satellite" {
-  for_each = setproduct([
+  for_each = toset(setproduct([
     "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
     "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  ], var.satellite_regions)
+  ], var.satellite_regions))
   policy_arn = each.value[0]
   role       = aws_iam_role.eks_management_satellite[each.value[1]].name
 }
@@ -79,12 +79,12 @@ resource "aws_iam_role_policy_attachment" "eks_node_satellite" {
 
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "eks_node_satellite_policy" {
-  for_each = setproduct([
+  for_each = toset(setproduct([
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-  ], var.satellite_regions)
+  ], var.satellite_regions))
   policy_arn = each.value[0]
   role       = aws_iam_role.eks_node_satellite[each.value[1]].name
 }
