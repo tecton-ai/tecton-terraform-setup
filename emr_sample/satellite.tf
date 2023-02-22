@@ -12,7 +12,7 @@ provider "aws" {
   }
 }
 
-# Only feature serving related infrastructer is brought up in the satellite region. We will not create EMR subnets in the satellite region.
+# Only feature serving related infrastructure is brought up in the satellite region. EMR networking will not be created in the satellite region.
 module "eks_satellite_subnets" {
   count = local.is_this_satellite_region_enabled ? 1 : 0
   providers = {
