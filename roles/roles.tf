@@ -387,7 +387,7 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
 }
 
 # EKS NODE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "eks_node_policy_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "eks_node_policy" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
@@ -527,7 +527,7 @@ resource "aws_iam_policy" "offline_ingest_role_policy" {
   tags   = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "offline_ingest_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "offline_ingest_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = aws_iam_policy.offline_ingest_role_policy[0].arn
@@ -785,7 +785,7 @@ resource "aws_iam_role" "eks_fargate_pod_execution" {
 }
 
 # FARGATE [Common : Databricks and EMR]
-data "aws_iam_policy_document" "fargate_logging" {
+data "aws_iam_policy_document" "fargate_logging_policy" {
   count   = var.fargate_enabled ? 1 : 0
   version = "2012-10-17"
   statement {
@@ -803,14 +803,14 @@ data "aws_iam_policy_document" "fargate_logging" {
 resource "aws_iam_policy" "fargate_logging" {
   count  = var.fargate_enabled ? 1 : 0
   name   = "tecton-${var.deployment_name}-fargate-logging"
-  policy = data.aws_iam_policy_document.fargate_logging[0].json
+  policy = data.aws_iam_policy_document.fargate_logging_policy[0].json
 }
 
 # FARGATE [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "fargate_logging" {
   count      = var.fargate_enabled ? 1 : 0
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
-  policy_arn = aws_iam_policy.fargate_logging[0].arn
+  policy_arn = aws_iam_policy.fargate_logging_policy[0].arn
 }
 
 # FARGATE [Common : Databricks and EMR]
