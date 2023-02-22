@@ -7,6 +7,7 @@
             "Action": [
                 "dynamodb:ConditionCheckItem",
                 "dynamodb:DescribeTable",
+                "dynamodb:GetIem",
                 "dynamodb:PutItem"
             ],
             "Resource": [
