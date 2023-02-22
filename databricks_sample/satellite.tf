@@ -15,7 +15,7 @@ provider "aws" {
 module "satellite_subnets" {
   count = local.is_this_satellite_region_enabled ? 1 : 0
   providers = {
-    aws = aws.satellite_aws
+    aws = aws.satellite-aws
   }
   source          = "../eks/vpc_subnets"
   deployment_name = var.deployment_name
