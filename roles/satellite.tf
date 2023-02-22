@@ -191,7 +191,7 @@ resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
 
 # FARGATE [Common : Databricks and EMR]
 data "aws_iam_policy_document" "fargate_satellite_logging_cross_account_write" {
-  for_each           = toset(var.satellite_regions)
+  count      = local.is_satellite_regions_enabled ?  1 : 0
   version = "2012-10-17"
   statement {
     actions = [
@@ -200,8 +200,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_cross_account_write" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:s3:::tecton-logs-aggregation/${var.deployment_name}-${each.value}",
-      "arn:aws:s3:::tecton-logs-aggregation/${var.deployment_name}-${each.value}/*"
+      "arn:aws:s3:::tecton-logs-aggregation/*"
     ]
   }
 }
@@ -210,7 +209,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_cross_account_write" {
 resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
   for_each = toset(var.satellite_regions)
   name     = "tecton-${var.deployment_name}-${each.value}-fargate-cross-account-write"
-  policy   = data.aws_iam_policy_document.fargate_satellite_logging_cross_account_write[each.value].json
+  policy   = data.aws_iam_policy_document.fargate_satellite_logging_cross_account_write[0].json
 }
 
 # Fargate satellite [Common : Databricks and EMR]
