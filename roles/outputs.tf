@@ -11,7 +11,7 @@ output "emr_master_role_name" {
 }
 
 output "emr_spark_instance_profile_arn" {
-  value = var.create_emr_roles ? aws_iam_instance_profile.emr_spark_instance_profile[0].arn : null
+  value = var.create_emr_roles ? aws_iam_instance_profile.emr_spark[0].arn : null
 }
 
 output "devops_role_name" {
@@ -46,5 +46,5 @@ output "fargate_eks_fargate_pod_execution_role_name" {
 }
 
 output "eks_fargate_node_policy_name" {
-  value = var.fargate_enabled ? aws_iam_policy.eks_fargate_node_policy[0].name : ""
+  value = var.fargate_enabled ? aws_iam_policy.eks_fargate_node[0].name : ""
 }

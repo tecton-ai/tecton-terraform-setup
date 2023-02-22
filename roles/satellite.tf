@@ -75,8 +75,8 @@ resource "aws_iam_policy" "eks_node_satellite" {
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "eks_node_satellite" {
   for_each   = toset(var.satellite_regions)
-  policy_arn = aws_iam_policy.eks_node_satellite[each.key].arn
-  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.eks_node_satellite[each.value].arn
+  role       = aws_iam_role.eks_node_satellite[each.value].name
 }
 
 # EKS NODE [Common : Databricks and EMR]
@@ -113,9 +113,9 @@ resource "aws_iam_policy" "satellite_ca" {
 
 # EKS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "satellite_ca_node" {
-  count      = local.is_satellite_regions_enabled ? 1 : 0
+  for_each   = toset(var.satellite_regions)
   policy_arn = aws_iam_policy.satellite_ca[0].arn
-  role       = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.eks_node_satellite[each.value].name
 }
 
 # EKS [Common : Databricks and EMR]
@@ -128,9 +128,9 @@ resource "aws_iam_policy" "cross_account_satellite_region" {
 
 # EKS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "cross_account_satellite_region" {
-  count      = local.is_satellite_regions_enabled ? 1 : 0
+  for_each   = toset(var.satellite_regions)
   policy_arn = aws_iam_policy.cross_account_satellite_region[0].arn
-  role       = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.eks_node_satellite[each.value].name
 }
 
 # DEVOPS [Common : Databricks and EMR]
@@ -156,7 +156,7 @@ resource "aws_iam_policy" "satellite_devops" {
 resource "aws_iam_role_policy_attachment" "satellite_devops" {
   count      = local.is_satellite_regions_enabled ?  1 : 0
   policy_arn = aws_iam_policy.satellite_devops[0].arn
-  role       = aws_iam_role.devops_role.name
+  role       = aws_iam_role.devops.name
 }
 
 # Fargate satellite [Common : Databricks and EMR]
@@ -229,8 +229,8 @@ data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
 # FARGATE SATELLITE [Common : Databricks and EMR]
 resource "aws_iam_policy" "fargate_satellite_logging" {
   for_each = toset(var.satellite_regions)
-  name   = "tecton-${var.deployment_name}-${each.key}-fargate-satellite-logging"
-  policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[each.key].json
+  name   = "tecton-${var.deployment_name}-${each.value}-fargate-satellite-logging"
+  policy = data.aws_iam_policy_document.fargate_satellite_logging_policy[each.value].json
 }
 
 # FARGATE SATELLITE [Common : Databricks and EMR]
@@ -243,7 +243,7 @@ resource "aws_iam_role_policy_attachment" "satellite_logging" {
 # FARGATE SATELLITE [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "fargate_satellite_pod_execution" {
   for_each   = toset(var.satellite_regions)
-  role       = aws_iam_role.eks_fargate_satellite_pod_execution[each.key].name
+  role       = aws_iam_role.eks_fargate_satellite_pod_execution[each.value].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
 
