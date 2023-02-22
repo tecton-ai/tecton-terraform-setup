@@ -3,11 +3,11 @@ output "spark_role_name" {
 }
 
 output "spark_role_arn" {
-  value = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : null
+  value = var.create_emr_roles ? aws_iam_role.emr_spark[0].name : null
 }
 
 output "emr_master_role_name" {
-  value = var.create_emr_roles ? aws_iam_role.emr_master_role[0].name : null
+  value = var.create_emr_roles ? aws_iam_role.emr_master[0].name : null
 }
 
 output "emr_spark_instance_profile_arn" {
@@ -15,23 +15,23 @@ output "emr_spark_instance_profile_arn" {
 }
 
 output "devops_role_name" {
-  value = aws_iam_role.devops_role.name
+  value = aws_iam_role.devops.name
 }
 
 output "eks_node_role_name" {
-  value = aws_iam_role.eks_node_role.name
+  value = aws_iam_role.eks_node.name
 }
 
 output "eks_management_role_name" {
-  value = aws_iam_role.eks_management_role.name
+  value = aws_iam_role.eks_management.name
 }
 
 output "online_ingest_role_arn" {
-  value = aws_iam_role.online_ingest_role[0].arn
+  value = aws_iam_role.online_ingest[0].arn
 }
 
 output "offline_ingest_role_arn" {
-  value = aws_iam_role.online_ingest_role[0].arn
+  value = aws_iam_role.online_ingest[0].arn
 }
 
 #########################################

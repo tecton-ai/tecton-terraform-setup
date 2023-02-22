@@ -76,7 +76,7 @@ data "template_file" "eks_fargate_node" {
 }
 
 # Fargate [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_fargate_node_policy" {
+resource "aws_iam_policy" "eks_fargate_node" {
   count = var.fargate_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
@@ -94,7 +94,7 @@ data "template_file" "devops_fargate_role_json" {
     FARGATE_ROLES           = jsonencode(local.feature_server_roles)
     FARGATE_POLICY_ARNS     = jsonencode(
       concat(
-        [aws_iam_policy.eks_fargate_node_policy[0].arn],
+        [aws_iam_policy.eks_fargate_node[0].arn],
         [for region in var.satellite_regions: aws_iam_policy.eks_fargate_satellite_node[region].arn]
       )
     )
@@ -102,7 +102,7 @@ data "template_file" "devops_fargate_role_json" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_fargate_policy" {
+resource "aws_iam_policy" "devops_fargate" {
   count = var.fargate_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-fargate-policy"
@@ -196,7 +196,7 @@ data "template_file" "emr_master_policy_json" {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
-    SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
+    SPARK_ROLE      = aws_iam_role.emr_spark[0].name
   }
 }
 
@@ -208,13 +208,13 @@ data "template_file" "emr_access_policy_json" {
     ACCOUNT_ID       = var.account_id
     DEPLOYMENT_NAME  = var.deployment_name
     REGION           = var.region
-    EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
-    SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
+    EMR_MANAGER_ROLE = aws_iam_role.emr_master[0].name
+    SPARK_ROLE       = aws_iam_role.emr_spark[0].name
   }
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role" "devops_role" {
+resource "aws_iam_role" "devops" {
   name               = "tecton-${var.deployment_name}-devops-role"
   tags               = local.tags
   assume_role_policy = var.external_id != "" ? data.template_file.assume_role_external_id_policy.rendered : data.template_file.assume_role_policy.rendered
@@ -235,7 +235,7 @@ resource "aws_iam_policy" "devops_policy_2" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_ingest_policy" {
+resource "aws_iam_policy" "devops_ingest" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-ingest-policy"
@@ -244,14 +244,14 @@ resource "aws_iam_policy" "devops_ingest_policy" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_eks_policy" {
+resource "aws_iam_policy" "devops_eks" {
   name   = "tecton-${var.deployment_name}-devops-eks-policy"
   policy = data.template_file.devops_eks_policy_json.rendered
   tags   = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
+resource "aws_iam_policy" "devops_eks_vpc_endpoint" {
   count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-eks-vpce"
@@ -260,7 +260,7 @@ resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_policy" "devops_elasticache_policy" {
+resource "aws_iam_policy" "devops_elasticache" {
   count  = var.elasticache_enabled ? 1 : 0
   name   = "tecton-${var.deployment_name}-devops-elasticache-policy"
   policy = data.template_file.devops_elasticache_policy_json.rendered
@@ -270,54 +270,54 @@ resource "aws_iam_policy" "devops_elasticache_policy" {
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_policy_attachment_1" {
   policy_arn = aws_iam_policy.devops_policy_1.arn
-  role       = aws_iam_role.devops_role.name
+  role       = aws_iam_role.devops.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
   policy_arn = aws_iam_policy.devops_policy_2.arn
-  role       = aws_iam_role.devops_role.name
+  role       = aws_iam_role.devops.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_ingest_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "devops_ingest" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.devops_ingest_policy[0].arn
-  role       = aws_iam_role.devops_role.name
+  policy_arn = aws_iam_policy.devops_ingest[0].arn
+  role       = aws_iam_role.devops.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_fargate_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "devops_fargate" {
   count = var.fargate_enabled ? 1 : 0
 
-  policy_arn = aws_iam_policy.devops_fargate_policy[0].arn
-  role       = aws_iam_role.devops_role.name
+  policy_arn = aws_iam_policy.devops_fargate[0].arn
+  role       = aws_iam_role.devops.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_eks_policy_attachment" {
-  policy_arn = aws_iam_policy.devops_eks_policy.arn
-  role       = aws_iam_role.devops_role.name
+resource "aws_iam_role_policy_attachment" "devops_eks" {
+  policy_arn = aws_iam_policy.devops_eks.arn
+  role       = aws_iam_role.devops.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_eks_vpc_endpoint_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "devops_eks_vpc_endpoint" {
   count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
 
-  policy_arn = aws_iam_policy.devops_eks_vpc_endpoint_policy[0].arn
-  role       = aws_iam_role.devops_role.name
+  policy_arn = aws_iam_policy.devops_eks_vpc_endpoint[0].arn
+  role       = aws_iam_role.devops.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "devops_elasticache_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "devops_elasticache" {
   count      = var.elasticache_enabled ? 1 : 0
-  policy_arn = aws_iam_policy.devops_elasticache_policy[0].arn
-  role       = aws_iam_role.devops_role.name
+  policy_arn = aws_iam_policy.devops_elasticache[0].arn
+  role       = aws_iam_role.devops.name
 }
 
 # EKS MANAGEMENT [Common : Databricks and EMR]
-resource "aws_iam_role" "eks_management_role" {
+resource "aws_iam_role" "eks_management" {
   name               = "tecton-${var.deployment_name}-eks-management-role"
   tags               = local.tags
   assume_role_policy = <<POLICY
@@ -337,24 +337,24 @@ POLICY
 }
 
 # EKS MANAGEMENT [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "eks_management_policy" {
+resource "aws_iam_role_policy_attachment" "eks_management" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
   ])
   policy_arn = each.value
-  role       = aws_iam_role.eks_management_role.name
+  role       = aws_iam_role.eks_management.name
 }
 
 # EKS VPC Management [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "tecton-eks-cluster-AmazonEKSVPCResourceController" {
   count      = var.fargate_enabled ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  role       = aws_iam_role.eks_management_role.name
+  role       = aws_iam_role.eks_management.name
 }
 
 # EKS NODE [Common : Databricks and EMR]
-resource "aws_iam_role" "eks_node_role" {
+resource "aws_iam_role" "eks_node" {
   name               = "tecton-${var.deployment_name}-eks-worker-role"
   tags               = local.tags
   assume_role_policy = <<POLICY
@@ -374,16 +374,16 @@ POLICY
 }
 
 # EKS NODE [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_node_policy" {
+resource "aws_iam_policy" "eks_node" {
   name   = "tecton-${var.deployment_name}-eks-worker-policy"
   policy = data.template_file.eks_policy_json.rendered
   tags   = local.tags
 }
 
 # EKS NODE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
-  policy_arn = aws_iam_policy.eks_node_policy.arn
-  role       = aws_iam_role.eks_node_role.name
+resource "aws_iam_role_policy_attachment" "eks_node" {
+  policy_arn = aws_iam_policy.eks_node.arn
+  role       = aws_iam_role.eks_node.name
 }
 
 # EKS NODE [Common : Databricks and EMR]
@@ -395,11 +395,11 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
   ])
   policy_arn = each.value
-  role       = aws_iam_role.eks_node_role.name
+  role       = aws_iam_role.eks_node.name
 }
 
 # Spark Access Policy : EMR only
-resource "aws_iam_policy" "emr_access_policy" {
+resource "aws_iam_policy" "emr_access" {
   count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-spark-access-policy-emr"
   policy = data.template_file.emr_access_policy_json[0].rendered
@@ -409,8 +409,8 @@ resource "aws_iam_policy" "emr_access_policy" {
 # EKS NODE : EMR Only attachment
 resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment_emr" {
   count      = var.create_emr_roles ? 1 : 0
-  policy_arn = aws_iam_policy.emr_access_policy[0].arn
-  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.emr_access[0].arn
+  role       = aws_iam_role.eks_node.name
 }
 
 provider "aws" {
@@ -418,7 +418,7 @@ provider "aws" {
 }
 
 # Spark Common : Databricks and EMR
-resource "aws_iam_policy" "common_spark_policy" {
+resource "aws_iam_policy" "common_spark" {
   provider = aws.databricks-account
   name     = "tecton-${var.deployment_name}-common-spark-policy"
   policy   = var.create_emr_roles ? data.template_file.emr_spark_policy_json[0].rendered : data.template_file.spark_policy_json[0].rendered
@@ -426,9 +426,9 @@ resource "aws_iam_policy" "common_spark_policy" {
 }
 
 # Spark Common : Databricks and EMR
-resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "common_spark" {
   provider   = aws.databricks-account
-  policy_arn = aws_iam_policy.common_spark_policy.arn
+  policy_arn = aws_iam_policy.common_spark.arn
   role       = var.create_emr_roles ? (var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role") : var.spark_role_name
 }
 
@@ -452,7 +452,7 @@ data "aws_iam_policy_document" "ingest_api_assume_policy" {
 }
 
 # Online Ingest
-resource "aws_iam_role" "online_ingest_role" {
+resource "aws_iam_role" "online_ingest" {
   count = var.enable_ingest_api ? 1 : 0
 
   name               = "tecton-${var.deployment_name}-online-ingest"
@@ -472,7 +472,7 @@ data "template_file" "online_ingest_role_json" {
   }
 }
 
-resource "aws_iam_policy" "online_ingest_role_policy" {
+resource "aws_iam_policy" "online_ingest_role" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-online-ingest"
@@ -483,8 +483,8 @@ resource "aws_iam_policy" "online_ingest_role_policy" {
 resource "aws_iam_role_policy_attachment" "online_ingest_attachment" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.online_ingest_role_policy[0].arn
-  role       = aws_iam_role.online_ingest_role[0].name
+  policy_arn = aws_iam_policy.online_ingest_role[0].arn
+  role       = aws_iam_role.online_ingest[0].name
 }
 
 # Needed for Lambda to talk to Redis
@@ -494,12 +494,12 @@ resource "aws_iam_role_policy_attachment" "online_lambda_role_vpc" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-  role       = aws_iam_role.online_ingest_role[0].name
+  role       = aws_iam_role.online_ingest[0].name
 }
 
 
 // Offline Ingest
-resource "aws_iam_role" "offline_ingest_role" {
+resource "aws_iam_role" "offline_ingest" {
   count = var.enable_ingest_api ? 1 : 0
 
   name               = "tecton-${var.deployment_name}-offline-ingest"
@@ -519,7 +519,7 @@ data "template_file" "offline_ingest_role_json" {
   }
 }
 
-resource "aws_iam_policy" "offline_ingest_role_policy" {
+resource "aws_iam_policy" "offline_ingest_role" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-offline-ingest"
@@ -527,11 +527,11 @@ resource "aws_iam_policy" "offline_ingest_role_policy" {
   tags   = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "offline_ingest_attachment" {
+resource "aws_iam_role_policy_attachment" "offline_ingest" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.offline_ingest_role_policy[0].arn
-  role       = aws_iam_role.offline_ingest_role[0].name
+  policy_arn = aws_iam_policy.offline_ingest_role[0].arn
+  role       = aws_iam_role.offline_ingest[0].name
 }
 
 # Needed for Lambda to talk to Redis
@@ -541,7 +541,7 @@ resource "aws_iam_role_policy_attachment" "offline_lambda_role_vpc" {
   count = var.enable_ingest_api ? 1 : 0
 
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-  role       = aws_iam_role.offline_ingest_role[0].name
+  role       = aws_iam_role.offline_ingest[0].name
 }
 
 
@@ -559,7 +559,7 @@ data "template_file" "online_ingest_management_policy_json" {
   }
 }
 
-resource "aws_iam_policy" "online_ingest_management_policy" {
+resource "aws_iam_policy" "online_ingest_management" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-ingest-manage"
@@ -567,15 +567,15 @@ resource "aws_iam_policy" "online_ingest_management_policy" {
   tags   = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "online_ingest_management_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "online_ingest_management" {
   count = var.enable_ingest_api ? 1 : 0
 
-  policy_arn = aws_iam_policy.online_ingest_management_policy[0].arn
-  role       = aws_iam_role.eks_node_role.id
+  policy_arn = aws_iam_policy.online_ingest_management[0].arn
+  role       = aws_iam_role.eks_node.id
 }
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
-resource "aws_iam_role" "spark_cross_account_role" {
+resource "aws_iam_role" "spark_cross_account" {
   count                = var.create_emr_roles ? 0 : 1
   name                 = "tecton-${var.deployment_name}-cross-account-spark-access"
   max_session_duration = 43200
@@ -608,11 +608,11 @@ resource "aws_iam_policy" "cross_account_databricks_policy" {
 resource "aws_iam_role_policy_attachment" "cross_account_databricks_policy_attachment" {
   count      = var.create_emr_roles ? 0 : 1
   policy_arn = aws_iam_policy.cross_account_databricks_policy[0].arn
-  role       = aws_iam_role.spark_cross_account_role[0].name
+  role       = aws_iam_role.spark_cross_account[0].name
 }
 
 # SPARK ROLE : EMR
-resource "aws_iam_role" "emr_spark_role" {
+resource "aws_iam_role" "emr_spark" {
   count              = var.create_emr_roles ? 1 : 0
   name               = var.emr_spark_role_name != null ? var.emr_spark_role_name : "tecton-${var.deployment_name}-emr-spark-role"
   tags               = local.tags
@@ -633,7 +633,7 @@ POLICY
 }
 
 # SPARK ROLE POLICY : EMR
-resource "aws_iam_policy" "emr_spark_policy" {
+resource "aws_iam_policy" "emr_spark" {
   count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-spark-policy-emr"
   policy = data.template_file.emr_spark_policy_json[0].rendered
@@ -641,28 +641,28 @@ resource "aws_iam_policy" "emr_spark_policy" {
 }
 
 # SPARK ROLE POLICY ATTACHMENT: EMR
-resource "aws_iam_role_policy_attachment" "emr_spark_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "emr_spark" {
   count      = var.create_emr_roles ? 1 : 0
-  policy_arn = aws_iam_policy.emr_spark_policy[0].arn
-  role       = aws_iam_role.emr_spark_role[0].name
+  policy_arn = aws_iam_policy.emr_spark[0].arn
+  role       = aws_iam_role.emr_spark[0].name
 }
 
 # SPARK ROLE SSM POLICY ATTACHMENT: EMR
-resource "aws_iam_role_policy_attachment" "emr_ssm_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "emr_ssm" {
   count      = var.create_emr_roles ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  role       = aws_iam_role.emr_spark_role[0].name
+  role       = aws_iam_role.emr_spark[0].name
 }
 
 # SPARK INSTANCE PROFILE : EMR
-resource "aws_iam_instance_profile" "emr_spark_instance_profile" {
+resource "aws_iam_instance_profile" "emr_spark" {
   count = var.create_emr_roles ? 1 : 0
   name  = "tecton-${var.deployment_name}-emr-spark-role"
-  role  = aws_iam_role.emr_spark_role[0].name
+  role  = aws_iam_role.emr_spark[0].name
 }
 
 # SPARK MASTER NODE ROLE : EMR
-resource "aws_iam_role" "emr_master_role" {
+resource "aws_iam_role" "emr_master" {
   count              = var.create_emr_roles ? 1 : 0
   name               = "tecton-${var.deployment_name}-emr-master-role"
   tags               = local.tags
@@ -683,7 +683,7 @@ POLICY
 }
 
 # SPARK MASTER POLICY : EMR
-resource "aws_iam_policy" "emr_master_policy" {
+resource "aws_iam_policy" "emr_master" {
   count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-master-policy-emr"
   policy = data.template_file.emr_master_policy_json[0].rendered
@@ -691,10 +691,10 @@ resource "aws_iam_policy" "emr_master_policy" {
 }
 
 # SPARK MASTER POLICY ATTACHMENT : EMR
-resource "aws_iam_role_policy_attachment" "emr_master_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "emr_master" {
   count      = var.create_emr_roles ? 1 : 0
-  policy_arn = aws_iam_policy.emr_master_policy[0].arn
-  role       = aws_iam_role.emr_master_role[0].name
+  policy_arn = aws_iam_policy.emr_master[0].arn
+  role       = aws_iam_role.emr_master[0].name
 }
 
 resource "aws_iam_service_linked_role" "spot" {
