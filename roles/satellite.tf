@@ -31,13 +31,17 @@ POLICY
 }
 
 # EKS MANAGEMENT [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "eks_management_service_satellite" {
+  for_each   = toset(var.satellite_regions)
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.eks_management_satellite[each.value].name
+}
+
+# EKS MANAGEMENT [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "eks_management_satellite" {
-  for_each = toset([
-    "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
-    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
-  ])
-  policy_arn = each.value
-  role       = aws_iam_role.eks_management_satellite[*].name
+  for_each   = toset(var.satellite_regions)
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_management_satellite[each.value].name
 }
 
 # EKS VPC Management [Common : Databricks and EMR]
