@@ -12,6 +12,7 @@ provider "aws" {
   }
 }
 
+# Only feature serving related infrastructer is brought up in the satellite region. We will not create EMR subnets in the satellite region.
 module "eks_satellite_subnets" {
   count = local.is_this_satellite_region_enabled ? 1 : 0
   providers = {
@@ -77,4 +78,12 @@ output "satellite_fargate_node_policy" {
   value = local.is_this_satellite_region_enabled ? [
     module.roles[0].eks_fargate_satellite_node_policy_name[local.satellite_region]
   ] : []
+}
+
+output "satellite_eks_node_role" {
+  value = local.is_this_satellite_region_enabled ? module.roles[0].eks_satellite_node_role_name[local.satellite_region] : ""
+}
+
+output "satellite_eks_management_role" {
+  value = local.is_this_satellite_region_enabled ? module.roles[0].eks_satellite_management_role_name[local.satellite_region] : ""
 }

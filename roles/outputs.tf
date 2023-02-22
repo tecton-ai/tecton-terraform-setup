@@ -48,27 +48,3 @@ output "fargate_eks_fargate_pod_execution_role_name" {
 output "eks_fargate_node_policy_name" {
   value = var.fargate_enabled ? aws_iam_policy.eks_fargate_node_policy[0].name : ""
 }
-
-#########################################
-########### Satellite cluster ###########
-#########################################
-output "fargate_satellite_kinesis_firehose_stream_role_name" {
-  value = {for region, v in aws_iam_role.kinesis_firehose_satellite_stream: region => v.name }
-}
-
-output "fargate_satellite_eks_fargate_pod_execution_role_name" {
-  value = {for region, v in aws_iam_role.eks_fargate_satellite_pod_execution: region => v.name }
-}
-
-output "eks_fargate_satellite_node_policy_name" {
-  value = { for region, v in aws_iam_policy.eks_fargate_satellite_node: region => v.name }
-}
-
-output "eks_satellite_node_role_name" {
-  value = {for region, v in aws_iam_role.eks_management_satellite: region => v.name}
-}
-
-output "eks_satellite_management_role_name" {
-  value = {for region, v in aws_iam_role.eks_node_satellite: region => v.name}
-  aws_iam_role.eks_management_role.name
-}
