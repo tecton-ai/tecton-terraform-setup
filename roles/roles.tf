@@ -76,7 +76,7 @@ data "template_file" "eks_fargate_node" {
 }
 
 # Fargate [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_fargate_node" {
+resource "aws_iam_policy" "eks_fargate_node_policy" {
   count = var.fargate_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
@@ -94,7 +94,7 @@ data "template_file" "devops_fargate_role_json" {
     FARGATE_ROLES           = jsonencode(local.feature_server_roles)
     FARGATE_POLICY_ARNS     = jsonencode(
       concat(
-        [aws_iam_policy.eks_fargate_node[0].arn],
+        [aws_iam_policy.eks_fargate_node_policy[0].arn],
         [for region in var.satellite_regions: aws_iam_policy.eks_fargate_satellite_node[region].arn]
       )
     )
