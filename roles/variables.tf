@@ -10,6 +10,12 @@ variable "region" {
   type = string
 }
 
+variable "satellite_regions" {
+  type        = list(string)
+  description = "The satellite regions for Tecton deployment. Only enable this if instructed to by Tecton support."
+  default     = []
+}
+
 variable "tecton_assuming_account_id" {
   type        = string
   description = "The account Tecton will use to assume any cross-account roles."
@@ -62,5 +68,5 @@ variable "enable_ingest_api" {
 variable "fargate_enabled" {
   default     = false
   type        = bool
-  description = "Whether or not to enable resources supporting Fargate. Default: false."
+  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters, if `var.satellite_regions` specified. Default: false."
 }

@@ -11,15 +11,10 @@
                 "iam:DetachRolePolicy",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
-            ],
+            "Resource": ${FARGATE_ROLES},
             "Condition": {
                 "StringEquals": {
-                    "iam:PolicyARN":
-                        [
-                            "${FARGATE_POLICY_ARN}"
-                        ]
+                    "iam:PolicyARN": ${FARGATE_POLICY_ARNS}
                 }
             }
         },
@@ -31,11 +26,10 @@
                 "iam:CreateRole",
                 "iam:DescribeRole",
                 "iam:TagRole",
-                "iam:DeleteRole"
+                "iam:DeleteRole",
+                "iam:UpdateAssumeRolePolicy"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-fs"
-            ]
+            "Resource": ${FARGATE_ROLES}
         },
         {
             "Sid": "KinesisStream",
@@ -48,7 +42,10 @@
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams"
             ],
-            "Resource": ["arn:aws:firehose:${REGION}:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*"]
+            "Resource": [
+                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*",
+                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-*-fargate-log-delivery-stream*"
+            ]
         },
         {
             "Sid": "FargateProfile",
@@ -60,8 +57,8 @@
                 "eks:TagResource"
             ],
             "Resource": [
-                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
+                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
             ]
         },
         {

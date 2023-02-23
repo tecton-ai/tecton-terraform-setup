@@ -87,8 +87,8 @@
                 "eks:DeleteCluster"
             ],
             "Resource": [
-                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:${REGION}:${ACCOUNT_ID}:nodegroup/tecton-${DEPLOYMENT_NAME}*"
+                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:*:${ACCOUNT_ID}:nodegroup/tecton-${DEPLOYMENT_NAME}*"
             ]
         },
         {
