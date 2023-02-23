@@ -34,6 +34,9 @@ output "offline_ingest_role_arn" {
   value = aws_iam_role.online_ingest_role[0].arn
 }
 
+#########################################
+################ Fargate ################
+#########################################
 output "fargate_kinesis_firehose_stream_role_name" {
   value = var.fargate_enabled ? aws_iam_role.kinesis_firehose_stream[0].name : ""
 }

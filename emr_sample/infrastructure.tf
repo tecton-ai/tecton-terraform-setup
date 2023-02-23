@@ -6,6 +6,7 @@ terraform {
     }
   }
 }
+
 provider "aws" {
   region = var.region
   assume_role {
@@ -29,6 +30,12 @@ variable "deployment_name" {
 
 variable "region" {
   type = string
+}
+
+variable "satellite_regions" {
+  type        = list(string)
+  description = "The satellite regions for Tecton deployment. Only enable this if instructed to by Tecton support. Only the first element (region) is used today. See satellite.tf for more info."
+  default     = []
 }
 
 variable "account_id" {
@@ -85,7 +92,7 @@ variable "enable_eks_ingress_vpc_endpoint" {
 
 variable "fargate_enabled" {
   default     = false
-  description = "Enable fargate on cluster."
+  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters, if `var.satellite_regions` specified."
   type        = bool
 }
 
@@ -163,6 +170,7 @@ module "roles" {
   account_id                      = var.account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id
   region                          = var.region
+  satellite_regions               = var.satellite_regions
   create_emr_roles                = true
   elasticache_enabled             = var.elasticache_enabled
   external_id                     = random_id.external_id.id

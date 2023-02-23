@@ -59,7 +59,7 @@
                 "s3:PutObjectAcl"
             ],
             "Resource": [
-		"arn:aws:s3:::tecton-logs-aggregation/*"
+                "arn:aws:s3:::tecton-logs-aggregation/*"
             ]
         },
         {

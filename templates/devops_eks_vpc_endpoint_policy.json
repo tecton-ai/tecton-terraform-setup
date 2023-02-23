@@ -58,6 +58,24 @@
           "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
         }
       }
+    },
+    {
+      "Sid": "EksVpcOwnedEndpointModify",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DeleteVpcEndpointServiceConfigurations",
+        "ec2:ModifyVpcEndpointServicePermissions",
+        "ec2:DeleteVpcEndpoints",
+        "ec2:ModifyVpcEndpoint"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/tecton-owned": "true"
+        }
+      }
     }
   ]
 }

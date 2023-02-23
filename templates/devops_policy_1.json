@@ -17,7 +17,7 @@
                 "s3:PutBucketVersioning",
                 "s3:PutLifecycleConfiguration"
             ],
-            "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"]
+            "Resource": ${S3_BUCKETS}
         },
         {
             "Sid": "S3Object",
@@ -29,7 +29,7 @@
                 "s3:GetObjectTagging",
                 "s3:PutObjectTagging"
             ],
-            "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"]
+            "Resource": ${S3_OBJECTS}
         },
         {
             "Sid": "VerifyPermissionsAndCreateInstanceProfiles",
@@ -93,13 +93,13 @@
                 "autoscaling:DetachLoadBalancerTargetGroups"
             ],
             "Resource": [
-                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:listener/app/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
-                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
-                "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:autoscaling:${REGION}:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:autoscaling:${REGION}:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener/app/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:loadbalancer/net/${DEPLOYMENT_NAME_CONCAT}*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
             ]
         },
         {

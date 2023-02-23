@@ -63,17 +63,23 @@ variable "enable_eks_ingress_vpc_endpoint" {
   type        = bool
 }
 
+variable "satellite_regions" {
+  type        = list(string)
+  description = "The satellite regions for Tecton deployment. Only enable this if instructed to by Tecton support. Only the first element (region) is used today. See satellite.tf for more info."
+  default     = []
+}
+
+variable "fargate_enabled" {
+  default     = false
+  description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters, if `var.satellite_regions` specified."
+  type        = bool
+}
+
 provider "aws" {
   region = var.region
   assume_role {
     role_arn = var.tecton_dataplane_account_role_arn
   }
-}
-
-variable "fargate_enabled" {
-  default     = false
-  description = "Enable fargate on cluster."
-  type        = bool
 }
 
 provider "aws" {
@@ -98,6 +104,7 @@ module "roles" {
   enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
   account_id                      = var.account_id
   region                          = var.region
+  satellite_regions               = var.satellite_regions
   spark_role_name                 = var.spark_role_name
   databricks_account_id           = var.external_databricks_account_id
   tecton_assuming_account_id      = var.tecton_assuming_account_id

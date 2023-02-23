@@ -1,0 +1,22 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CreateSatelliteServingDynamoDBServiceLinkedRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication*"
+            ],
+            "Condition": {
+                "StringLike": {
+                    "iam:AWSServiceName": [
+                        "replication.dynamodb.amazonaws.com"
+                    ]
+                }
+            }
+        }
+    ]
+}
