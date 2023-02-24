@@ -16,11 +16,11 @@
                 "dynamodb:PutItem",
                 "dynamodb:Query",
                 "dynamodb:TagResource",
-                "dynamodb:UpdateTable",
-                "dynamodb:CreateTableReplica",
-                "dynamodb:Scan"
+                "dynamodb:UpdateTable"
             ],
-            "Resource": ${DYNAMO_TABLES}
+            "Resource": [
+                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
         },
         {
             "Sid": "DynamoDBGlobal",
@@ -59,7 +59,7 @@
                 "s3:PutObjectAcl"
             ],
             "Resource": [
-                "arn:aws:s3:::tecton-logs-aggregation/*"
+		        "arn:aws:s3:::tecton-logs-aggregation/*"
             ]
         },
         {
