@@ -16,11 +16,10 @@
                 "dynamodb:PutItem",
                 "dynamodb:Query",
                 "dynamodb:TagResource",
-                "dynamodb:UpdateTable"
+                "dynamodb:UpdateTable",
+                "dynamodb:CreateTableReplica"
             ],
-            "Resource": [
-                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
-            ]
+            "Resource": ${DYNAMO_TABLES}
         },
         {
             "Sid": "DynamoDBGlobal",
