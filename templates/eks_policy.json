@@ -17,7 +17,8 @@
                 "dynamodb:Query",
                 "dynamodb:TagResource",
                 "dynamodb:UpdateTable",
-                "dynamodb:CreateTableReplica"
+                "dynamodb:CreateTableReplica",
+                "dynamodb:Scan"
             ],
             "Resource": ${DYNAMO_TABLES}
         },
