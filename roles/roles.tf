@@ -17,8 +17,7 @@ locals {
     ["arn:aws:s3:::tecton-${var.deployment_name}"]
   )
   s3_objects = formatlist("%s/*", local.s3_buckets)
-  dynamo_tables = local.is_satellite_regions_enabled ? format("arn:aws:dynamodb:*:%s:table/tecton-%s*", var.account_id, var.deployment_name)]
-   : format("arn:aws:dynamodb:%s:%s:table/tecton-%s*", var.region, var.account_id, var.deployment_name)
+  dynamo_tables = local.is_satellite_regions_enabled ? format("arn:aws:dynamodb:*:%s:table/tecton-%s*", var.account_id, var.deployment_name) : format("arn:aws:dynamodb:%s:%s:table/tecton-%s*", var.region, var.account_id, var.deployment_name)
 }
 
 # EKS [Common : Databricks and EMR]
