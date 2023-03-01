@@ -31,7 +31,14 @@
         "lambda:PublishLayerVersion",
         "lambda:GetLayerVersion",
         "lambda:ListVersionsByFunction",
-        "lambda:DeleteFunction"  
+        "lambda:DeleteFunction",
+        "lambda:ListLayerVersions",
+        "lambda:DeleteLayerVersion",
+        "lambda:CreateAlias",
+        "lambda:DeleteAlias",
+        "lambda:ListAliases",
+        "lambda:GetAlias",
+        "lambda:UpdateAlias"  
       ],
       "Resource": [
         "arn:aws:lambda:${REGION}:${ACCOUNT_ID}:function:tecton-*",
@@ -63,15 +70,19 @@
       ]
     },
     {
-      "Sid": "ListResourcesForDiscovery",
+      "Sid": "ManageLoadBalancerForwardingRules",
       "Effect": "Allow",
       "Action": [
         "elasticloadbalancing:DescribeLoadBalancers",
         "elasticloadbalancing:DescribeTags",
         "elasticloadbalancing:DescribeListeners",
         "elasticloadbalancing:DescribeRules",
+        "elasticloadbalancing:CreateRule",
+        "elasticloadbalancing:CreateTargetGroup",
         "elasticloadbalancing:DescribeTargetGroups",
         "elasticloadbalancing:DescribeTargetHealth",
+        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:DeregisterTargets",
 
         "kinesis:ListStreams"
       ],
