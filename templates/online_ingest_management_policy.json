@@ -7,7 +7,8 @@
       "Action": [
         "elasticloadbalancing:CreateRule",
         "elasticloadbalancing:CreateTargetGroup",
-        "elasticloadbalancing:RegisterTargets"
+        "elasticloadbalancing:RegisterTargets",
+        "elasticloadbalancing:DeregisterTargets"
       ],
       "Resource": [
         "arn:aws:elasticloadbalancing:${REGION}:${ACCOUNT_ID}:listener/net/tecton-${DEPLOYMENT_NAME}*",
@@ -77,12 +78,8 @@
         "elasticloadbalancing:DescribeTags",
         "elasticloadbalancing:DescribeListeners",
         "elasticloadbalancing:DescribeRules",
-        "elasticloadbalancing:CreateRule",
-        "elasticloadbalancing:CreateTargetGroup",
         "elasticloadbalancing:DescribeTargetGroups",
         "elasticloadbalancing:DescribeTargetHealth",
-        "elasticloadbalancing:RegisterTargets",
-        "elasticloadbalancing:DeregisterTargets",
 
         "kinesis:ListStreams"
       ],
