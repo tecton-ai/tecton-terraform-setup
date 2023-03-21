@@ -33,29 +33,16 @@ resource "aws_iam_role" "cross_account_role" {
 }
 POLICY
 }
-resource "aws_iam_policy" "cross_account_policy" {
-  name = "tecton-${var.deployment_name}-cross-account-policy"
-  policy = templatefile("${path.module}/../templates/ca_policy.json", {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-    SPARK_ROLE      = local.spark_role_name
-  })
-  tags = local.tags
-}
-
-resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
-  policy_arn = aws_iam_policy.cross_account_policy.arn
-  role       = aws_iam_role.cross_account_role.name
-}
 
 # SPARK ROLE
 resource "aws_iam_policy" "common_spark_policy" {
   name = "tecton-${var.deployment_name}-common-spark-policy"
   policy = templatefile("${path.module}/../templates/spark_policy.json", {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
+    ACCOUNT_ID                               = var.account_id
+    DEPLOYMENT_NAME                          = var.deployment_name
+    REGION                                   = var.region
+    MATERIALIZED_DATA_ACCOUNT_ID             = var.materialized_data_account_id
+    MATERIALIZED_DATA_CROSS_ACCOUNT_ROLE_ARN = var.materialized_data_cross_acccount_role_arn
   })
   tags = local.tags
 }

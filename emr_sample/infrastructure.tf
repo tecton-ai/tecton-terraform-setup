@@ -23,21 +23,25 @@ locals {
   # Get this values from your Tecton rep
   tecton_assuming_account_id = "1234567890"
 
-  # OPTIONAL for EMR notebook clusters in a different account (see optional block at end of file)
-  # cross_account_arn = "arn:aws:iam::9876543210:root"
-}
+  # External ID for the cross-account EMR role. This should be the same external id as the cross-account Dynamo and S3 role
+  emr_cross_account_external_id = "dahfoewaifcnosdih"
 
-resource "random_id" "external_id" {
-  byte_length = 16
+  # Role used for EMR to read/write to Dynamo and s3
+  materialized_data_cross_account_role_arn = "arn:aws:iam::9876543210:root"
+
+  # Id for the AWS account where Dynamo and S3 live.
+  materialized_data_account_id = "823987328479"
 }
 
 module "tecton" {
-  source                     = "../deployment"
-  deployment_name            = local.deployment_name
-  account_id                 = local.account_id
-  tecton_assuming_account_id = local.tecton_assuming_account_id
-  region                     = local.region
-  cross_account_external_id  = random_id.external_id.id
+  source                                    = "../deployment"
+  deployment_name                           = local.deployment_name
+  account_id                                = local.account_id
+  tecton_assuming_account_id                = local.tecton_assuming_account_id
+  region                                    = local.region
+  cross_account_external_id                 = local.emr_cross_account_external_id
+  materialized_data_account_id              = local.materialized_data_account_id
+  materialized_data_cross_acccount_role_arn = local.materialized_data_cross_account_role_arn
 
   create_emr_roles = true
 }
@@ -58,17 +62,17 @@ module "subnets" {
 
 
 module "redis" {
-  source                   = "../emr/redis"
+  source = "../emr/redis"
   # See https://docs.tecton.ai/latest/setting-up-tecton/configuring-redis.html
   # By default Tecton comes with DynamoDB as the online store but you can optionally choose
   # to use Redis.
   # Enable by setting count to 1.
-  count                    = 0
-  redis_subnet_id          = module.subnets.emr_subnet_id
-  redis_security_group_id  = module.security_groups.emr_security_group_id
-  deployment_name          = local.deployment_name
+  count                   = 0
+  redis_subnet_id         = module.subnets.emr_subnet_id
+  redis_security_group_id = module.security_groups.emr_security_group_id
+  deployment_name         = local.deployment_name
 }
-  
+
 locals {
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
   notebook_cluster_count = 0
@@ -127,66 +131,3 @@ module "emr_debugging" {
   log_uri_bucket          = module.notebook_cluster[0].logs_s3_bucket.bucket
   log_uri_bucket_arn      = module.notebook_cluster[0].logs_s3_bucket.arn
 }
-
-##############################################################################################
-# OPTIONAL
-# creates subnets and notebook cluster for EMR on another account
-# note that for full functionality, you must also give this account access to the underlying
-# data sources tecton uses
-#
-# To use EMR notebooks in a different account than your Tecton account, uncomment the below
-# modules and also the relevant local vars
-##############################################################################################
-
-# provider "aws" {
-#   region = "this-accounts-region"
-
-#   assume_role {
-#     role_arn = "another-account-role-arn"
-#     # Once you run terraform for the first time, type `terraform output`
-#     # and copy the external_id below
-#     external_id = "my_external_id"
-#   }
-#   alias = "cross_account"
-# }
-
-# module "cross-account-notebook" {
-#   providers = {
-#     aws = aws.cross_account
-#   }
-#   count  = 0
-#   source = "../emr/cross_account"
-
-#   cidr_block              = "10.0.0.0/16"
-#   deployment_name         = local.deployment_name
-#   enable_notebook_cluster = true
-#   region                  = local.region
-#   # roles below created by `aws emr create-default-roles`
-#   # note that this role also needs access to S3 and Secretsmanager
-#   emr_instance_profile_name = "EMR_EC2_DefaultRole"
-#   emr_service_role_name     = "EMR_DefaultRole"
-#   glue_account_id           = local.account_id
-# }
-
-# # gives the cross-account permissions to read the materialized data bucket
-# resource "aws_s3_bucket_policy" "read-only-access" {
-#   bucket = module.tecton.s3_bucket.bucket
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid    = "AllowReadOnly"
-#         Effect = "Allow"
-#         Principal = {
-#           "AWS" : local.cross_account_arn
-#         }
-#         Action = ["s3:Get*", "s3:List*"]
-#         Resource = [
-#           module.tecton.s3_bucket.arn,
-#           # you may want to scope down the paths allowed further
-#           "${module.tecton.s3_bucket.arn}/*"
-#         ]
-#       }
-#     ]
-#   })
-# }

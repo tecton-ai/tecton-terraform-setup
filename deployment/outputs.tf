@@ -16,6 +16,3 @@ output "emr_master_role_name" {
 output "emr_spark_instance_profile_arn" {
   value = var.create_emr_roles ? aws_iam_instance_profile.emr_spark_instance_profile[0].arn : null
 }
-output "s3_bucket" {
-  value = aws_s3_bucket.tecton
-}
