@@ -2,33 +2,11 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "DynamoDB",
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:BatchWriteItem",
-        "dynamodb:ConditionCheckItem",
-        "dynamodb:DescribeTable",
-        "dynamodb:PutItem",
-        "dynamodb:GetItem",
-        "dynamodb:Query"
-      ],
-      "Resource": [
-        "arn:aws:dynamodb:${REGION}:${MATERIALIZED_DATA_ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
-      ]
-    },
-    {
-      "Sid": "DynamoDBGlobal",
-      "Effect": "Allow",
-      "Action": ["dynamodb:ListTables"],
-      "Resource": "*"
-    },
-    {
       "Sid": "S3Bucket",
       "Effect": "Allow",
       "Action": "s3:ListBucket",
       "Resource": [
         "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}",
-        "arn:aws:s3:::tecton.ai.databricks-init-scripts",
         "arn:aws:s3:::tecton.ai.public*",
         "arn:aws:s3:::tecton-materialization-release"
       ]
@@ -38,7 +16,6 @@
       "Effect": "Allow",
       "Action": ["s3:GetObject"],
       "Resource": [
-        "arn:aws:s3:::tecton.ai.databricks-init-scripts/*",
         "arn:aws:s3:::tecton.ai.public*",
         "arn:aws:s3:::tecton-materialization-release/*"
       ]

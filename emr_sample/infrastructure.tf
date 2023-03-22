@@ -26,11 +26,11 @@ locals {
   # External ID for the cross-account EMR role. This should be the same external id as the cross-account Dynamo and S3 role
   emr_cross_account_external_id = "dahfoewaifcnosdih"
 
-  # Role used for EMR to read/write to Dynamo and s3
-  materialized_data_cross_account_role_arn = "arn:aws:iam::9876543210:root"
+  # Role used by EMR to read/write to Dynamo
+  materialized_data_cross_account_role_arn = "arn:aws:iam::823987328:role/tecton-data-access-cross-account-role"
 
   # Id for the AWS account where Dynamo and S3 live.
-  materialized_data_account_id = "823987328479"
+  materialized_data_account_id = "823987328"
 }
 
 module "tecton" {
