@@ -12,6 +12,12 @@
       ]
     },
     {
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Effect": "Allow",
+      "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"],
+      "Sid": "S3Object"
+    },
+    {
       "Sid": "TectonPublicS3",
       "Effect": "Allow",
       "Action": ["s3:GetObject"],
@@ -19,12 +25,6 @@
         "arn:aws:s3:::tecton.ai.public*",
         "arn:aws:s3:::tecton-materialization-release/*"
       ]
-    },
-    {
-      "Action": "sts:AssumeRole",
-      "Effect": "Allow",
-      "Resource": ["{MATERIALIZED_DATA_CROSS_ACCOUNT_ROLE_ARN}"],
-      "Sid": "CrossAccountAccess"
     }
   ]
 }

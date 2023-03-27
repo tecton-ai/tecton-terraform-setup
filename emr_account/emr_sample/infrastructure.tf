@@ -22,26 +22,19 @@ locals {
 
   # Get this values from your Tecton rep
   tecton_assuming_account_id = "1234567890"
+}
 
-  # External ID for the cross-account EMR role. This should be the same external id as the cross-account Dynamo and S3 role
-  emr_cross_account_external_id = "dahfoewaifcnosdih"
-
-  # Role used by EMR to read/write to Dynamo
-  materialized_data_cross_account_role_arn = "arn:aws:iam::823987328:role/tecton-data-access-cross-account-role"
-
-  # Id for the AWS account where Dynamo and S3 live.
-  materialized_data_account_id = "823987328"
+resource "random_id" "external_id" {
+  byte_length = 16
 }
 
 module "tecton" {
-  source                                    = "../deployment"
-  deployment_name                           = local.deployment_name
-  account_id                                = local.account_id
-  tecton_assuming_account_id                = local.tecton_assuming_account_id
-  region                                    = local.region
-  cross_account_external_id                 = local.emr_cross_account_external_id
-  materialized_data_account_id              = local.materialized_data_account_id
-  materialized_data_cross_acccount_role_arn = local.materialized_data_cross_account_role_arn
+  source                     = "../deployment"
+  deployment_name            = local.deployment_name
+  account_id                 = local.account_id
+  tecton_assuming_account_id = local.tecton_assuming_account_id
+  region                     = local.region
+  cross_account_external_id  = random_id.external_id.id
 
   create_emr_roles = true
 }
@@ -58,19 +51,6 @@ module "subnets" {
   source          = "../emr/vpc_subnets"
   deployment_name = local.deployment_name
   region          = local.region
-}
-
-
-module "redis" {
-  source = "../emr/redis"
-  # See https://docs.tecton.ai/latest/setting-up-tecton/configuring-redis.html
-  # By default Tecton comes with DynamoDB as the online store but you can optionally choose
-  # to use Redis.
-  # Enable by setting count to 1.
-  count                   = 0
-  redis_subnet_id         = module.subnets.emr_subnet_id
-  redis_security_group_id = module.security_groups.emr_security_group_id
-  deployment_name         = local.deployment_name
 }
 
 locals {
