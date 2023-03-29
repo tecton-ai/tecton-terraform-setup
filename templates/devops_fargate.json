@@ -32,6 +32,17 @@
             "Resource": ${FARGATE_ROLES}
         },
         {
+            "Sid": "FargateListRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:ListRolePolicies"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*"
+            ]
+        },
+        {
             "Sid": "KinesisStream",
             "Effect": "Allow",
             "Action": [
