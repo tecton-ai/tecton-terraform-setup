@@ -135,9 +135,9 @@ resource "aws_iam_policy" "cross_account_satellite_region" {
 
 # EKS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "cross_account_satellite_region" {
-  for_each   = toset(var.satellite_regions)
+  count      = local.is_satellite_regions_enabled ? 1 : 0
   policy_arn = aws_iam_policy.cross_account_satellite_region[0].arn
-  role       = aws_iam_role.eks_node_satellite[each.value].name
+  role       = aws_iam_role.eks_node_role.name
 }
 
 # DEVOPS [Common : Databricks and EMR]
