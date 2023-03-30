@@ -75,12 +75,13 @@
             "Sid": "EmrRequestTag",
             "Effect": "Allow",
             "Action": [
+                "elasticmapreduce:AddTag",
                 "elasticmapreduce:RunJobFlow"
             ],
             "Resource": "*",
             "Condition": {
                 "StringEquals": {
-                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                    "aws:RequestTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
                 }
             }
         },
