@@ -75,7 +75,6 @@
             "Sid": "EmrRequestTag",
             "Effect": "Allow",
             "Action": [
-                "elasticmapreduce:AddTags",
                 "elasticmapreduce:RunJobFlow"
             ],
             "Resource": "*",
