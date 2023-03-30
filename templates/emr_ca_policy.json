@@ -56,7 +56,7 @@
             "Effect": "Allow",
             "Action": [
                 "ec2:Describe*",
-                "elasticmapreduce:AddTag",
+                "elasticmapreduce:AddTags",
                 "elasticmapreduce:DescribeCluster",
                 "elasticmapreduce:ListSteps",
                 "elasticmapreduce:ListBootstrapActions",
@@ -75,7 +75,7 @@
             "Sid": "EmrRequestTag",
             "Effect": "Allow",
             "Action": [
-                "elasticmapreduce:AddTag",
+                "elasticmapreduce:AddTags",
                 "elasticmapreduce:RunJobFlow"
             ],
             "Resource": "*",
