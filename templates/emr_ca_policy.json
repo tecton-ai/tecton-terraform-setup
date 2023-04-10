@@ -56,7 +56,6 @@
             "Effect": "Allow",
             "Action": [
                 "ec2:Describe*",
-                "elasticmapreduce:AddTags",
                 "elasticmapreduce:DescribeCluster",
                 "elasticmapreduce:ListSteps",
                 "elasticmapreduce:ListBootstrapActions",
