@@ -10,6 +10,33 @@
             "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"]
         },
         {
+            "Sid": "AllowCreateS3ReplicationRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/s3-bucket-replication-tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:iam::${ACCOUNT_ID}:role/s3-batch-operation-tecton-${DEPLOYMENT_NAME}"
+            ]
+        },
+        {
+            "Sid": "AllowAttachS3ReplicationPolicy",
+            "Effect": "Allow",
+            "Action": [
+                "iam:AttachRolePolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/s3-bucket-replication-tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:iam::${ACCOUNT_ID}:role/s3-batch-operation-tecton-${DEPLOYMENT_NAME}"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "iam:PolicyARN": ${SATELLITE_REPLICATION_POLICY}
+                }
+            }
+        },
+        {
             "Sid": "ManangeS3ReplicationRole",
             "Effect": "Allow",
             "Action": [
