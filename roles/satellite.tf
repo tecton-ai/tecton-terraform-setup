@@ -154,12 +154,6 @@ data "aws_iam_policy_document" "batch_operation_assume_role" {
     }
   }
 }
-// IAM Role to allow batch operations to replicate existing objects
-resource "aws_iam_role" "batch_operation" {
-  count              = local.is_satellite_regions_enabled ? 1 : 0
-  name               = "s3-batch-operation-${var.deployment_name}"
-  assume_role_policy = data.aws_iam_policy_document.batch_operation_assume_role[count.index].json
-}
 
 data "aws_iam_policy_document" "batch_operation_policy" {
   count = local.is_satellite_regions_enabled ? 1 : 0
