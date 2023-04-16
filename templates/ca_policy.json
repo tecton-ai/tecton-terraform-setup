@@ -27,8 +27,7 @@
             "Effect": "Allow",
             "Action": [
                 "dynamodb:ListTables",
-                "dynamodb:DescribeLimits",
-                "*"
+                "dynamodb:DescribeLimits"
             ],
             "Resource": "*"
         },
