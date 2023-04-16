@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "replication_policy" {
 
 resource "aws_iam_policy" "replication" {
   count  = local.is_satellite_regions_enabled ? 1 : 0
-  name   = "s3-bucket-replication-${var.deployment_name}"
+  name   = "tecton-s3-bucket-replication-${var.deployment_name}"
   policy = data.aws_iam_policy_document.replication_policy[count.index].json
 }
 
@@ -190,7 +190,7 @@ data "aws_iam_policy_document" "batch_operation_policy" {
 // Policy to allow batch operations to initiate replication
 resource "aws_iam_policy" "batch_operation" {
   count  = local.is_satellite_regions_enabled ? 1 : 0
-  name   = "s3-batch-operation-tecton-${var.deployment_name}"
+  name   = "tecton-s3-batch-operation-${var.deployment_name}"
   policy = data.aws_iam_policy_document.batch_operation_policy[count.index].json
 }
 
