@@ -41,6 +41,7 @@
                 "iam:GetPolicyVersion",
                 "iam:ListPolicyVersions",
                 "iam:ListAttachedRolePolicies",
+                "iam:ListEntitiesForPolicy",
                 "iam:ListInstanceProfilesForRole"
             ],
             "Resource": [
