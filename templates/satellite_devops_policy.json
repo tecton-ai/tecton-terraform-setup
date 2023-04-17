@@ -10,14 +10,15 @@
             "Resource": ["arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"]
         },
         {
-            "Sid": "AllowCreateS3ReplicationRole",
+            "Sid": "AllowCreateAndManageS3ReplicationRole",
             "Effect": "Allow",
             "Action": [
-                "iam:CreateRole"
+                "iam:CreateRole",
+                "iam:PassRole"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-replication-tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-batch-tecton-${DEPLOYMENT_NAME}"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-replication",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-batch"
             ]
         },
         {
@@ -27,25 +28,14 @@
                 "iam:AttachRolePolicy"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-replication-tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-batch-tecton-${DEPLOYMENT_NAME}"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-replication",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-batch"
             ],
             "Condition": {
                 "StringEquals": {
                     "iam:PolicyARN": ${SATELLITE_REPLICATION_POLICY}
                 }
             }
-        },
-        {
-            "Sid": "ManangeS3ReplicationRole",
-            "Effect": "Allow",
-            "Action": [
-                "iam:PassRole"
-            ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-replication-tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-batch-tecton-${DEPLOYMENT_NAME}"
-            ]
         },
         {
             "Sid": "ManageSecurityGroups",
