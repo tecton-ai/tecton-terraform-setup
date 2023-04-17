@@ -391,3 +391,11 @@ output "eks_satellite_node_role_name" {
 output "eks_satellite_management_role_name" {
   value = {for region, v in aws_iam_role.eks_node_satellite: region => v.name}
 }
+
+output "s3_replication_policy_name" {
+  value = aws_iam_policy.replication[0].name
+}
+
+output "s3_batch_replication_policy_name" {
+  value = aws_iam_policy.batch_operation[0].name
+}

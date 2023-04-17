@@ -31,3 +31,11 @@ output "roles" {
     fargate_node_policy_name                    = module.roles.eks_fargate_node_policy_name
   }
 }
+
+output "s3_replication_policy_name" {
+  value = length(var.satellite_regions) > 0 ? module.roles.s3_replication_policy_name : ""
+}
+
+output "s3_batch_replication_policy_name" {
+  value = length(var.satellite_regions) > 0 ? module.roles.s3_batch_replication_policy_name : ""
+}
