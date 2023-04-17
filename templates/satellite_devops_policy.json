@@ -16,8 +16,8 @@
                 "iam:CreateRole"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-s3-bucket-replication-tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-s3-batch-operation-tecton-${DEPLOYMENT_NAME}"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-replication-tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-batch-tecton-${DEPLOYMENT_NAME}"
             ]
         },
         {
@@ -27,8 +27,8 @@
                 "iam:AttachRolePolicy"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-s3-bucket-replication-tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-s3-batch-operation-tecton-${DEPLOYMENT_NAME}"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-replication-tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-batch-tecton-${DEPLOYMENT_NAME}"
             ],
             "Condition": {
                 "StringEquals": {
@@ -43,8 +43,8 @@
                 "iam:PassRole"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-s3-bucket-replication-tecton-${DEPLOYMENT_NAME}",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-s3-batch-operation-tecton-${DEPLOYMENT_NAME}"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-replication-tecton-${DEPLOYMENT_NAME}",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-batch-tecton-${DEPLOYMENT_NAME}"
             ]
         },
         {
