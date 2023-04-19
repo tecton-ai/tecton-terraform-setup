@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "s3_replication_policy" {
 resource "aws_iam_policy" "s3_replication" {
   count  = local.is_satellite_regions_enabled ? 1 : 0
   name   = "tecton-s3-bucket-replication-${var.deployment_name}"
-  policy = data.aws_iam_policy_document.replication_policy[count.index].json
+  policy = data.aws_iam_policy_document.s3_replication_policy[count.index].json
 }
 
 data "aws_iam_policy_document" "batch_operation_assume_role" {
@@ -242,8 +242,8 @@ data "template_file" "satellite_devops_policy_json" {
     SATELLITE_REPLICATION_POLICY = jsonencode(
       concat(
         [
-          aws_iam_policy.batch_operation[0].arn,
-          aws_iam_policy.replication[0].arn
+          aws_iam_policy.s3_batch_replication[0].arn,
+          aws_iam_policy.s3_replication[0].arn
         ]
       )
     )
