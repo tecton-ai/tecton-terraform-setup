@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "replication_policy" {
   }
 }
 
-resource "aws_iam_policy" "replication" {
+resource "aws_iam_policy" "s3_replication" {
   count  = local.is_satellite_regions_enabled ? 1 : 0
   name   = "tecton-s3-bucket-replication-${var.deployment_name}"
   policy = data.aws_iam_policy_document.replication_policy[count.index].json
