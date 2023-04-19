@@ -188,7 +188,7 @@ data "aws_iam_policy_document" "batch_operation_policy" {
   }
 }
 // Policy to allow batch operations to initiate replication
-resource "aws_iam_policy" "batch_operation" {
+resource "aws_iam_policy" "s3_batch_replication" {
   count  = local.is_satellite_regions_enabled ? 1 : 0
   name   = "tecton-s3-batch-operation-${var.deployment_name}"
   policy = data.aws_iam_policy_document.batch_operation_policy[count.index].json
@@ -393,9 +393,9 @@ output "eks_satellite_management_role_name" {
 }
 
 output "s3_replication_policy_name" {
-  value = aws_iam_policy.replication[0].name
+  value = aws_iam_policy.s3_replication[0].name
 }
 
 output "s3_batch_replication_policy_name" {
-  value = aws_iam_policy.batch_operation[0].name
+  value = aws_iam_policy.s3_batch_replication[0].name
 }
