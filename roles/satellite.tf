@@ -103,7 +103,7 @@ data "template_file" "satellite_ca_policy_json" {
   }
 }
 
-data "aws_iam_policy_document" "replication_policy" {
+data "aws_iam_policy_document" "s3_replication_policy" {
   count = local.is_satellite_regions_enabled ? 1 : 0
   statement {
     actions = [
