@@ -103,6 +103,97 @@ data "template_file" "satellite_ca_policy_json" {
   }
 }
 
+data "aws_iam_policy_document" "s3_replication_policy" {
+  count = local.is_satellite_regions_enabled ? 1 : 0
+  statement {
+    actions = [
+      "s3:GetReplicationConfiguration",
+      "s3:ListBucket"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::tecton-${var.deployment_name}"
+    ]
+  }
+  statement {
+    actions = [
+      "s3:GetObjectVersion",
+      "s3:GetObjectVersionAcl"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::tecton-${var.deployment_name}/*"
+    ]
+  }
+  statement {
+    actions = [
+      "s3:ReplicateObject",
+      "s3:ReplicateDelete"
+    ]
+    effect    = "Allow"
+    resources = formatlist("arn:aws:s3:::tecton-${var.deployment_name}-%s/*", var.satellite_regions)
+  }
+}
+
+resource "aws_iam_policy" "s3_replication" {
+  count  = local.is_satellite_regions_enabled ? 1 : 0
+  name   = "tecton-s3-bucket-replication-${var.deployment_name}"
+  policy = data.aws_iam_policy_document.s3_replication_policy[count.index].json
+}
+
+data "aws_iam_policy_document" "batch_operation_assume_role" {
+  count  = local.is_satellite_regions_enabled ? 1 : 0
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["batchoperations.s3.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "batch_operation_policy" {
+  count = local.is_satellite_regions_enabled ? 1 : 0
+  statement {
+    actions = [
+      "s3:InitiateReplication"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::tecton-${var.deployment_name}/*"
+    ]
+  }
+  statement {
+    actions = [
+      "s3:GetReplicationConfiguration",
+      "s3:PutInventoryConfiguration"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::tecton-${var.deployment_name}"
+    ]
+  }
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion"
+    ]
+    effect = "Allow"
+    resources = [
+      "arn:aws:s3:::tecton-${var.deployment_name}/*"
+    ]
+  }
+}
+// Policy to allow batch operations to initiate replication
+resource "aws_iam_policy" "s3_batch_replication" {
+  count  = local.is_satellite_regions_enabled ? 1 : 0
+  name   = "tecton-s3-batch-operation-${var.deployment_name}"
+  policy = data.aws_iam_policy_document.batch_operation_policy[count.index].json
+}
+
 # EKS [Common : Databricks and EMR]
 resource "aws_iam_policy" "satellite_ca" {
   count = local.is_satellite_regions_enabled ? 1 : 0
@@ -148,6 +239,14 @@ data "template_file" "satellite_devops_policy_json" {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     SECURITY_GROUPS = jsonencode(local.security_groups)
+    SATELLITE_REPLICATION_POLICY = jsonencode(
+      concat(
+        [
+          aws_iam_policy.s3_batch_replication[0].arn,
+          aws_iam_policy.s3_replication[0].arn
+        ]
+      )
+    )
   }
 }
 
@@ -291,4 +390,12 @@ output "eks_satellite_node_role_name" {
 
 output "eks_satellite_management_role_name" {
   value = {for region, v in aws_iam_role.eks_node_satellite: region => v.name}
+}
+
+output "s3_replication_policy_name" {
+  value = aws_iam_policy.s3_replication[0].name
+}
+
+output "s3_batch_replication_policy_name" {
+  value = aws_iam_policy.s3_batch_replication[0].name
 }
