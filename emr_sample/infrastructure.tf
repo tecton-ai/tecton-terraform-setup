@@ -96,6 +96,17 @@ variable "fargate_enabled" {
   type        = bool
 }
 
+variable "data_validation_on_fargate_enabled" {
+  default     = false
+  description = <<EOT
+    Enable running data validation jobs using Fargate.
+    Otherwise they will be scheduled on EC2 machines, if data validation is enabled for cluster.
+    `fargate_enabled` should be set to true for this take effect.
+    Default: false.
+  EOT
+  type        = bool
+}
+
 module "eks_subnets" {
   providers = {
     aws = aws
@@ -175,6 +186,8 @@ module "roles" {
   elasticache_enabled             = var.elasticache_enabled
   external_id                     = random_id.external_id.id
   fargate_enabled                 = var.fargate_enabled
+
+  data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
 }
 
 module "notebook_cluster" {
