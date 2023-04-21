@@ -20,13 +20,14 @@ locals {
     format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
   ] : []
   data_validation_worker_policies = var.data_validation_on_fargate_enabled ? [
-    aws_iam_policy.eks_fargate_data_validation_worker_policy[0].arn
+    aws_iam_policy.eks_fargate_data_validation_worker[0].arn
   ] : []
   s3_buckets = concat(
     formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
     ["arn:aws:s3:::tecton-${var.deployment_name}"]
   )
   s3_objects = formatlist("%s/*", local.s3_buckets)
+  data_validation_enabled = var.fargate_enabled && var.data_validation_on_fargate_enabled
 }
 
 # EKS [Common : Databricks and EMR]
@@ -118,7 +119,7 @@ data "template_file" "devops_fargate_role_json" {
 
 # Data validation [Common : Databricks and EMR]
 data "template_file" "eks_fargate_data_validation_worker_policy" {
-  count = (var.fargate_enabled && var.data_validation_on_fargate_enabled) ? 1 : 0
+  count = local.data_validation_enabled ? 1 : 0
 
   template = file("${path.module}/../templates/data_validation_worker_policy.json")
   vars = {
@@ -130,8 +131,8 @@ data "template_file" "eks_fargate_data_validation_worker_policy" {
 }
 
 # Data validation [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_fargate_data_validation_worker_policy" {
-  count = (var.fargate_enabled && var.data_validation_on_fargate_enabled) ? 1 : 0
+resource "aws_iam_policy" "eks_fargate_data_validation_worker" {
+  count = local.data_validation_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-eks-fargate-data-validation-worker-policy"
   policy = data.template_file.eks_fargate_data_validation_worker_policy[0].rendered
