@@ -29,8 +29,7 @@ output "roles" {
     fargate_kinesis_firehose_stream_role_name   = module.roles.fargate_kinesis_firehose_stream_role_name
     fargate_eks_fargate_pod_execution_role_name = module.roles.fargate_eks_fargate_pod_execution_role_name
     fargate_node_policy_name                    = module.roles.eks_fargate_node_policy_name
-
-    fargate_data_validation_worker_policy_name = module.roles.fargate_data_validation_worker_policy_name
+    fargate_data_validation_worker_policy_name  = module.roles.fargate_data_validation_worker_policy_name
   }
 }
 
