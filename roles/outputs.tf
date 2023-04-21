@@ -49,6 +49,6 @@ output "eks_fargate_node_policy_name" {
   value = var.fargate_enabled ? aws_iam_policy.eks_fargate_node_policy[0].name : ""
 }
 
-output "eks_fargate_data_validation_worker_policy_name" {
+output "fargate_data_validation_worker_policy_name" {
   value = var.data_validation_on_fargate_enabled ? aws_iam_policy.eks_fargate_data_validation_worker_policy[0].name : ""
 }
