@@ -75,6 +75,17 @@ variable "fargate_enabled" {
   type        = bool
 }
 
+variable "data_validation_on_fargate_enabled" {
+  default     = false
+  description = <<EOT
+    Enable running data validation jobs using Fargate.
+    Otherwise they will be scheduled on EC2 machines, if data validation is enabled for cluster.
+    `fargate_enabled` should be set to true for this take effect.
+    Default: false.
+  EOT
+  type        = bool
+}
+
 provider "aws" {
   region = var.region
   assume_role {
@@ -110,6 +121,8 @@ module "roles" {
   tecton_assuming_account_id      = var.tecton_assuming_account_id
   elasticache_enabled             = var.elasticache_enabled
   fargate_enabled                 = var.fargate_enabled
+
+  data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
 }
 
 module "subnets" {

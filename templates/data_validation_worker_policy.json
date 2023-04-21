@@ -2,7 +2,7 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "ReadWriteDataMetrics",
+      "Sid": "ReadWriteDataMetricsPolicies",
       "Effect": "Allow",
       "Action": [
         "dynamodb:PutItem",

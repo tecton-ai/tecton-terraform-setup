@@ -12,7 +12,16 @@ locals {
       [format("arn:aws:iam::%s:role/tecton-%s-fargate-fs", var.account_id, var.deployment_name)],
       local.satellite_feature_server_roles
   )
-  data_validation_worker_role = format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
+  feature_server_policies = concat(
+    [aws_iam_policy.eks_fargate_node_policy[0].arn],
+    [for region in var.satellite_regions: aws_iam_policy.eks_fargate_satellite_node[region].arn]
+  )
+  data_validation_worker_roles = var.data_validation_on_fargate_enabled ? [
+    format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
+  ] : []
+  data_validation_worker_policies = var.data_validation_on_fargate_enabled ? [
+    aws_iam_policy.eks_fargate_data_validation_worker_policy[0].arn
+  ] : []
   s3_buckets = concat(
     formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
     ["arn:aws:s3:::tecton-${var.deployment_name}"]
@@ -95,14 +104,13 @@ data "template_file" "devops_fargate_role_json" {
     FARGATE_ROLES           = jsonencode(
       concat(
         local.feature_server_roles,
-        (var.data_validation_on_fargate_enabled ? [local.data_validation_worker_role] : [])
+        local.data_validation_worker_roles
       )
     )
     FARGATE_POLICY_ARNS     = jsonencode(
       concat(
-        [aws_iam_policy.eks_fargate_node_policy[0].arn],
-        [for region in var.satellite_regions: aws_iam_policy.eks_fargate_satellite_node[region].arn],
-        (var.data_validation_on_fargate_enabled ? [aws_iam_policy.eks_fargate_data_validation_worker_policy[0].arn] : [])
+        local.feature_server_policies,
+        local.data_validation_worker_policies
       )
     )
   }

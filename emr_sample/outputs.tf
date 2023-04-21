@@ -46,6 +46,8 @@ output "roles" {
     fargate_kinesis_firehose_stream_role_name   = (var.apply_layer > 1) ? module.roles[0].fargate_kinesis_firehose_stream_role_name : ""
     fargate_eks_fargate_pod_execution_role_name = (var.apply_layer > 1) ? module.roles[0].fargate_eks_fargate_pod_execution_role_name : ""
     fargate_node_policy_name                    = (var.apply_layer > 1) ? module.roles[0].eks_fargate_node_policy_name : ""
+
+    fargate_data_validation_worker_policy_name  = (var.apply_layer > 1) ? module.roles[0].eks_fargate_data_validation_worker_policy_name : ""
   }
 }
 
