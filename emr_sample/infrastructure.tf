@@ -174,19 +174,18 @@ module "roles" {
     # any databricks resources when using `emr_sample`.
     aws.databricks-account = aws
   }
-  count                           = (var.apply_layer > 1) ? 1 : 0
-  source                          = "../roles"
-  deployment_name                 = var.deployment_name
-  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
-  account_id                      = var.account_id
-  tecton_assuming_account_id      = var.tecton_assuming_account_id
-  region                          = var.region
-  satellite_regions               = var.satellite_regions
-  create_emr_roles                = true
-  elasticache_enabled             = var.elasticache_enabled
-  external_id                     = random_id.external_id.id
-  fargate_enabled                 = var.fargate_enabled
-
+  count                              = (var.apply_layer > 1) ? 1 : 0
+  source                             = "../roles"
+  deployment_name                    = var.deployment_name
+  enable_eks_ingress_vpc_endpoint    = var.enable_eks_ingress_vpc_endpoint
+  account_id                         = var.account_id
+  tecton_assuming_account_id         = var.tecton_assuming_account_id
+  region                             = var.region
+  satellite_regions                  = var.satellite_regions
+  create_emr_roles                   = true
+  elasticache_enabled                = var.elasticache_enabled
+  external_id                        = random_id.external_id.id
+  fargate_enabled                    = var.fargate_enabled
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
 }
 

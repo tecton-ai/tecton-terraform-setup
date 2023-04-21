@@ -110,18 +110,17 @@ module "roles" {
     aws                    = aws
     aws.databricks-account = aws.databricks-account
   }
-  source                          = "../roles"
-  deployment_name                 = var.deployment_name
-  enable_eks_ingress_vpc_endpoint = var.enable_eks_ingress_vpc_endpoint
-  account_id                      = var.account_id
-  region                          = var.region
-  satellite_regions               = var.satellite_regions
-  spark_role_name                 = var.spark_role_name
-  databricks_account_id           = var.external_databricks_account_id
-  tecton_assuming_account_id      = var.tecton_assuming_account_id
-  elasticache_enabled             = var.elasticache_enabled
-  fargate_enabled                 = var.fargate_enabled
-
+  source                             = "../roles"
+  deployment_name                    = var.deployment_name
+  enable_eks_ingress_vpc_endpoint    = var.enable_eks_ingress_vpc_endpoint
+  account_id                         = var.account_id
+  region                             = var.region
+  satellite_regions                  = var.satellite_regions
+  spark_role_name                    = var.spark_role_name
+  databricks_account_id              = var.external_databricks_account_id
+  tecton_assuming_account_id         = var.tecton_assuming_account_id
+  elasticache_enabled                = var.elasticache_enabled
+  fargate_enabled                    = var.fargate_enabled
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
 }
 
