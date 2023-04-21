@@ -76,8 +76,8 @@ variable "data_validation_on_fargate_enabled" {
   type        = bool
   description = <<EOT
     Enable running data validation jobs using Fargate.
-    Otherwise they will be scheduled on EC2 machines, if data validation is enabled for cluster.
-    `fargate_enabled` should be set to true for this take effect.
+    Otherwise jobs will be scheduled on EC2 machines (if data validation is enabled for the cluster).
+    `fargate_enabled` should be set to true for this to take effect.
     Default: false.
   EOT
 }
