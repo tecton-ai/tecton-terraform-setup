@@ -38,3 +38,19 @@ variable "additional_offline_storage_tags" {
   description = "Additional tags for offline storage (S3 bucket)"
   default     = {}
 }
+
+variable "bucket_sse_algorithm" {
+  default     = "AES256"
+  description = <<EOD
+Server-side encryption algorithm to use. Valid values are AES256 and aws:kms.
+ Note: (1) All resources should also be granted permission to decrypt with the KMS key if using KMS.
+       (2) If athena retrieval is used, the kms_key option must also be set on the athena session.
+EOD
+  type        = string
+}
+
+variable "bucket_sse_key_enabled" {
+  type        = bool
+  description = "Whether or not to use Amazon S3 Bucket Keys for SSE-KMS."
+  default     = null
+}
