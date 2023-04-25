@@ -10,10 +10,21 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tecton_s3_bucket_
   bucket = aws_s3_bucket.tecton.id
 
   rule {
+    bucket_key_enabled = var.bucket_sse_algorithm == "aws:kms" ? var.bucket_sse_key_enabled : null
+
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm = var.bucket_sse_algorithm
     }
   }
+}
+
+resource "aws_s3_bucket_public_access_block" "tecton" {
+  bucket = aws_s3_bucket.tecton.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_policy" "read-only-access" {
@@ -43,4 +54,11 @@ resource "aws_s3_bucket_ownership_controls" "bucket_owner_enforced" {
   rule {
     object_ownership = "BucketOwnerEnforced"
   }
+}
+
+resource "aws_s3_bucket_acl" "tecton" {
+  depends_on = [aws_s3_bucket_ownership_controls.bucket_owner_enforced]
+
+  bucket = aws_s3_bucket.tecton.id
+  acl    = "private"
 }

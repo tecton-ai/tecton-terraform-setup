@@ -58,6 +58,13 @@ variable "emr_service_security_group_id" {
   type        = string
   description = "EMR service security group"
 }
+
+variable "bootstrap_tecton_emr_setup_args" {
+  default     = null
+  description = "Args to be passed to the default EMR setup bootstrap script"
+  type        = list(string)
+}
+
 variable "extra_bootstrap_actions" {
   type        = list(any)
   description = "Additional bootstrap actions to perform upon EMR creation"

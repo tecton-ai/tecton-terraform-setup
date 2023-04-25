@@ -73,6 +73,7 @@ locals {
         "s3://tecton.ai.public%s/install_scripts/setup_emr_notebook_cluster_v2.sh",
         lookup(local.bootstrap_regions, var.region, ""),
       )
+      args = var.bootstrap_tecton_emr_setup_args
     }
   ]
 }
