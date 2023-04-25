@@ -64,6 +64,7 @@ locals {
     {
       name = "tecton_emr_setup"
       path = "s3://tecton.ai.public/install_scripts/setup_emr_notebook_cluster_v2.sh"
+      args = var.bootstrap_tecton_emr_setup_args
     }
   ]
 }

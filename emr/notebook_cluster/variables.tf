@@ -42,12 +42,10 @@ variable "subnet_id" {
   type        = string
   description = "Subnet to install EMR into"
 }
-
 variable "instance_profile_arn" {
   type        = string
   description = "Underlying EC2 instance profile to use"
 }
-
 variable "emr_service_role_id" {
   type        = string
   description = "EMR service role"
@@ -61,6 +59,12 @@ variable "emr_security_group_id" {
 variable "emr_service_security_group_id" {
   type        = string
   description = "EMR service security group"
+}
+
+variable "bootstrap_tecton_emr_setup_args" {
+  default     = null
+  description = "Args to be passed to the default EMR setup bootstrap script"
+  type        = list(string)
 }
 
 variable "extra_bootstrap_actions" {
