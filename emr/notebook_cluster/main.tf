@@ -60,10 +60,26 @@ locals {
     }
   ]
 
+  // bootstrap_regions
+  // ---
+  // EMR bootstrapping only supports bootstrap scripts from s3 buckets. The current way the s3
+  // client within EMR is retrieving the bootstrap scripts causes a failure to retrieve the file in
+  // certain regions. Currently Tecton supports serving bootstrap scripts from the following
+  // regions. (including us-west-2 by default) Reach out to customer support for further information.
+  bootstrap_regions = {
+    "eu-central-1" : "-eu-central-1",
+    "eu-west-1" : "-eu-west-1",
+    "us-east-2" : "-us-east-2",
+  }
+
   bootstrap_action = [
     {
       name = "tecton_emr_setup"
-      path = "s3://tecton.ai.public/install_scripts/setup_emr_notebook_cluster_v2.sh"
+      path = format(
+        "s3://tecton.ai.public%s/install_scripts/setup_emr_notebook_cluster_v2.sh",
+        lookup(local.bootstrap_regions, var.region, ""),
+      )
+      args = var.bootstrap_tecton_emr_setup_args
     }
   ]
 }
