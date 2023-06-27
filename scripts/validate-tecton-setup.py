@@ -172,6 +172,7 @@ def validate_saas(
     if is_cross_account_databricks:
         print("Skipping validation of spark role because we can't access as cross-account databricks")
     else:
+        print("validating spark role permissions...", end='')
         spark = iam.Role(spark_role)
         spark_role_policies = get_policies(spark)
         if len(spark_role_policies) == 0:
@@ -188,6 +189,9 @@ def validate_saas(
             account_id,
             spark_role,
         )
+        print("done")
+
+    print("validating cross-account role permissions...", end='')
     ca = iam.Role(ca_role)
     cross_account_role_policies = get_policies(ca)
     success &= test_policy(
@@ -200,7 +204,10 @@ def validate_saas(
         account_id,
         spark_role,
     )
+    print("done")
+
     if emr_master_role is not None and not is_cross_account_databricks:
+        print("validating emr-master role permissions...", end='')
         master = iam.Role(emr_master_role)
         master_policies = get_policies(master)
         # We test in a slightly different format to what is requested because commands like CreateFleet take many resources as args
@@ -252,7 +259,10 @@ def validate_saas(
             spark_instance_profile_arn.endswith(f"instance-profile/{spark_role}"),
             f"EMR requires instance profile name to match role name. {spark_instance_profile_arn} does not match {spark_role}",
         )
+        print("done")
 
+    else:
+        print("emr-master-role not provided, skipping emr validation.")
     if db_token is not None:
         success &= _soft_assert(
             spark_instance_profile_arn in get_db_instance_profiles(db_token, databricks_workspace),
@@ -284,6 +294,7 @@ def get_db_instance_profiles(api_key, databricks_workspace):
 
 
 def validate_emr_subnets_securitygroups(session, deployment_name):
+    print("validating emr subnets...", end='')
     ec2 = session.resource("ec2")
     # validate subnets
     filters = [{"Name": f"tag:tecton-accessible:{deployment_name}", "Values": ["true"]}]
@@ -301,8 +312,10 @@ def validate_emr_subnets_securitygroups(session, deployment_name):
         == len([subnet.availability_zone_id for subnet in subnets]),
         f"Found tagged subnets belonging to the same availability zone. Tecton has probably been mistakenly granted access to both public and private subnets. Remove the tecton-accessible:{deployment_name}=true tag from any public subnets Tecton should not access.",
     )
+    print("done")
 
     # validate sgs
+    print("validating emr security groups...", end='')
     master_filters = [
         {"Name": f"tag:tecton-accessible:{deployment_name}", "Values": ["true"]},
         {
@@ -341,6 +354,7 @@ def validate_emr_subnets_securitygroups(session, deployment_name):
         all([sg.vpc_id == subnets[0].vpc_id for sg in all_sgs]),
         "Security group tagged with tecton-accessible belongs to a different vpc than the subnets.",
     )
+    print('done')
     return success
 
 
@@ -370,7 +384,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     session = validate_cross_account(args.account_id, args.ca_role, args.external_id, session=boto3.session.Session())
-    validate_saas(
+    success = validate_saas(
         session,
         deployment_name=args.deployment_name,
         region=args.region,
@@ -380,3 +394,5 @@ if __name__ == "__main__":
         emr_master_role=args.emr_master_role,
         is_cross_account_databricks=args.is_cross_account_databricks,
     )
+
+    print('Tecton setup validated successfully!' if success else 'Tecton setup validation encountered errors, please check output.') 
