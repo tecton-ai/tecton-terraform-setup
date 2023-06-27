@@ -4,9 +4,10 @@
 
 Databricks example:
 
-- Assuming the default aws credentials can assume the ca-role
-    - If necessary, use of `aws-vault exec <some_other_role> -- ...` may be done as well for
-      role chaining
+- This script should be run as a role which:
+    - can assume the cross-account role passed in as `--ca-role`
+    - has the permission: `iam:SimulateCustomPolicy` on `*`
+- If necessary, use of `aws-vault exec <some_other_role> -- ...` may be done as well for role chaining
 
 ```shell
 python3 validate.py \
