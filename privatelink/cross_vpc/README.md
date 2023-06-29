@@ -17,7 +17,7 @@ is tracked.
   account IDs prior to configuration.
 * `<deployment_name>` should be replaced with your deployment name
 * `vpc_id` represents the ID of the VPC which should be connected to the Tecton deployment
-  (aka the `dns_name`)
+* `dns_name` will be provided by your Tecton rep
 * `<vpc_endpoint_service_name>` will be provided by your Tecton rep
 * See [inputs](#inputs) below for more inputs - particularly ingress/egress
 * Additional security group rules can be written outside this module by leveraging the security
