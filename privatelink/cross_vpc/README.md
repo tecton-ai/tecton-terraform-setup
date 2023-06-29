@@ -14,11 +14,12 @@ This module is intended to be used in the Terraform which the VPC intended to co
 is tracked.
 
 * In order to connect to the provided VPC endpoint service, Tecton needs to be aware of all AWS
-  account IDs prior to configuration.
-* `<deployment_name>` should be replaced with your deployment name
-* `vpc_id` represents the ID of the VPC which should be connected to the Tecton deployment
-* `dns_name` will be provided by your Tecton rep
-* `<vpc_endpoint_service_name>` will be provided by your Tecton rep
+  account IDs prior to connection.
+* Details in relation to requirements:
+    * `vpc_id` represents the ID of the VPC which should be connected to the Tecton deployment
+    * `dns_name` will be provided by your Tecton rep - typically `<deployment_name>.tecton.ai`
+    * `vpc_endpoint_service_name` will be provided by your Tecton rep
+    * `vpc_endpoint_subnet_ids` should be added in order to lace the VPC endpoint in the appropriate subnet
 * See [inputs](#inputs) below for more inputs - particularly ingress/egress
 * Additional security group rules can be written outside this module by leveraging the security
   group ID [output](#outputs)
@@ -27,10 +28,10 @@ is tracked.
 module "privatelink-cross-vpc" {
   source = "github.com/tecton-ai-ext/tecton-terraform-setup//privatelink/cross_vpc"
 
-  dns_name = "<cluster_name>.tecton.ai"
-	vpc_endpoint_service_name = "<vpc_endpoint_service_name>"
+  dns_name = "<deployment_name>.tecton.ai"
+  vpc_endpoint_service_name = "<vpc_endpoint_service_name>"
   vpc_id = "<vpc_id_to_connect_to_tecton>"
-	vpc_endpoint_subnet_ids = [
+  vpc_endpoint_subnet_ids = [
     # subnet_ids which to place the VPC endpoint in
   ]
 }
