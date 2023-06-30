@@ -29,3 +29,9 @@ variable "vpc_endpoint_security_group_egress_cidrs" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "enable_vpc_endpoint_private_dns" {
+  type        = bool
+  default     = false
+  description = "Enables private DNS on the VPC endpoint rather than creating a route53 private hosted zone & record. Setting this requires that the associated VPC endpoint service has private DNS enabled. Please confirm with your Tecton rep prior to setting this."
+}
