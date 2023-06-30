@@ -28,7 +28,7 @@ resource "aws_vpc_endpoint" "cross_vpc" {
   subnet_ids          = var.vpc_endpoint_subnet_ids
   vpc_endpoint_type   = "Interface"
   auto_accept         = true
-  private_dns_enabled = var.vpc_endpoint_private_dns
+  private_dns_enabled = var.enable_vpc_endpoint_private_dns
 }
 
 resource "aws_route53_zone" "private" {
