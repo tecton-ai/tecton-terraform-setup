@@ -28,19 +28,21 @@ resource "aws_vpc_endpoint" "cross_vpc" {
   subnet_ids          = var.vpc_endpoint_subnet_ids
   vpc_endpoint_type   = "Interface"
   auto_accept         = true
-  private_dns_enabled = false
+  private_dns_enabled = var.enable_vpc_endpoint_private_dns
 }
 
 resource "aws_route53_zone" "private" {
-  name = var.dns_name
+  count = var.enable_vpc_endpoint_private_dns ? 0 : 1
+  name  = var.dns_name
   vpc {
     vpc_id = var.vpc_id
   }
 }
 
 resource "aws_route53_record" "cluster_private" {
+  count   = var.enable_vpc_endpoint_private_dns ? 0 : 1
   name    = var.dns_name
-  zone_id = aws_route53_zone.private.id
+  zone_id = aws_route53_zone.private[0].id
   type    = "A"
 
   alias {
