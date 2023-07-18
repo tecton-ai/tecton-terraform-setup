@@ -61,7 +61,8 @@
                 "iam:GetPolicyVersion",
                 "iam:ListPolicyVersions",
                 "iam:ListAttachedRolePolicies",
-                "iam:ListInstanceProfilesForRole"
+                "iam:ListInstanceProfilesForRole",
+                "iam:ListRolePolicies"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:role/${SPARK_ROLE}",
