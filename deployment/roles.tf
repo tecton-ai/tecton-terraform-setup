@@ -80,3 +80,13 @@ resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
   role       = local.spark_role_name
 }
+
+resource "aws_kms_key_policy" "cmk" {
+  key_id = var.kms_key_id
+  policy = templatefile("${path.module}/../templates/cmk_policy.json", {
+    ROLE_ARNS      = [
+        "arn:aws:iam::${var.account_id}:role/${local.spark_role_name}",
+        "arn:aws:iam::${var.tecton_assuming_account_id}:root",
+    ]
+  })
+}

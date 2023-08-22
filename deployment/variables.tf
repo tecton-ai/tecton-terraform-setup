@@ -63,3 +63,9 @@ variable "bucket_sse_key_enabled" {
   description = "Whether or not to use Amazon S3 Bucket Keys for SSE-KMS."
   default     = null
 }
+
+variable "kms_key_id" {
+  type = string
+  description = "ID of customer-managed key for encryptig data at rest"
+  default     = ""
+}
