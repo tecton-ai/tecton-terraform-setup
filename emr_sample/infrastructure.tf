@@ -58,17 +58,17 @@ module "subnets" {
 
 
 module "redis" {
-  source                   = "../emr/redis"
+  source = "../emr/redis"
   # See https://docs.tecton.ai/latest/setting-up-tecton/configuring-redis.html
   # By default Tecton comes with DynamoDB as the online store but you can optionally choose
   # to use Redis.
   # Enable by setting count to 1.
-  count                    = 0
-  redis_subnet_id          = module.subnets.emr_subnet_id
-  redis_security_group_id  = module.security_groups.emr_security_group_id
-  deployment_name          = local.deployment_name
+  count                   = 0
+  redis_subnet_id         = module.subnets.emr_subnet_id
+  redis_security_group_id = module.security_groups.emr_security_group_id
+  deployment_name         = local.deployment_name
 }
-  
+
 locals {
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
   notebook_cluster_count = 0
@@ -79,7 +79,7 @@ locals {
 
 module "notebook_cluster" {
   source = "../emr/notebook_cluster"
-  # See https://docs.tecton.ai/v2/setting-up-tecton/04b-connecting-emr.html#prerequisites
+  # See https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
   # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account

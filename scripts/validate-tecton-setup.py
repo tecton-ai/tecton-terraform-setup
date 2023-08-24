@@ -3,12 +3,13 @@
 import argparse
 import json
 import os
-import requests
 import time
 
-import jinja2
 import boto3
 import boto3.session
+import jinja2
+import requests
+
 
 def _boto_session_for_role(role_arn, external_id=None, login_tries=1, region=None, session=None):
     for i in range(0, login_tries):
@@ -16,11 +17,11 @@ def _boto_session_for_role(role_arn, external_id=None, login_tries=1, region=Non
             if session is None:
                 session = boto3.session.Session()
             sts_connection = session.client("sts")
-            args = dict(
-                RoleArn=role_arn,
-                RoleSessionName="tecton_terraform_setup",
-                DurationSeconds=3600,
-            )
+            args = {
+                "RoleArn": role_arn,
+                "RoleSessionName": "tecton_terraform_setup",
+                "DurationSeconds": 3600,
+            }
             if external_id:
                 args["ExternalId"] = external_id
             assume_role_object = sts_connection.assume_role(**args)["Credentials"]
@@ -35,6 +36,7 @@ def _boto_session_for_role(role_arn, external_id=None, login_tries=1, region=Non
                 raise
             else:
                 time.sleep(5)
+
 
 def validate_cross_account(account_id, role_name, external_id, region=None, session=None):
     role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
@@ -51,6 +53,7 @@ def validate_cross_account(account_id, role_name, external_id, region=None, sess
     except Exception:
         msg = f"The provided role {role_arn} failed externalID validation because assumeRole failed with the provided externalID."
         raise Exception(msg)
+
 
 def _soft_assert(predicate, error_msg):
     """
@@ -172,7 +175,7 @@ def validate_saas(
     if is_cross_account_databricks:
         print("Skipping validation of spark role because we can't access as cross-account databricks")
     else:
-        print("validating spark role permissions...", end='')
+        print("validating spark role permissions...", end="")
         spark = iam.Role(spark_role)
         spark_role_policies = get_policies(spark)
         if len(spark_role_policies) == 0:
@@ -191,7 +194,7 @@ def validate_saas(
         )
         print("done")
 
-    print("validating cross-account role permissions...", end='')
+    print("validating cross-account role permissions...", end="")
     ca = iam.Role(ca_role)
     cross_account_role_policies = get_policies(ca)
     success &= test_policy(
@@ -207,7 +210,7 @@ def validate_saas(
     print("done")
 
     if emr_master_role is not None and not is_cross_account_databricks:
-        print("validating emr-master role permissions...", end='')
+        print("validating emr-master role permissions...", end="")
         master = iam.Role(emr_master_role)
         master_policies = get_policies(master)
         # We test in a slightly different format to what is requested because commands like CreateFleet take many resources as args
@@ -246,10 +249,7 @@ def validate_saas(
         )
         success &= _soft_assert(
             any(
-                [
-                    it.arn == "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-                    for it in spark.attached_policies.all()
-                ]
+                it.arn == "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" for it in spark.attached_policies.all()
             ),
             "Required policy arn arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore not found!",
         )
@@ -294,7 +294,7 @@ def get_db_instance_profiles(api_key, databricks_workspace):
 
 
 def validate_emr_subnets_securitygroups(session, deployment_name):
-    print("validating emr subnets...", end='')
+    print("validating emr subnets...", end="")
     ec2 = session.resource("ec2")
     # validate subnets
     filters = [{"Name": f"tag:tecton-accessible:{deployment_name}", "Values": ["true"]}]
@@ -308,14 +308,14 @@ def validate_emr_subnets_securitygroups(session, deployment_name):
         f"Found tagged subnets belonging to different vpcs. Remove the tecton-accessible:{deployment_name}=true tag from any subnets Tecton should not access.",
     )
     success &= _soft_assert(
-        len(set([subnet.availability_zone_id for subnet in subnets]))
+        len({subnet.availability_zone_id for subnet in subnets})
         == len([subnet.availability_zone_id for subnet in subnets]),
         f"Found tagged subnets belonging to the same availability zone. Tecton has probably been mistakenly granted access to both public and private subnets. Remove the tecton-accessible:{deployment_name}=true tag from any public subnets Tecton should not access.",
     )
     print("done")
 
     # validate sgs
-    print("validating emr security groups...", end='')
+    print("validating emr security groups...", end="")
     master_filters = [
         {"Name": f"tag:tecton-accessible:{deployment_name}", "Values": ["true"]},
         {
@@ -340,21 +340,21 @@ def validate_emr_subnets_securitygroups(session, deployment_name):
     service_sgs = list(ec2.security_groups.filter(Filters=service_filters))
     success &= _soft_assert(
         1 == len(master_sgs),
-        f"Expected exactly 1 security group to be used for EMR Master node (see https://docs.tecton.ai/v2/setting-up-tecton/07a-deployment_saas.html#configure-security-groups), found {master_sgs}",
+        f"Expected exactly 1 security group to be used for EMR Master node (see https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/configuring-emr#configure-security-groups), found {master_sgs}",
     )
     success &= _soft_assert(
         1 == len(core_sgs),
-        f"Expected exactly 1 security group to be used for EMR Core&Task nodes (see https://docs.tecton.ai/v2/setting-up-tecton/07a-deployment_saas.html#configure-security-groups), found {core_sgs}",
+        f"Expected exactly 1 security group to be used for EMR Core&Task nodes (see https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites), found {core_sgs}",
     )
     success &= _soft_assert(
         1 == len(service_sgs),
-        f"Expected exactly 1 security group to be used for EMR Service-access (see https://docs.tecton.ai/v2/setting-up-tecton/07a-deployment_saas.html#configure-security-groups), found {service_sgs}",
+        f"Expected exactly 1 security group to be used for EMR Service-access (see https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites), found {service_sgs}",
     )
     success &= _soft_assert(
-        all([sg.vpc_id == subnets[0].vpc_id for sg in all_sgs]),
+        all(sg.vpc_id == subnets[0].vpc_id for sg in all_sgs),
         "Security group tagged with tecton-accessible belongs to a different vpc than the subnets.",
     )
-    print('done')
+    print("done")
     return success
 
 
@@ -377,9 +377,15 @@ if __name__ == "__main__":
         default=None,
         required=False,
     )
-    parser.add_argument("--deployment-name", type=str, help="The tecton deployment name, should not start with tecton-", required=True)
     parser.add_argument(
-        "--is-cross-account-databricks", type=str, help="Whether databricks will be run in a separate account from the data plane", default=False, required=False
+        "--deployment-name", type=str, help="The tecton deployment name, should not start with tecton-", required=True
+    )
+    parser.add_argument(
+        "--is-cross-account-databricks",
+        type=str,
+        help="Whether databricks will be run in a separate account from the data plane",
+        default=False,
+        required=False,
     )
     args = parser.parse_args()
 
@@ -395,4 +401,8 @@ if __name__ == "__main__":
         is_cross_account_databricks=args.is_cross_account_databricks,
     )
 
-    print('Tecton setup validated successfully!' if success else 'Tecton setup validation encountered errors, please check output.') 
+    print(
+        "Tecton setup validated successfully!"
+        if success
+        else "Tecton setup validation encountered errors, please check output."
+    )
