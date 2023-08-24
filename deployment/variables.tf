@@ -32,6 +32,11 @@ variable "create_emr_roles" {
   type    = bool
   default = false
 }
+variable "emr_read_ecr_repositories" {
+  type        = list(string)
+  description = "List of ECR repositories that EMR roles are granted read access to."
+  default     = []
+}
 variable "additional_s3_read_only_principals" {
   type    = list(string)
   default = []
