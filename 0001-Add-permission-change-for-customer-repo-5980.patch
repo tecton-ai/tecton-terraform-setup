@@ -1,0 +1,193 @@
+From 7ead435292cc7c58b8f4950866a3b1ca1546977b Mon Sep 17 00:00:00 2001
+From: Yan <yan@tecton.ai>
+Date: Mon, 3 Oct 2022 11:30:59 -0700
+Subject: [PATCH] Add permission change for customer repo (#5980)
+
+# What
+
+Add permission changes in terraform repo for customer who wants
+satellite region.
+
+# Why
+
+Help user to generate the permission changes easily
+
+# Test Plan
+
+```
+terraform validate
+
+Warning: Argument is deprecated
+
+  on buckets.tf line 1, in resource "aws_s3_bucket" "tecton":
+   1: resource "aws_s3_bucket" "tecton" {
+
+Use the aws_s3_bucket_server_side_encryption_configuration resource instead
+
+(and one more similar warning elsewhere)
+
+Success! The configuration is valid, but there were some validation warnings as shown above.
+```
+
+# Notes
+
+Any additional notes for reviewers
+
+**Jira**: https://tecton.atlassian.net/browse/TEC-XXXX
+---
+ .../deployment/emr_roles.tf                   | 19 +++++++++
+ .../deployment/roles.tf                       | 17 ++++++++
+ .../deployment/variables.tf                   |  4 ++
+ .../templates/satellite_ca_policy.json        | 40 +++++++++++++++++++
+ .../satellite_serving_dynamodb_policy.json    | 22 ++++++++++
+ 5 files changed, 102 insertions(+)
+ create mode 100644 templates/satellite_ca_policy.json
+ create mode 100644 templates/satellite_serving_dynamodb_policy.json
+
+diff --git a/deployment/emr_roles.tf b/infrastructure/deployment/external/tecton-terraform-setup/deployment/emr_roles.tf
+index 4c361e14e46..f839fcc5504 100644
+--- a/deployment/emr_roles.tf
++++ b/deployment/emr_roles.tf
+@@ -19,6 +19,25 @@ resource "aws_iam_role_policy_attachment" "emr_cross_account_policy_attachment"
+   role       = aws_iam_role.cross_account_role.name
+ }
+ 
++# CROSS ACCOUNT SATELLITE SERVING
++resource "aws_iam_policy" "emr_cross_account_satellite_region_policy" {
++  count = var.create_emr_roles && var.satellite_region ? 1 : 0
++  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy-emr"
++  policy = templatefile("${path.module}/../templates/satellite_serving_dynamodb_policy.json", {
++    ACCOUNT_ID       = var.account_id
++    DEPLOYMENT_NAME  = var.deployment_name
++    REGION           = var.region
++    EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
++    SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
++  })
++  tags = local.tags
++}
++resource "aws_iam_role_policy_attachment" "emr_cross_account_satellite_region_policy_attachment" {
++  count      = var.create_emr_roles && var.satellite_region ? 1 : 0
++  policy_arn = aws_iam_policy.emr_cross_account_satellite_region_policy[0].arn
++  role       = aws_iam_role.cross_account_role.name
++}
++
+ # SPARK ROLE
+ resource "aws_iam_role" "emr_spark_role" {
+   count              = var.create_emr_roles ? 1 : 0
+diff --git a/deployment/roles.tf b/infrastructure/deployment/external/tecton-terraform-setup/deployment/roles.tf
+index d627908d8d5..7828f7c7f04 100644
+--- a/deployment/roles.tf
++++ b/deployment/roles.tf
+@@ -63,3 +63,20 @@ resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
+   policy_arn = aws_iam_policy.common_spark_policy.arn
+   role       = local.spark_role_name
+ }
++
++resource "aws_iam_policy" "satellite_region_policy" {
++  count = var.satellite_region ? 0 : 1
++  name  = "tecton-satellite-region-policy"
++  policy = templatefile("${path.module}/../templates/satellite_ca_policy.json", {
++    ACCOUNT_ID       = var.account_id
++    DEPLOYMENT_NAME  = var.deployment_name
++    REGION           = var.region
++    SATELLITE_REGION = var.satellite_region
++  })
++  tags = local.tags
++}
++resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
++  count      = var.satellite_region ? 0 : 1
++  policy_arn = aws_iam_policy.satellite_region_policy[0].arn
++  role       = local.spark_role_name
++}
+diff --git a/deployment/variables.tf b/infrastructure/deployment/external/tecton-terraform-setup/deployment/variables.tf
+index e60b714b04a..43cbb74b9e5 100644
+--- a/deployment/variables.tf
++++ b/deployment/variables.tf
+@@ -7,6 +7,10 @@ variable "account_id" {
+ variable "region" {
+   type = string
+ }
++variable "satellite_region" {
++  type    = string
++  default = null
++}
+ variable "cross_account_external_id" {
+   type = string
+ }
+diff --git a/templates/satellite_ca_policy.json b/infrastructure/deployment/external/tecton-terraform-setup/templates/satellite_ca_policy.json
+new file mode 100644
+index 00000000000..70f05edf0bd
+--- /dev/null
++++ b/templates/satellite_ca_policy.json
+@@ -0,0 +1,40 @@
++{
++    "Version": "2012-10-17",
++    "Statement": [
++        {
++            "Sid": "DynamoDB",
++            "Effect": "Allow",
++            "Action": [
++                "dynamodb:BatchGetItem",
++                "dynamodb:BatchWriteItem",
++                "dynamodb:ConditionCheckItem",
++                "dynamodb:CreateTable",
++                "dynamodb:DeleteItem",
++                "dynamodb:DeleteTable",
++                "dynamodb:DescribeTable",
++                "dynamodb:GetItem",
++                "dynamodb:PutItem",
++                "dynamodb:Query",
++                "dynamodb:TagResource",
++                "dynamodb:UpdateTable"
++            ],
++            "Resource": [
++                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*",
++                "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
++            ]
++        },
++        {
++            "Sid": "DynamoDBCrossRegion",
++            "Effect": "Allow",
++            "Action": [
++                "dynamodb:CreateTableReplica",
++                "dynamodb:Scan",
++                "dynamodb:UpdateItem",
++                "dynamodb:DeleteTableReplica"
++            ],
++            "Resource": [
++                "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
++            ]
++        }
++    ]
++}
+diff --git a/templates/satellite_serving_dynamodb_policy.json b/infrastructure/deployment/external/tecton-terraform-setup/templates/satellite_serving_dynamodb_policy.json
+new file mode 100644
+index 00000000000..02f00cae107
+--- /dev/null
++++ b/templates/satellite_serving_dynamodb_policy.json
+@@ -0,0 +1,22 @@
++{
++    "Version": "2012-10-17",
++    "Statement": [
++        {
++            "Sid": "CreateSatelliteServingDynamoDBServiceLinkedRole",
++            "Effect": "Allow",
++            "Action": [
++                "iam:CreateServiceLinkedRole"
++            ],
++            "Resource": [
++                "arn:aws:iam::*:role/aws-service-role/replication.dynamodb.amazonaws.com/AWSServiceRoleForDynamoDBReplication*"
++            ],
++            "Condition": {
++                "StringLike": {
++                    "iam:AWSServiceName": [
++                        "replication.dynamodb.amazonaws.com"
++                    ]
++                }
++            }
++        }
++    ]
++}
+-- 
+2.40.0
+
