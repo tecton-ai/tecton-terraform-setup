@@ -66,7 +66,7 @@ variable "bucket_sse_key_enabled" {
 
 variable "kms_key_id" {
   type        = string
-  description = "If provided, ID of customer-managed key for encryptig data at rest"
+  description = "If provided, ID of customer-managed key for encrypting data at rest"
   default     = null
 }
 
