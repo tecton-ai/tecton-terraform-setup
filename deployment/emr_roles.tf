@@ -19,6 +19,25 @@ resource "aws_iam_role_policy_attachment" "emr_cross_account_policy_attachment" 
   role       = aws_iam_role.cross_account_role.name
 }
 
+# CROSS ACCOUNT SATELLITE SERVING
+resource "aws_iam_policy" "emr_cross_account_satellite_region_policy" {
+  count = var.create_emr_roles && (var.satellite_region != null) ? 1 : 0
+  name  = "tecton-${var.deployment_name}-cross-account-satellite-region-policy-emr"
+  policy = templatefile("${path.module}/../templates/satellite_serving_dynamodb_policy.json", {
+    ACCOUNT_ID       = var.account_id
+    DEPLOYMENT_NAME  = var.deployment_name
+    REGION           = var.region
+    EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
+    SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
+  })
+  tags = local.tags
+}
+resource "aws_iam_role_policy_attachment" "emr_cross_account_satellite_region_policy_attachment" {
+  count = var.create_emr_roles && (var.satellite_region != null) ? 1 : 0
+  policy_arn = aws_iam_policy.emr_cross_account_satellite_region_policy[0].arn
+  role       = aws_iam_role.cross_account_role.name
+}
+
 # SPARK ROLE
 resource "aws_iam_role" "emr_spark_role" {
   count              = var.create_emr_roles ? 1 : 0
