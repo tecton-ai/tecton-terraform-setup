@@ -55,10 +55,3 @@ resource "aws_s3_bucket_ownership_controls" "bucket_owner_enforced" {
     object_ownership = "BucketOwnerEnforced"
   }
 }
-
-resource "aws_s3_bucket_acl" "tecton" {
-  depends_on = [aws_s3_bucket_ownership_controls.bucket_owner_enforced]
-
-  bucket = aws_s3_bucket.tecton.id
-  acl    = "private"
-}
