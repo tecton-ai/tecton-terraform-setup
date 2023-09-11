@@ -120,3 +120,51 @@ resource "aws_iam_role_policy_attachment" "emr_master_policy_attachment" {
   policy_arn = aws_iam_policy.emr_master_policy[0].arn
   role       = aws_iam_role.emr_master_role[0].name
 }
+
+resource "aws_iam_policy" "emr_ecr_read" {
+  name  = "tecton-${var.deployment_name}-ecr-read-emr"
+  count = var.create_emr_roles && length(var.emr_read_ecr_repositories) > 0 ? 1 : 0
+
+  policy = data.aws_iam_policy_document.emr_ecr_read[0].json
+}
+
+data "aws_iam_policy_document" "emr_ecr_read" {
+  count = var.create_emr_roles && length(var.emr_read_ecr_repositories) > 0 ? 1 : 0
+
+  statement {
+    sid    = "AllowImageReadOnly"
+    effect = "Allow"
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:DescribeImages",
+      "ecr:BatchGetImage",
+      "ecr:ListTagsForResource"
+    ]
+
+    resources = formatlist("arn:aws:ecr:%s:%s:repository/%s", var.region, var.account_id, var.emr_read_ecr_repositories)
+  }
+
+  statement {
+    sid    = "AllowECRAuth"
+    effect = "Allow"
+    actions = [
+      "ecr:GetAuthorizationToken"
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "emr_master_ecr_read_policy_attachment" {
+  count      = var.create_emr_roles && length(var.emr_read_ecr_repositories) > 0 ? 1 : 0
+  policy_arn = aws_iam_policy.emr_ecr_read[0].arn
+  role       = aws_iam_role.emr_master_role[0].name
+}
+
+resource "aws_iam_role_policy_attachment" "emr_spark_ecr_read_policy_attachment" {
+  count      = var.create_emr_roles && length(var.emr_read_ecr_repositories) > 0 ? 1 : 0
+  policy_arn = aws_iam_policy.emr_ecr_read[0].arn
+  role       = aws_iam_role.emr_spark_role[0].name
+}
