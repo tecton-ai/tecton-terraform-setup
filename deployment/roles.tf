@@ -80,3 +80,19 @@ resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn
   role       = local.spark_role_name
 }
+
+resource "aws_kms_key_policy" "cmk" {
+  count  = var.kms_key_id == null ? 0 : 1
+  key_id = var.kms_key_id
+  # Note that the "Resource: *" in the policy doc cannot be scoped down.
+  # From: https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html,
+  # unlike IAM policies, KMS key policies do not specify a resource.
+  # The resource is the KMS key that is associated with the key policy
+  policy = templatefile("${path.module}/../templates/cmk_policy.json", {
+    ROLE_ARNS = concat([
+      "arn:aws:iam::${var.account_id}:role/${local.spark_role_name}",
+      "arn:aws:iam::${var.tecton_assuming_account_id}:root",
+    ], var.kms_key_additional_principals)
+  })
+}
+
