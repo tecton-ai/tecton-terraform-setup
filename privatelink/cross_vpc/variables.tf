@@ -4,7 +4,7 @@ variable "vpc_id" {
 }
 
 variable "dns_name" {
-  description = "DNS name for Tecton servcies"
+  description = "DNS name for Tecton services"
   type        = string
 }
 
