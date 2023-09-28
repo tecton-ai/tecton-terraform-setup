@@ -37,6 +37,25 @@
             "Resource": [
                 "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
             ]
+        },
+        {
+            "Sid": "CloudwatchLogging",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetPolicy",
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListInstanceProfilesForRole",
+                "iam:ListRolePolicies"
+            ],
+            "Resource": [
+                  "arn:aws:logs::${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs::${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs::${ACCOUNT_ID}:log-group::log-stream:*"
+            ]
         }
     ]
 }

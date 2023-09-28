@@ -71,6 +71,25 @@
                 "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-*",
                 "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*"
             ]
+        },
+        {
+            "Sid": "CloudwatchLogging",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetPolicy",
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListInstanceProfilesForRole",
+                "iam:ListRolePolicies"
+            ],
+            "Resource": [
+                  "arn:aws:logs::${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs::${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs::${ACCOUNT_ID}:log-group::log-stream:*"
+            ]
         }
     ]
 }
