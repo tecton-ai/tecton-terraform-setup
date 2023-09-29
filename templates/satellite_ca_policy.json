@@ -50,9 +50,9 @@
                 "logs:PutRetentionPolicy"
             ],
             "Resource": [
-                  "arn:aws:logs::${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
-                  "arn:aws:logs::${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
-                  "arn:aws:logs::${ACCOUNT_ID}:log-group::log-stream:*"
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group::log-stream:*"
             ]
         }
     ]
