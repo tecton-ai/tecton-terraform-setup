@@ -76,7 +76,7 @@
             "Sid": "CloudwatchLogging",
             "Effect": "Allow",
             "Action": [
-								"logs:CreateLogGroup",
+                "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:DescribeLogGroups",
                 "logs:DescribeLogStreams",
