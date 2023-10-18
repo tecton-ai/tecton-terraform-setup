@@ -107,6 +107,7 @@
             "Sid": "DescribeLoadBalancer",
             "Effect": "Allow",
             "Action": [
+                "*",
                 "elasticloadbalancing:DescribeTags",
                 "elasticloadbalancing:DescribeLoadBalancerAttributes",
                 "elasticloadbalancing:DescribeLoadBalancers",
