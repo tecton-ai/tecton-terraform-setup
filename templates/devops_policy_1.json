@@ -54,10 +54,12 @@
             "Sid": "GetReadOnlyPolicy",
             "Effect": "Allow",
             "Action": [
-                "iam:GetPolicy"
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion"
             ],
             "Resource": [
-                "arn:aws:iam::aws:policy/ReadOnlyAccess"
+                "arn:aws:iam::aws:policy/ReadOnlyAccess",
+                "arn:aws:iam::aws:policy/PowerUserAccess"
             ]
         },
         {
