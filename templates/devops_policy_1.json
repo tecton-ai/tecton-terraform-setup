@@ -51,6 +51,16 @@
             ]
         },
         {
+            "Sid": "GetReadOnlyPolicy",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetPolicy"
+            ],
+            "Resource": [
+                "arn:aws:iam::aws:policy/ReadOnlyAccess"
+            ]
+        },
+        {
             "Sid": "ManageInstanceProfilesForTectonRoles",
             "Effect": "Allow",
             "Action": [
