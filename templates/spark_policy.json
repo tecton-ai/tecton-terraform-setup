@@ -7,9 +7,11 @@
             "Action": [
                 "dynamodb:BatchWriteItem",
                 "dynamodb:ConditionCheckItem",
+                "dynamodb:DescribeImport",
                 "dynamodb:DescribeTable",
-                "dynamodb:PutItem",
                 "dynamodb:GetItem",
+                "dynamodb:ImportTable",
+                "dynamodb:PutItem",
                 "dynamodb:Query"
             ],
             "Resource": [
@@ -47,7 +49,7 @@
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
             ]
         },
-    {
+      {
             "Sid": "TectonPublicS3",
             "Effect": "Allow",
             "Action": [
@@ -57,6 +59,23 @@
                 "arn:aws:s3:::tecton.ai.databricks-init-scripts/*",
                 "arn:aws:s3:::tecton.ai.public*",
                 "arn:aws:s3:::tecton-materialization-release/*"
+            ]
+        },
+        {
+            "Sid": "CloudwatchLogging",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group::log-stream:*"
             ]
         }
     ]

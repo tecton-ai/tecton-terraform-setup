@@ -11,8 +11,10 @@
                 "dynamodb:CreateTable",
                 "dynamodb:DeleteItem",
                 "dynamodb:DeleteTable",
+                "dynamodb:DescribeImport",
                 "dynamodb:DescribeTable",
                 "dynamodb:GetItem",
+                "dynamodb:ImportTable",
                 "dynamodb:PutItem",
                 "dynamodb:Query",
                 "dynamodb:TagResource",
@@ -34,6 +36,23 @@
             ],
             "Resource": [
                 "arn:aws:dynamodb:${SATELLITE_REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "CloudwatchLogging",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group::log-stream:*"
             ]
         }
     ]
