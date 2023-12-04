@@ -89,7 +89,8 @@ resource "aws_kms_key_policy" "cmk" {
   # unlike IAM policies, KMS key policies do not specify a resource.
   # The resource is the KMS key that is associated with the key policy
   policy = templatefile("${path.module}/../templates/cmk_policy.json", {
-    ROLE_ARNS = concat([
+    ACCOUNT_ID = var.account_id
+    ROLE_ARNS  = concat([
       "arn:aws:iam::${var.account_id}:role/${local.spark_role_name}",
       "arn:aws:iam::${var.tecton_assuming_account_id}:root",
     ], var.kms_key_additional_principals)
