@@ -393,9 +393,9 @@ output "eks_satellite_management_role_name" {
 }
 
 output "s3_replication_policy_name" {
-  value = length(aws_iam_policy.s3_replication) > 0 ? aws_iam_policy.s3_replication[0].name : null
+  value = local.is_satellite_regions_enabled ? aws_iam_policy.s3_replication[0].name : null
 }
 
 output "s3_batch_replication_policy_name" {
-  value = length(aws_iam_policy.s3_batch_replication) > 0 ? aws_iam_policy.s3_batch_replication[0].name : null
+  value = local.is_satellite_regions_enabled ? aws_iam_policy.s3_batch_replication[0].name : null
 }
