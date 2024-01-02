@@ -27,25 +27,30 @@ resource "aws_s3_bucket_public_access_block" "tecton" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_policy" "read-only-access" {
+data "aws_iam_policy_document" "s3_bucket_policy" {
+  count = length(var.additional_s3_read_only_principals) > 0 ? 1 : 0
+
+  dynamic "statement" {
+    for_each = length(var.additional_s3_read_only_principals) > 0 ? [true] : []
+    content {
+      sid     = "AllowReadOnly"
+      actions = ["s3:Get*", "s3:List*"]
+      resources = [
+        aws_s3_bucket.tecton.arn,
+        "${aws_s3_bucket.tecton.arn}/*",
+      ]
+      principals {
+        identifiers = var.additional_s3_read_only_principals
+        type        = "AWS"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "tecton" {
   count  = length(var.additional_s3_read_only_principals) > 0 ? 1 : 0
   bucket = aws_s3_bucket.tecton.bucket
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Id      = "BucketPolicy"
-    Statement = [
-      {
-        Sid       = "AllowReadOnly"
-        Effect    = "Allow"
-        Principal = var.additional_s3_read_only_principals
-        Action    = ["s3:Get*", "s3:List*"]
-        Resource = [
-          aws_s3_bucket.tecton.arn,
-          "${aws_s3_bucket.tecton.arn}/*",
-        ]
-      }
-    ]
-  })
+  policy = data.aws_iam_policy_document.s3_bucket_policy[0].json
 }
 
 resource "aws_s3_bucket_ownership_controls" "bucket_owner_enforced" {
