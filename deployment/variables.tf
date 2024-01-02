@@ -42,6 +42,15 @@ variable "additional_s3_read_only_principals" {
   default = []
 }
 
+variable "s3_read_write_principals" {
+  type        = list(string)
+  description = <<-EOT
+    List of principals to grant read and write access to Tecton S3 bucket.
+    Typically the AWS account running the materilization jobs
+  EOT
+  default     = []
+}
+
 variable "additional_offline_storage_tags" {
   type        = map(string)
   description = "Additional tags for offline storage (S3 bucket)"
@@ -75,4 +84,3 @@ variable "kms_key_additional_principals" {
   description = "Additional set of principals to grant KMS key access to"
   default     = []
 }
-
