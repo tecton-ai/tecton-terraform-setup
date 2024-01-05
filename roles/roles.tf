@@ -165,7 +165,7 @@ resource "aws_iam_role" "database_migrator" {
   assume_role_policy = var.external_id != "" ? data.template_file.assume_role_external_id_policy.rendered : data.template_file.assume_role_policy.rendered
 }
 
-# DEVOPS [Common : Databricks and EMR]
+# Database Migrator [Common : Databricks and EMR]
 resource "aws_iam_policy" "database_migrator_policy" {
   name   = "tecton-${var.deployment_name}-database-migrator"
   policy = data.template_file.database_migrator_policy_json.rendered
