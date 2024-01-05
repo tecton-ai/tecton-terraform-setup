@@ -158,7 +158,7 @@ data "template_file" "database_migrator_policy_json" {
   }
 }
 
-# DEVOPS [Common : Databricks and EMR]
+# Database Migrator [Common : Databricks and EMR]
 resource "aws_iam_role" "database_migrator" {
   name               = "tecton-${var.deployment_name}-database-migrator"
   tags               = local.tags
