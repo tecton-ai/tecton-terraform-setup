@@ -172,11 +172,6 @@ resource "aws_iam_policy" "database_migrator_policy" {
   tags   = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "database_migrator_policy_to_db_migrator_role" {
-  role       = aws_iam_role.database_migrator.name
-  policy_arn = aws_iam_policy.database_migrator_policy.arn
-}
-
 resource "aws_iam_role_policy_attachment" "database_migrator_policy_to_eks_node_role" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = aws_iam_policy.database_migrator_policy.arn
