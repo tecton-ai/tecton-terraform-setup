@@ -148,7 +148,7 @@ resource "aws_iam_policy" "devops_fargate_policy" {
   tags   = local.tags
 }
 
-# DEVOPS [Common : Databricks and EMR]
+# Database Migrator [Common : Databricks and EMR]
 data "template_file" "database_migrator_policy_json" {
   template = file("${path.module}/../templates/database_migrator_policy.json")
   vars = {
