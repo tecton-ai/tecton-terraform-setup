@@ -4,28 +4,15 @@
         {
             "Sid": "RdsSnapshotAccess",
             "Action": [
-                "rds:CopyDBClusterSnapshot",
-                "rds:CopyDBSnapshot",
-                "rds:CreateDBClusterSnapshot",
                 "rds:CreateDBSnapshot",
-                "rds:DeleteDBClusterSnapshot",
-                "rds:DeleteDBSnapshot",
-                "rds:DescribeDBClusterSnapshots",
-                "rds:DescribeDBClusters",
                 "rds:DescribeDBInstances",
-                "rds:DescribeDBSnapshots",
-                "rds:ModifyDBClusterSnapshotAttribute",
-                "rds:ModifyDBSnapshot",
-                "rds:ModifyDBSnapshotAttribute"
+                "rds:DescribeDBSnapshots"
             ],
             "Effect": "Allow",
             "Resource": [
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:cluster:*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:cluster-snapshot:*",
                 "arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:snapshot:*",
-                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:snapshot-tenant-database:*:*"
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:snapshot:database-migrator-pre-migration-*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:snapshot-tenant-database:database-migrator-pre-migration-*:*"
             ]
         }
     ]

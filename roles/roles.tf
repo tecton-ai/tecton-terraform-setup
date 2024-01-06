@@ -153,7 +153,6 @@ data "template_file" "database_migrator_policy_json" {
   template = file("${path.module}/../templates/database_migrator_policy.json")
   vars = {
     ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
   }
 }
