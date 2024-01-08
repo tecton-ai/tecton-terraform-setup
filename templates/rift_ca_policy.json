@@ -1,0 +1,92 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DynamoDB",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:CreateTable",
+                "dynamodb:DeleteItem",
+                "dynamodb:DeleteTable",
+                "dynamodb:DescribeImport",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:ImportTable",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:TagResource",
+                "dynamodb:UpdateTable"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "DynamoDBGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:DescribeLimits"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3Bucket",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"
+            ]
+        },
+        {
+            "Sid": "S3Object",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:DeleteObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+            ]
+        },
+        {
+            "Sid": "VerifyPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetPolicy",
+                "iam:GetRole",
+                "iam:GetRolePolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListInstanceProfilesForRole",
+                "iam:ListRolePolicies"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*"
+            ]
+        },
+        {
+            "Sid": "CloudwatchLogging",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group::log-stream:*"
+            ]
+        }
+    ]
+}
