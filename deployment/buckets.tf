@@ -27,8 +27,13 @@ resource "aws_s3_bucket_public_access_block" "tecton" {
   restrict_public_buckets = true
 }
 
+
+locals {
+  enable_s3_bucket_policy = (length(var.additional_s3_read_only_principals) > 0 || length(var.s3_read_write_principals) > 0)
+}
+
 data "aws_iam_policy_document" "s3_bucket_policy" {
-  count = length(var.additional_s3_read_only_principals) > 0 ? 1 : 0
+  count = local.enable_s3_bucket_policy ? 1 : 0
 
   dynamic "statement" {
     for_each = length(var.additional_s3_read_only_principals) > 0 ? [true] : []
@@ -45,10 +50,42 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
       }
     }
   }
+
+  dynamic "statement" {
+    for_each = length(var.s3_read_write_principals) > 0 ? [true] : []
+
+    content {
+      sid     = "S3Bucket"
+      actions = ["s3:ListBucket"]
+      principals {
+        identifiers = var.s3_read_write_principals
+        type        = "AWS"
+      }
+      resources = ["arn:aws:s3:::tecton-${var.deployment_name}"]
+    }
+  }
+
+  dynamic "statement" {
+    for_each = length(var.s3_read_write_principals) > 0 ? [true] : []
+
+    content {
+      sid = "S3Object"
+      actions = [
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutObject"
+      ]
+      principals {
+        identifiers = var.s3_read_write_principals
+        type        = "AWS"
+      }
+      resources = ["arn:aws:s3:::tecton-${var.deployment_name}/*"]
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "tecton" {
-  count  = length(var.additional_s3_read_only_principals) > 0 ? 1 : 0
+  count  = local.enable_s3_bucket_policy ? 1 : 0
   bucket = aws_s3_bucket.tecton.bucket
   policy = data.aws_iam_policy_document.s3_bucket_policy[0].json
 }
