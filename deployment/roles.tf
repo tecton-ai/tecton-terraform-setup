@@ -4,7 +4,7 @@ locals {
 }
 
 data "aws_iam_role" "spark_role" {
-  count = var.use_rift_ca_policy ? 0 : 1
+  count = var.use_rift_cross_account_policy ? 0 : 1
   name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
@@ -35,7 +35,7 @@ resource "aws_iam_role" "cross_account_role" {
 POLICY
 }
 resource "aws_iam_policy" "cross_account_policy_spark" {
-  count = var.use_rift_ca_policy ? 0 : 1
+  count = var.use_rift_cross_account_policy ? 0 : 1
 
   name = "tecton-${var.deployment_name}-cross-account-policy"
   policy = templatefile("${path.module}/../templates/ca_policy.json", {
@@ -49,7 +49,7 @@ resource "aws_iam_policy" "cross_account_policy_spark" {
 
 
 resource "aws_iam_policy" "cross_account_policy_rift" {
-  count = var.use_rift_ca_policy ? 1 : 0
+  count = var.use_rift_cross_account_policy ? 1 : 0
 
   name = "tecton-${var.deployment_name}-cross-account-policy"
   policy = templatefile("${path.module}/../templates/rift_ca_policy.json", {
@@ -61,7 +61,7 @@ resource "aws_iam_policy" "cross_account_policy_rift" {
 }
 
 locals {
-  cross_account_policy_arn = var.use_rift_ca_policy ? aws_iam_policy.cross_account_policy_rift[0].arn : aws_iam_policy.cross_account_policy_spark[0].arn
+  cross_account_policy_arn = var.use_rift_cross_account_policy ? aws_iam_policy.cross_account_policy_rift[0].arn : aws_iam_policy.cross_account_policy_spark[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
@@ -71,7 +71,7 @@ resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
 
 # SPARK ROLE
 resource "aws_iam_policy" "common_spark_policy" {
-  count = var.use_rift_ca_policy ? 0 : 1
+  count = var.use_rift_cross_account_policy ? 0 : 1
 
   name = "tecton-${var.deployment_name}-common-spark-policy"
   policy = templatefile("${path.module}/../templates/spark_policy.json", {
@@ -82,7 +82,7 @@ resource "aws_iam_policy" "common_spark_policy" {
   tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
-  count = var.use_rift_ca_policy ? 0 : 1
+  count = var.use_rift_cross_account_policy ? 0 : 1
 
   policy_arn = aws_iam_policy.common_spark_policy[0].arn
   role       = local.spark_role_name
