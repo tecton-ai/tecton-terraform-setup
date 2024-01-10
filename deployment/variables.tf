@@ -85,7 +85,7 @@ variable "kms_key_additional_principals" {
   default     = []
 }
 
-variable "use_rift_ca_policy" {
+variable "use_rift_cross_account_policy" {
   type        = bool
   description = "Whether or not to use rift version of IAM policies for cross-account access"
   default     = false

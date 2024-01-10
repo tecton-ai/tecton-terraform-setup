@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "my-region"
+  region = "us-west-2"
 }
 
 # this example assumes that Databricks and Tecton are deployed to the same account
@@ -17,8 +17,8 @@ locals {
   deployment_name = "my-deployment-name"
 
   # The region and account_id of this Tecton account you just created
-  region     = "my-region"
-  account_id = "123456789"
+  region     = "us-west-2"
+  account_id = "1234567890"
 
   # Name of role and instance profile used by Databricks
   spark_role_name             = "my-spark-role-name"
@@ -28,6 +28,9 @@ locals {
 
   # Get from your Tecton rep
   tecton_assuming_account_id = "123456789"
+
+  # OPTIONAL to also enable Rift. Get from your Tecton rep
+  # tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
 }
 
 resource "random_id" "external_id" {
@@ -43,4 +46,6 @@ module "tecton" {
   cross_account_external_id  = resource.random_id.external_id.id
 
   databricks_spark_role_name = local.spark_role_name
+  # OPTIONAL to also enable Rift
+  # s3_read_write_principals   = [local.tecton_control_plane_root_principal]
 }
