@@ -8,7 +8,7 @@ output "spark_role_name" {
   value = local.spark_role_name
 }
 output "spark_role_arn" {
-  value = data.aws_iam_role.spark_role.arn
+  value = var.use_rift_ca_policy ? null : data.aws_iam_role.spark_role[0].arn
 }
 output "emr_master_role_name" {
   value = var.create_emr_roles ? aws_iam_role.emr_master_role[0].name : null
