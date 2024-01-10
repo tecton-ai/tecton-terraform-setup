@@ -84,3 +84,9 @@ variable "kms_key_additional_principals" {
   description = "Additional set of principals to grant KMS key access to"
   default     = []
 }
+
+variable "use_rift_ca_policy" {
+  type        = bool
+  description = "Whether or not to use rift version of IAM policies for cross-account access"
+  default     = false
+}
