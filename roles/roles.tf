@@ -148,6 +148,34 @@ resource "aws_iam_policy" "devops_fargate_policy" {
   tags   = local.tags
 }
 
+# Database Migrator [Common : Databricks and EMR]
+data "template_file" "database_migrator_policy_json" {
+  template = file("${path.module}/../templates/database_migrator_policy.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    REGION          = var.region
+  }
+}
+
+# Database Migrator [Common : Databricks and EMR]
+resource "aws_iam_role" "database_migrator" {
+  name               = "tecton-${var.deployment_name}-database-migrator"
+  tags               = local.tags
+  assume_role_policy = var.external_id != "" ? data.template_file.assume_role_external_id_policy.rendered : data.template_file.assume_role_policy.rendered
+}
+
+# Database Migrator [Common : Databricks and EMR]
+resource "aws_iam_policy" "database_migrator_policy" {
+  name   = "tecton-${var.deployment_name}-database-migrator"
+  policy = data.template_file.database_migrator_policy_json.rendered
+  tags   = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "database_migrator_policy_to_eks_node_role" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.database_migrator_policy.arn
+}
+
 # EKS [Common : Databricks and EMR]
 data "template_file" "devops_eks_policy_json" {
   template = file("${path.module}/../templates/devops_eks_policy.json")

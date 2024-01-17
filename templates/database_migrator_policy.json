@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "RdsSnapshotAccess",
+            "Action": [
+                "rds:CreateDBSnapshot",
+                "rds:DescribeDBInstances",
+                "rds:DescribeDBSnapshots"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:db:*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:snapshot:database-migrator-pre-migration-*",
+                "arn:aws:rds:${REGION}:${ACCOUNT_ID}:snapshot-tenant-database:database-migrator-pre-migration-*:*"
+            ]
+        }
+    ]
+}
