@@ -7,6 +7,15 @@ variable "account_id" {
 variable "region" {
   type = string
 }
+
+variable "s3_read_write_principals" {
+  type        = list(string)
+  description = <<-EOT
+    List of principals to grant read and write access to Tecton S3 bucket.
+    Typically the AWS account running the materilization jobs
+  EOT
+}
+
 variable "satellite_region" {
   type    = string
   default = null
@@ -40,15 +49,6 @@ variable "emr_read_ecr_repositories" {
 variable "additional_s3_read_only_principals" {
   type    = list(string)
   default = []
-}
-
-variable "s3_read_write_principals" {
-  type        = list(string)
-  description = <<-EOT
-    List of principals to grant read and write access to Tecton S3 bucket.
-    Typically the AWS account running the materilization jobs
-  EOT
-  default     = []
 }
 
 variable "additional_offline_storage_tags" {
