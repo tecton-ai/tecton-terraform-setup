@@ -21,10 +21,7 @@ locals {
   account_id = "1234567890"
 
   # Get from your Tecton rep
-  tecton_assuming_account_id = "123456789"
-
-  # OPTIONAL to also enable Rift. Get from your Tecton rep
-  # tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
+  tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
 
   # OPTIONAL for EMR notebook clusters in a different account (see optional block at end of file)
   # cross_account_arn = "arn:aws:iam::9876543210:root"
@@ -38,14 +35,12 @@ module "tecton" {
   source                     = "../deployment"
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
-  tecton_assuming_account_id = local.tecton_assuming_account_id
   region                     = local.region
   cross_account_external_id  = random_id.external_id.id
 
   create_emr_roles = true
 
-  # OPTIONAL to also enable Rift
-  # s3_read_write_principals   = [local.tecton_control_plane_root_principal]
+  s3_read_write_principals   = [local.tecton_control_plane_root_principal]
 }
 
 module "security_groups" {

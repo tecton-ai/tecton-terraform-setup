@@ -27,10 +27,7 @@ locals {
   databricks_workspace = "mycompany.cloud.databricks.com"
 
   # Get from your Tecton rep
-  tecton_assuming_account_id = "123456789"
-
-  # OPTIONAL to also enable Rift. Get from your Tecton rep
-  # tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
+  tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
 }
 
 resource "random_id" "external_id" {
@@ -41,11 +38,9 @@ module "tecton" {
   source                     = "../deployment"
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
-  tecton_assuming_account_id = local.tecton_assuming_account_id
   region                     = local.region
   cross_account_external_id  = resource.random_id.external_id.id
 
   databricks_spark_role_name = local.spark_role_name
-  # OPTIONAL to also enable Rift
-  # s3_read_write_principals   = [local.tecton_control_plane_root_principal]
+  s3_read_write_principals   = [local.tecton_control_plane_root_principal]
 }
