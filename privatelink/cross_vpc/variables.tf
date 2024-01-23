@@ -14,18 +14,24 @@ variable "vpc_endpoint_service_name" {
 }
 
 variable "vpc_endpoint_subnet_ids" {
-  description = "Private subnet ids where to create VPC endpiont"
+  description = "Private subnet ids where to create VPC endpoint"
   type        = list(string)
 }
 
+variable "vpc_endpoint_security_group_name" {
+  description = "Name of the VPC endpoint security group"
+  type        = string
+  default     = "tecton-services-vpc-endpoint"
+}
+
 variable "vpc_endpoint_security_group_ingress_cidrs" {
-  description = "Ingress CIDR blocks of the VPC endpiont security group"
+  description = "Ingress CIDR blocks of the VPC endpoint security group"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
 variable "vpc_endpoint_security_group_egress_cidrs" {
-  description = "Egress CIDR blocks of the VPC endpiont security group"
+  description = "Egress CIDR blocks of the VPC endpoint security group"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
