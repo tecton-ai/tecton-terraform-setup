@@ -1,5 +1,5 @@
 resource "aws_security_group" "cross_vpc_vpc_endpoint" {
-  name        = "tecton-services-vpc-endpoint"
+  name        = var.vpc_endpoint_security_group_name
   description = "Security group for the accessing Tecton services by cross-vpc vpc endpoint"
   vpc_id      = var.vpc_id
 
