@@ -19,3 +19,7 @@ output "spark_instance_profile_name" {
 output "databricks_workspace" {
   value = local.databricks_workspace
 }
+
+output "kms_key_arn" {
+  value = module.tecton.kms_key_arn
+}

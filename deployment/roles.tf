@@ -5,7 +5,7 @@ locals {
 
 data "aws_iam_role" "spark_role" {
   count = var.use_rift_cross_account_policy ? 0 : 1
-  name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
+  name  = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
 
@@ -105,8 +105,17 @@ resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   role       = local.spark_role_name
 }
 
+locals {
+  cmk_policy_roles = concat(
+    [aws_iam_role.cross_account_role.arn],
+    local.spark_role_name != null ? ["arn:aws:iam::${var.account_id}:role/${local.spark_role_name}"] : [],
+    var.s3_read_write_principals,
+    var.kms_key_additional_principals
+  )
+}
+
 resource "aws_kms_key_policy" "cmk" {
-  count  = var.kms_key_id == null ? 0 : 1
+  count  = (var.kms_key_id == null) ? 0 : 1
   key_id = var.kms_key_id
   # Note that the "Resource: *" in the policy doc cannot be scoped down.
   # From: https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html,
@@ -114,10 +123,7 @@ resource "aws_kms_key_policy" "cmk" {
   # The resource is the KMS key that is associated with the key policy
   policy = templatefile("${path.module}/../templates/cmk_policy.json", {
     ACCOUNT_ID = var.account_id
-    ROLE_ARNS = concat([
-      "arn:aws:iam::${var.account_id}:role/${local.spark_role_name}",
-      "arn:aws:iam::${var.tecton_assuming_account_id}:root",
-    ], var.kms_key_additional_principals)
+    ROLE_ARNS  = local.cmk_policy_roles
   })
 }
 

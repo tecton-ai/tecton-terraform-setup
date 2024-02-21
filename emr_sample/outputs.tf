@@ -19,3 +19,7 @@ output "spark_instance_profile_arn" {
 output "notebook_cluster_id" {
   value = local.notebook_cluster_count > 0 ? module.notebook_cluster[0].cluster_id : ""
 }
+
+output "kms_key_arn" {
+  value = module.tecton.kms_key_arn
+}
