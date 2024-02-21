@@ -10,3 +10,7 @@ output "cross_account_role_arn" {
 output "cross_account_external_id" {
   value = resource.random_id.external_id.id
 }
+
+output "kms_key_arn" {
+  value = module.tecton.kms_key_arn
+}

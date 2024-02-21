@@ -19,3 +19,7 @@ output "emr_spark_instance_profile_arn" {
 output "s3_bucket" {
   value = aws_s3_bucket.tecton
 }
+
+output "kms_key_arn" {
+  value = local.kms_key_arn
+}
