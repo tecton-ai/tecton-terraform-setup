@@ -28,10 +28,9 @@ locals {
 
   # Get from your Tecton rep
   tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
-}
 
-resource "random_id" "external_id" {
-  byte_length = 16
+  # Get from your Tecton rep
+  cross_account_external_id = "tecton-external-id"
 }
 
 module "tecton" {
@@ -39,7 +38,7 @@ module "tecton" {
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
   region                     = local.region
-  cross_account_external_id  = resource.random_id.external_id.id
+  cross_account_external_id  = local.cross_account_external_id
 
   databricks_spark_role_name = local.spark_role_name
   s3_read_write_principals   = [local.tecton_control_plane_root_principal]

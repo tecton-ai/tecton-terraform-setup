@@ -9,7 +9,7 @@ terraform {
 }
 
 provider "aws" {
-  region     = "us-west-2"
+  region = "us-west-2"
 }
 
 locals {
@@ -23,24 +23,23 @@ locals {
   # Get from your Tecton rep
   tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
 
+  # get from your tecton rep
+  cross_account_external_id = "tecton-external-id"
+
   # OPTIONAL for EMR notebook clusters in a different account (see optional block at end of file)
   # cross_account_arn = "arn:aws:iam::9876543210:root"
 }
 
-resource "random_id" "external_id" {
-  byte_length = 16
-}
-
 module "tecton" {
-  source                     = "../deployment"
-  deployment_name            = local.deployment_name
-  account_id                 = local.account_id
-  region                     = local.region
-  cross_account_external_id  = random_id.external_id.id
+  source                    = "../deployment"
+  deployment_name           = local.deployment_name
+  account_id                = local.account_id
+  region                    = local.region
+  cross_account_external_id = local.cross_account_external_id
 
   create_emr_roles = true
 
-  s3_read_write_principals   = [local.tecton_control_plane_root_principal]
+  s3_read_write_principals = [local.tecton_control_plane_root_principal]
 }
 
 module "security_groups" {

@@ -22,6 +22,9 @@ locals {
 
   # Get from your Tecton rep
   tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
+
+  # get from your tecton rep
+  cross_account_external_id = "tecton-external-id"
 }
 
 resource "random_id" "external_id" {
@@ -33,7 +36,7 @@ module "tecton" {
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
   region                     = local.region
-  cross_account_external_id  = resource.random_id.external_id.id
+  cross_account_external_id  = local.cross_account_external_id
 
   # Control plane root principal
   s3_read_write_principals      = [local.tecton_control_plane_root_principal]
