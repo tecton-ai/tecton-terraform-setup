@@ -6,6 +6,10 @@ resource "aws_s3_bucket" "tecton" {
   }
 }
 
+locals {
+  kms_key_arn = (var.kms_key_id != null) ? format("arn:aws:kms:%s:%s:key/%s", var.region, var.account_id, var.kms_key_id) : null
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "tecton_s3_bucket_encryption_configuration" {
   bucket = aws_s3_bucket.tecton.id
 
@@ -13,7 +17,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "tecton_s3_bucket_
     bucket_key_enabled = var.bucket_sse_algorithm == "aws:kms" ? var.bucket_sse_key_enabled : null
 
     apply_server_side_encryption_by_default {
-      sse_algorithm = var.bucket_sse_algorithm
+      sse_algorithm     = var.bucket_sse_algorithm
+      kms_master_key_id = local.kms_key_arn
     }
   }
 }
