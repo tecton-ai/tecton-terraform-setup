@@ -27,10 +27,6 @@ locals {
   cross_account_external_id = "tecton-external-id"
 }
 
-resource "random_id" "external_id" {
-  byte_length = 16
-}
-
 module "tecton" {
   source                     = "../deployment"
   deployment_name            = local.deployment_name
