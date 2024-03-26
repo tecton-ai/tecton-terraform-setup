@@ -12,7 +12,7 @@ import requests
 
 
 def _boto_session_for_role(role_arn, external_id=None, login_tries=1, region=None, session=None):
-    for i in range(0, login_tries):
+    for i in range(login_tries):
         try:
             if session is None:
                 session = boto3.session.Session()
@@ -90,7 +90,7 @@ def test_policy(
         resources = [statement["Resource"]] if isinstance(statement["Resource"], str) else statement["Resource"]
         context_entries = []
         if "Condition" in statement:
-            pairs = list(statement["Condition"].values())[0]
+            pairs = next(iter(statement["Condition"].values()))
             context_entries = [
                 {
                     "ContextKeyName": key,

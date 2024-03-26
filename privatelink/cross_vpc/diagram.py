@@ -1,13 +1,15 @@
 #!/bin/env python3
 
-from diagrams import Cluster, Diagram
+from diagrams import Cluster
+from diagrams import Diagram
 from diagrams.aws.compute import EC2Instances
-from diagrams.aws.network import Endpoint, ElbNetworkLoadBalancer, Route53HostedZone
+from diagrams.aws.network import ElbNetworkLoadBalancer
+from diagrams.aws.network import Endpoint
+from diagrams.aws.network import Route53HostedZone
 from diagrams.aws.security import Shield
 
-diagram_attr = {
-    "pad": "0.5"
-}
+
+diagram_attr = {"pad": "0.5"}
 
 with Diagram("Tecton Cross-VPC Privatelink", graph_attr=diagram_attr, filename="diagram"):
     with Cluster("AWS account"):

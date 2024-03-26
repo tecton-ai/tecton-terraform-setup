@@ -126,4 +126,3 @@ resource "aws_kms_key_policy" "cmk" {
     ROLE_ARNS  = local.cmk_policy_roles
   })
 }
-
