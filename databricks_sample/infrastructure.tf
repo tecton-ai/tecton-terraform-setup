@@ -34,11 +34,11 @@ locals {
 }
 
 module "tecton" {
-  source                     = "../deployment"
-  deployment_name            = local.deployment_name
-  account_id                 = local.account_id
-  region                     = local.region
-  cross_account_external_id  = local.cross_account_external_id
+  source                    = "../deployment"
+  deployment_name           = local.deployment_name
+  account_id                = local.account_id
+  region                    = local.region
+  cross_account_external_id = local.cross_account_external_id
 
   databricks_spark_role_name = local.spark_role_name
   s3_read_write_principals   = [local.tecton_control_plane_root_principal]

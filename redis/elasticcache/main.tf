@@ -24,8 +24,7 @@ resource "aws_elasticache_replication_group" "tecton_redis_cluster" {
     num_node_groups         = 4
   }
   security_group_ids = [var.redis_security_group_id]
-  subnet_group_name  = "tecton-redis-cluster-cache-subnet"
-  depends_on         = [aws_elasticache_subnet_group.tecton_redis_cluster_subnet_group]
+  subnet_group_name  = aws_elasticache_subnet_group.tecton_redis_cluster_subnet_group.name
   tags = {
     "tecton-accessible:${var.deployment_name}" = "true"
   }

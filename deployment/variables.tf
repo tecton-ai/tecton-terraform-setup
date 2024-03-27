@@ -25,7 +25,7 @@ variable "cross_account_external_id" {
 }
 variable "tecton_assuming_account_id" {
   type        = string
-  description = "The account Tecton will use to assume any cross-account roles."
+  description = "The account Tecton will use to assume any cross-account roles. Typically the account ID of your Tecton control plane"
   default     = "153453085158"
 }
 variable "databricks_spark_role_name" {
