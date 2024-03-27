@@ -71,12 +71,11 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_dns_name"></a> [dns\_name](#input\_dns\_name) | DNS name for Tecton servcies | `string` | n/a | yes |
-| <a name="input_vpc_endpoint_security_group_egress_cidrs"></a> [vpc\_endpoint\_security\_group\_egress\_cidrs](#input\_vpc\_endpoint\_security\_group\_egress\_cidrs) | Egress CIDR blocks of the VPC endpoint security group | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
-| <a name="input_vpc_endpoint_security_group_ingress_cidrs"></a> [vpc\_endpoint\_security\_group\_ingress\_cidrs](#input\_vpc\_endpoint\_security\_group\_ingress\_cidrs) | Ingress CIDR blocks of the VPC endpoint security group | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
+| <a name="input_vpc_endpoint_security_group_egress_cidrs"></a> [vpc\_endpoint\_security\_group\_egress\_cidrs](#input\_vpc\_endpoint\_security\_group\_egress\_cidrs) | Egress CIDR blocks of the VPC endpiont security group | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
+| <a name="input_vpc_endpoint_security_group_ingress_cidrs"></a> [vpc\_endpoint\_security\_group\_ingress\_cidrs](#input\_vpc\_endpoint\_security\_group\_ingress\_cidrs) | Ingress CIDR blocks of the VPC endpiont security group | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | <a name="input_vpc_endpoint_service_name"></a> [vpc\_endpoint\_service\_name](#input\_vpc\_endpoint\_service\_name) | Name of the pre-existing VPC endpoint service to connect to | `string` | n/a | yes |
-| <a name="input_vpc_endpoint_subnet_ids"></a> [vpc\_endpoint\_subnet\_ids](#input\_vpc\_endpoint\_subnet\_ids) | Private subnet ids where to create VPC endpoint | `list(string)` | n/a | yes |
+| <a name="input_vpc_endpoint_subnet_ids"></a> [vpc\_endpoint\_subnet\_ids](#input\_vpc\_endpoint\_subnet\_ids) | Private subnet ids where to create VPC endpiont | `list(string)` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID from which to create the VPC endpoint | `string` | n/a | yes |
-| <a name="input_vpc_endpoint_security_group_name"></a> [vpc\_endpoint\_security\_group\_name](#input\_vpc\_endpoint\_security\_group\_name) | Name of the VPC endpoint security group | `string` | `"tecton-services-vpc-endpoint"` | no |
 
 ## Outputs
 

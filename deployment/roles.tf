@@ -14,26 +14,28 @@ resource "aws_iam_role" "cross_account_role" {
   name                 = "tecton-${var.deployment_name}-cross-account-role"
   max_session_duration = 43200
   tags                 = local.tags
-  assume_role_policy   = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${var.tecton_assuming_account_id}:root"
-      },
-      "Action": "sts:AssumeRole",
-      "Condition": {
-        "StringEquals": {
-          "sts:ExternalId": "${var.cross_account_external_id}"
-        }
-      }
+  assume_role_policy   = data.aws_iam_policy_document.cross_account_role_assume_role.json
+}
+
+data "aws_iam_policy_document" "cross_account_role_assume_role" {
+  statement {
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = distinct([
+        "arn:aws:iam::153453085158:root",
+        "arn:aws:iam::${var.tecton_assuming_account_id}:root"
+      ])
     }
-  ]
+    actions = ["sts:AssumeRole"]
+    condition {
+      test     = "StringEquals"
+      variable = "sts:ExternalId"
+      values   = ["${var.cross_account_external_id}"]
+    }
+  }
 }
-POLICY
-}
+
 resource "aws_iam_policy" "cross_account_policy_spark" {
   count = var.use_rift_cross_account_policy ? 0 : 1
 
@@ -126,4 +128,3 @@ resource "aws_kms_key_policy" "cmk" {
     ROLE_ARNS  = local.cmk_policy_roles
   })
 }
-
