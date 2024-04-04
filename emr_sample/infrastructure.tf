@@ -21,7 +21,7 @@ locals {
   account_id = "1234567890"
 
   # Get from your Tecton rep
-  tecton_control_plane_root_principal = "arn:aws:iam::987654321:root"
+  tecton_control_plane_account_id = "987654321"
 
   # get from your tecton rep
   cross_account_external_id = "tecton-external-id"
@@ -31,15 +31,16 @@ locals {
 }
 
 module "tecton" {
-  source                    = "../deployment"
-  deployment_name           = local.deployment_name
-  account_id                = local.account_id
-  region                    = local.region
-  cross_account_external_id = local.cross_account_external_id
+  source                     = "../deployment"
+  deployment_name            = local.deployment_name
+  account_id                 = local.account_id
+  region                     = local.region
+  cross_account_external_id  = local.cross_account_external_id
+  tecton_assuming_account_id = local.tecton_control_plane_account_id
 
   create_emr_roles = true
 
-  s3_read_write_principals = [local.tecton_control_plane_root_principal]
+  s3_read_write_principals = [format("arn:aws:iam::%s:root", tecton_control_plane_account_id)]
 }
 
 module "security_groups" {
