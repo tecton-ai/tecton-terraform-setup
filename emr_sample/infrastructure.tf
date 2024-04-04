@@ -40,7 +40,7 @@ module "tecton" {
 
   create_emr_roles = true
 
-  s3_read_write_principals = [format("arn:aws:iam::%s:root", tecton_control_plane_account_id)]
+  s3_read_write_principals = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
 }
 
 module "security_groups" {

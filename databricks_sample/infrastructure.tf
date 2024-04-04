@@ -43,5 +43,5 @@ module "tecton" {
 
 
   databricks_spark_role_name = local.spark_role_name
-  s3_read_write_principals   = [format("arn:aws:iam::%s:root", tecton_control_plane_account_id)]
+  s3_read_write_principals   = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
 }

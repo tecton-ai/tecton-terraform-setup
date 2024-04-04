@@ -36,6 +36,6 @@ module "tecton" {
   tecton_assuming_account_id = local.tecton_control_plane_account_id
 
   # Control plane root principal
-  s3_read_write_principals      = [format("arn:aws:iam::%s:root", tecton_control_plane_account_id)]
+  s3_read_write_principals      = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
   use_rift_cross_account_policy = true
 }
