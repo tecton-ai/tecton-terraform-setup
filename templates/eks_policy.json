@@ -63,6 +63,16 @@
             ]
         },
         {
+            "Sid": "ECR",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:*",
+            ],
+            "Resource": [
+		        "arn:aws:ecr:${REGION}:${ACCOUNT_ID}:repository/*"
+            ]
+        },
+        {
             "Sid": "CreateServiceLinkedRoles",
             "Effect": "Allow",
             "Action": [
