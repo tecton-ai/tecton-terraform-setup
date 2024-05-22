@@ -123,7 +123,7 @@ data "template_file" "eks_alb_policy_json" {
   template = file("${path.module}/../templates/alb_policy.json")
   vars = {
     ACCOUNT_ID      = var.account_id
-    VPC             = var.vpc_id
+    VPC_ID          = var.vpc_id
     REGION          = var.region
     DEPLOYMENT_NAME = var.deployment_name
   }

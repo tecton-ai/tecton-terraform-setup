@@ -81,3 +81,9 @@ variable "data_validation_on_fargate_enabled" {
     Default: false.
   EOT
 }
+
+variable "vpc_id" {
+  type = string
+  default = null
+}
+
