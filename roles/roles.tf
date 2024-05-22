@@ -123,7 +123,7 @@ data "template_file" "eks_alb_policy_json" {
   template = file("${path.module}/../templates/alb_policy.json")
   vars = {
     ACCOUNT_ID      = var.account_id
-    VPC             = var.eks_vpc_id == null ? aws_vpc.eks_vpc[0].id : var.eks_vpc_id
+    VPC             = var.vpc_id
     REGION          = var.region
     DEPLOYMENT_NAME = var.deployment_name
   }
