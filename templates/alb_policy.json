@@ -73,12 +73,7 @@
                 "ec2:AuthorizeSecurityGroupIngress",
                 "ec2:RevokeSecurityGroupIngress"
             ],
-            "Resource": "*",
-            "Condition": {
-                "ArnEquals": {
-                    "ec2:Vpc": "arn:aws:ec2:${REGION}:${ACCOUNT_ID}:vpc/${VPC_ID}"
-                }
-            }
+            "Resource": "*"
         },
         {
             "Effect": "Allow",
