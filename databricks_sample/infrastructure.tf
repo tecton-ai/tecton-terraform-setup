@@ -122,6 +122,7 @@ module "roles" {
   elasticache_enabled                = var.elasticache_enabled
   fargate_enabled                    = var.fargate_enabled
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
+  vpc_id                             = module.eks_subnets.vpc_id
 }
 
 module "subnets" {

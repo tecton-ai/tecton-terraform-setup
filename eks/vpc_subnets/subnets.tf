@@ -81,6 +81,7 @@ resource "aws_subnet" "eks_subnet" {
   tags = {
     "Name"                                     = "${var.deployment_name}-eks-subnet",
     "tecton-accessible:${var.deployment_name}" = "true",
+    "kubernetes.io/role/internal-elb"          = "1",
   }
 }
 

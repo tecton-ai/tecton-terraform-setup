@@ -117,6 +117,18 @@ data "template_file" "devops_fargate_role_json" {
   }
 }
 
+# ALB [Common : Databricks and EMR]
+data "template_file" "eks_alb_policy_json" {
+
+  template = file("${path.module}/../templates/alb_policy.json")
+  vars = {
+    ACCOUNT_ID      = var.account_id
+    VPC_ID          = var.vpc_id
+    REGION          = var.region
+    DEPLOYMENT_NAME = var.deployment_name
+  }
+}
+
 # Data validation [Common : Databricks and EMR]
 data "template_file" "eks_fargate_data_validation_worker_policy" {
   count = local.data_validation_enabled ? 1 : 0
@@ -463,6 +475,14 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
   policy_arn = each.value
   role       = aws_iam_role.eks_node_role.name
 }
+
+# ALB [Common : Databricks and EMR]
+resource "aws_iam_policy" "eks_alb_policy" {
+  name   = "tecton-${var.deployment_name}-eks-alb-policy"
+  policy = data.template_file.eks_alb_policy_json.rendered
+  tags   = local.tags
+}
+
 
 # Spark Access Policy : EMR only
 resource "aws_iam_policy" "emr_access_policy" {
@@ -885,3 +905,10 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
   role       = aws_iam_role.eks_fargate_pod_execution[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
 }
+
+# ALB [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "devops_eks_alb_policy_attachment" {
+  role       = aws_iam_role.devops_role.name
+  policy_arn = aws_iam_policy.eks_alb_policy.arn 
+}
+

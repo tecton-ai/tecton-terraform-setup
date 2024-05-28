@@ -187,6 +187,7 @@ module "roles" {
   external_id                        = random_id.external_id.id
   fargate_enabled                    = var.fargate_enabled
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
+  vpc_id                             = module.eks_subnets.vpc_id
 }
 
 module "notebook_cluster" {
