@@ -403,7 +403,7 @@ provider "aws" {
 
 locals {
   spark_policy = var.create_emr_roles ? (
-    templatefile("${path.module}/../templates/spark_policy.json",
+    templatefile("${path.module}/../templates/emr_spark_policy.json",
       {
         ACCOUNT_ID      = var.account_id
         DEPLOYMENT_NAME = var.deployment_name
