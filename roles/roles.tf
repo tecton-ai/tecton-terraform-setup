@@ -30,124 +30,36 @@ locals {
   data_validation_enabled = var.fargate_enabled && var.data_validation_on_fargate_enabled
 }
 
-# EKS [Common : Databricks and EMR]
-data "template_file" "eks_policy_json" {
-  template = file("${path.module}/../templates/eks_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-# EKS [Common : Databricks and EMR]
-data "template_file" "devops_policy_json_1" {
-  template = file("${path.module}/../templates/devops_policy_1.json")
-  vars = {
-    ACCOUNT_ID             = var.account_id
-    DEPLOYMENT_NAME        = var.deployment_name
-    DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
-    S3_BUCKETS             = jsonencode(local.s3_buckets)
-    S3_OBJECTS             = jsonencode(local.s3_objects)
-  }
-}
-
-# EKS [Common : Databricks and EMR]
-data "template_file" "devops_policy_json_2" {
-  template = file("${path.module}/../templates/devops_policy_2.json")
-  vars = {
-    ACCOUNT_ID             = var.account_id
-    DEPLOYMENT_NAME        = var.deployment_name
-  }
-}
-
-# EKS [Common : Databricks and EMR]
-data "template_file" "devops_ingest_policy_json" {
-  count = var.enable_ingest_api ? 1 : 0
-
-  template = file("${path.module}/../templates/devops_ingest_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-# Fargate [Common : Databricks and EMR]
-data "template_file" "eks_fargate_node" {
-  count = var.fargate_enabled ? 1 : 0
-
-  template = file("${path.module}/../templates/fargate_eks_role.json")
-  vars = {
-    ACCOUNT_ID          = var.account_id
-    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-    DEPLOYMENT_NAME     = var.deployment_name
-    REGION              = var.region
-  }
-}
-
 # Fargate [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_node_policy" {
   count = var.fargate_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
-  policy = data.template_file.eks_fargate_node[0].rendered
+  policy = templatefile(
+    "${path.module}/../templates/fargate_eks_role.json",
+    {
+      ACCOUNT_ID          = var.account_id
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME     = var.deployment_name
+      REGION              = var.region
+    }
+  )
   tags   = local.tags
-}
-
-# Fargate [Common : Databricks and EMR]
-data "template_file" "devops_fargate_role_json" {
-  count    = var.fargate_enabled ? 1 : 0
-  template = file("${path.module}/../templates/devops_fargate.json")
-  vars = {
-    ACCOUNT_ID              = var.account_id
-    DEPLOYMENT_NAME         = var.deployment_name
-    FARGATE_ROLES           = jsonencode(
-      concat(
-        local.feature_server_roles,
-        local.data_validation_worker_roles
-      )
-    )
-    FARGATE_POLICY_ARNS     = jsonencode(
-      concat(
-        local.feature_server_policies,
-        local.data_validation_worker_policies
-      )
-    )
-  }
-}
-
-# ALB [Common : Databricks and EMR]
-data "template_file" "eks_alb_policy_json" {
-
-  template = file("${path.module}/../templates/alb_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    VPC_ID          = var.vpc_id
-    REGION          = var.region
-    DEPLOYMENT_NAME = var.deployment_name
-  }
-}
-
-# Data validation [Common : Databricks and EMR]
-data "template_file" "eks_fargate_data_validation_worker_policy" {
-  count = local.data_validation_enabled ? 1 : 0
-
-  template = file("${path.module}/../templates/data_validation_worker_policy.json")
-  vars = {
-    ACCOUNT_ID          = var.account_id
-    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-    DEPLOYMENT_NAME     = var.deployment_name
-    REGION              = var.region
-  }
 }
 
 # Data validation [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_data_validation_worker" {
   count = local.data_validation_enabled ? 1 : 0
-
   name   = "tecton-${var.deployment_name}-eks-fargate-data-validation-worker-policy"
-  policy = data.template_file.eks_fargate_data_validation_worker_policy[0].rendered
+  policy = templatefile(
+    "${path.module}/../templates/data_validation_worker_policy.json",
+    {
+      ACCOUNT_ID          = var.account_id
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME     = var.deployment_name
+      REGION              = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -156,30 +68,55 @@ resource "aws_iam_policy" "devops_fargate_policy" {
   count = var.fargate_enabled ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-fargate-policy"
-  policy = data.template_file.devops_fargate_role_json[0].rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_fargate.json",
+    {
+      ACCOUNT_ID              = var.account_id
+      DEPLOYMENT_NAME         = var.deployment_name
+      FARGATE_ROLES           = jsonencode(
+        concat(
+          local.feature_server_roles,
+          local.data_validation_worker_roles
+        )
+      )
+      FARGATE_POLICY_ARNS     = jsonencode(
+        concat(
+          local.feature_server_policies,
+          local.data_validation_worker_policies
+        )
+      )
+    }
+  )
   tags   = local.tags
 }
 
-# Database Migrator [Common : Databricks and EMR]
-data "template_file" "database_migrator_policy_json" {
-  template = file("${path.module}/../templates/database_migrator_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    REGION          = var.region
-  }
+locals {
+  assume_role_policy = var.external_id != "" ? (
+    templatefile("${path.module}/../templates/assume_role_external_id.json", {
+        ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+        EXTERNAL_ID         = var.external_id}
+    )
+    ) : (
+      templatefile("${path.module}/../templates/assume_role.json", {ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id})
+    )
 }
-
 # Database Migrator [Common : Databricks and EMR]
 resource "aws_iam_role" "database_migrator" {
   name               = "tecton-${var.deployment_name}-database-migrator"
   tags               = local.tags
-  assume_role_policy = var.external_id != "" ? data.template_file.assume_role_external_id_policy.rendered : data.template_file.assume_role_policy.rendered
+  assume_role_policy = local.assume_role_policy
 }
 
 # Database Migrator [Common : Databricks and EMR]
 resource "aws_iam_policy" "database_migrator_policy" {
   name   = "tecton-${var.deployment_name}-database-migrator"
-  policy = data.template_file.database_migrator_policy_json.rendered
+  policy = templatefile(
+    "${path.module}/../templates/database_migrator_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -188,127 +125,39 @@ resource "aws_iam_role_policy_attachment" "database_migrator_policy_to_eks_node_
   policy_arn = aws_iam_policy.database_migrator_policy.arn
 }
 
-# EKS [Common : Databricks and EMR]
-data "template_file" "devops_eks_policy_json" {
-  template = file("${path.module}/../templates/devops_eks_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-# EKS [Common : Databricks and EMR]
-data "template_file" "devops_eks_vpc_endpoint_policy_json" {
-  count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
-
-  template = file("${path.module}/../templates/devops_eks_vpc_endpoint_policy.json")
-  vars = {
-    DEPLOYMENT_NAME = var.deployment_name
-  }
-}
-
-# Elasticache [Common : Databricks and EMR]
-data "template_file" "devops_elasticache_policy_json" {
-  template = file("${path.module}/../templates/devops_elasticache_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-data "template_file" "assume_role_policy" {
-  template = file("${path.module}/../templates/assume_role.json")
-  vars = {
-    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-  }
-}
-
-data "template_file" "assume_role_external_id_policy" {
-  template = file("${path.module}/../templates/assume_role_external_id.json")
-  vars = {
-    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-    EXTERNAL_ID         = var.external_id
-  }
-}
-
-# Spark : Databricks
-data "template_file" "spark_policy_json" {
-  count    = var.create_emr_roles ? 0 : 1
-  template = file("${path.module}/../templates/spark_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-# Spark : Databricks
-data "template_file" "cross_account_databricks_json" {
-  count    = var.create_emr_roles ? 0 : 1
-  template = file("${path.module}/../templates/cross_account_databricks.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-# Spark Policy : EMR
-data "template_file" "emr_spark_policy_json" {
-  count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/emr_spark_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
-# Spark Master Policy : EMR
-data "template_file" "emr_master_policy_json" {
-  count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/emr_master_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-    SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
-  }
-}
-
-# Spark Cross Account Policy : EMR
-data "template_file" "emr_access_policy_json" {
-  count    = var.create_emr_roles ? 1 : 0
-  template = file("${path.module}/../templates/emr_ca_policy.json")
-  vars = {
-    ACCOUNT_ID       = var.account_id
-    DEPLOYMENT_NAME  = var.deployment_name
-    REGION           = var.region
-    EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
-    SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
-  }
-}
-
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role" "devops_role" {
   name               = "tecton-${var.deployment_name}-devops-role"
   tags               = local.tags
-  assume_role_policy = var.external_id != "" ? data.template_file.assume_role_external_id_policy.rendered : data.template_file.assume_role_policy.rendered
+  assume_role_policy = local.assume_role_policy
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_policy_1" {
   name   = "tecton-${var.deployment_name}-devops-policy-1"
-  policy = data.template_file.devops_policy_json_1.rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_policy_1.json",
+    {
+      ACCOUNT_ID             = var.account_id
+      DEPLOYMENT_NAME        = var.deployment_name
+      DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
+      S3_BUCKETS             = jsonencode(local.s3_buckets)
+      S3_OBJECTS             = jsonencode(local.s3_objects)
+    }
+  )
   tags   = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_policy_2" {
   name   = "tecton-${var.deployment_name}-devops-policy-2"
-  policy = data.template_file.devops_policy_json_2.rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_policy_2.json",
+    {
+      ACCOUNT_ID             = var.account_id
+      DEPLOYMENT_NAME        = var.deployment_name
+    }
+  )
   tags   = local.tags
 }
 
@@ -317,14 +166,28 @@ resource "aws_iam_policy" "devops_ingest_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-ingest-policy"
-  policy = data.template_file.devops_ingest_policy_json[0].rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_ingest_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_policy" {
   name   = "tecton-${var.deployment_name}-devops-eks-policy"
-  policy = data.template_file.devops_eks_policy_json.rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_eks_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -333,7 +196,12 @@ resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
   count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-devops-eks-vpce"
-  policy = data.template_file.devops_eks_vpc_endpoint_policy_json[0].rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_eks_vpc_endpoint_policy.json",
+    {
+      DEPLOYMENT_NAME = var.deployment_name
+    }
+  )
   tags   = local.tags
 }
 
@@ -341,7 +209,14 @@ resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
 resource "aws_iam_policy" "devops_elasticache_policy" {
   count  = var.elasticache_enabled ? 1 : 0
   name   = "tecton-${var.deployment_name}-devops-elasticache-policy"
-  policy = data.template_file.devops_elasticache_policy_json.rendered
+  policy = templatefile(
+    "${path.module}/../templates/devops_elasticache_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -454,7 +329,14 @@ POLICY
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_node_policy" {
   name   = "tecton-${var.deployment_name}-eks-worker-policy"
-  policy = data.template_file.eks_policy_json.rendered
+  policy = templatefile(
+    "${path.module}/../templates/eks_policy.json",
+    {
+      ACCOUNT_ID = var.account_id,
+      DEPLOYMENT_NAME = var.deployment_name,
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -479,7 +361,15 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
 # ALB [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_alb_policy" {
   name   = "tecton-${var.deployment_name}-eks-alb-policy"
-  policy = data.template_file.eks_alb_policy_json.rendered
+  policy = templatefile(
+    "${path.module}/../templates/alb_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      VPC_ID          = var.vpc_id
+      REGION          = var.region
+      DEPLOYMENT_NAME = var.deployment_name
+    }
+  )
   tags   = local.tags
 }
 
@@ -488,7 +378,15 @@ resource "aws_iam_policy" "eks_alb_policy" {
 resource "aws_iam_policy" "emr_access_policy" {
   count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-spark-access-policy-emr"
-  policy = data.template_file.emr_access_policy_json[0].rendered
+  policy =   templatefile("${path.module}/../templates/emr_ca_policy.json",
+    {
+      ACCOUNT_ID       = var.account_id
+      DEPLOYMENT_NAME  = var.deployment_name
+      REGION           = var.region
+      EMR_MANAGER_ROLE = aws_iam_role.emr_master_role[0].name
+      SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
+    }
+  )
   tags   = local.tags
 }
 
@@ -503,11 +401,31 @@ provider "aws" {
   alias = "databricks-account"
 }
 
+locals {
+  spark_policy = var.create_emr_roles ? (
+    templatefile("${path.module}/../templates/spark_policy.json",
+      {
+        ACCOUNT_ID      = var.account_id
+        DEPLOYMENT_NAME = var.deployment_name
+        REGION          = var.region
+      }
+    )
+  ) : (
+    templatefile("${path.module}/../templates/spark_policy.json",
+      {
+        ACCOUNT_ID      = var.account_id
+        DEPLOYMENT_NAME = var.deployment_name
+        REGION          = var.region
+      }
+    )
+  )
+}
+
 # Spark Common : Databricks and EMR
 resource "aws_iam_policy" "common_spark_policy" {
   provider = aws.databricks-account
   name     = "tecton-${var.deployment_name}-common-spark-policy"
-  policy   = var.create_emr_roles ? data.template_file.emr_spark_policy_json[0].rendered : data.template_file.spark_policy_json[0].rendered
+  policy   = local.spark_policy
   tags     = local.tags
 }
 
@@ -546,23 +464,19 @@ resource "aws_iam_role" "online_ingest_role" {
   tags               = local.tags
 }
 
-# This file contains the permissions needed by the Ingest API Writer to write to Dynamo, Kinesis (for offline logging)
+# This policy contains the permissions needed by the Ingest API Writer to write to Dynamo, Kinesis (for offline logging)
 # and SQS in case of DLQ.
-data "template_file" "online_ingest_role_json" {
-  count    = var.enable_ingest_api ? 1 : 0
-  template = file("${path.module}/../templates/online_ingest_role.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
 resource "aws_iam_policy" "online_ingest_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-online-ingest"
-  policy = data.template_file.online_ingest_role_json[0].rendered
+  policy =   templatefile("${path.module}/../templates/online_ingest_role.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -593,23 +507,18 @@ resource "aws_iam_role" "offline_ingest_role" {
   tags               = local.tags
 }
 
-// This file contains the permissions needed by the Ingest API Writer to write to Dynamo, Kinesis (for offline logging)
+// This policy contains the permissions needed by the Ingest API Writer to write to Dynamo, Kinesis (for offline logging)
 // and SQS in case of DLQ.
-data "template_file" "offline_ingest_role_json" {
-  count    = var.enable_ingest_api ? 1 : 0
-  template = file("${path.module}/../templates/offline_ingest_role.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
 resource "aws_iam_policy" "offline_ingest_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
-
   name   = "tecton-${var.deployment_name}-offline-ingest"
-  policy = data.template_file.offline_ingest_role_json[0].rendered
+  policy = templatefile("${path.module}/../templates/offline_ingest_role.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -632,24 +541,19 @@ resource "aws_iam_role_policy_attachment" "offline_lambda_role_vpc" {
 
 
 # Ingest API Management Permissions
-# This file contains the permissions needed by the control plane services to deploy new versions of the Ingest API,
+# This policy contains the permissions needed by the control plane services to deploy new versions of the Ingest API,
 # update ALB accordingly, and also to discover the offline log on the fly.
-data "template_file" "online_ingest_management_policy_json" {
-  count = var.enable_ingest_api ? 1 : 0
-
-  template = file("${path.module}/../templates/online_ingest_management_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-  }
-}
-
 resource "aws_iam_policy" "online_ingest_management_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
   name   = "tecton-${var.deployment_name}-ingest-manage"
-  policy = data.template_file.online_ingest_management_policy_json[0].rendered
+  policy =   templatefile("${path.module}/../templates/online_ingest_management_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
   tags   = local.tags
 }
 
@@ -686,8 +590,14 @@ POLICY
 resource "aws_iam_policy" "cross_account_databricks_policy" {
   count  = var.create_emr_roles ? 0 : 1
   name   = "tecton-${var.deployment_name}-cross-account-databricks-policy"
-  policy = data.template_file.cross_account_databricks_json[0].rendered
-  tags   = local.tags
+  policy =   templatefile(
+    "${path.module}/../templates/cross_account_databricks.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+    }
+  )
 }
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
@@ -722,7 +632,7 @@ POLICY
 resource "aws_iam_policy" "emr_spark_policy" {
   count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-spark-policy-emr"
-  policy = data.template_file.emr_spark_policy_json[0].rendered
+  policy = local.spark_policy
   tags   = local.tags
 }
 
@@ -772,7 +682,14 @@ POLICY
 resource "aws_iam_policy" "emr_master_policy" {
   count  = var.create_emr_roles ? 1 : 0
   name   = "tecton-${var.deployment_name}-master-policy-emr"
-  policy = data.template_file.emr_master_policy_json[0].rendered
+  policy =   templatefile("${path.module}/../templates/emr_master_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      REGION          = var.region
+      SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
+    }
+  )
   tags   = local.tags
 }
 
@@ -909,6 +826,5 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
 # ALB [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_eks_alb_policy_attachment" {
   role       = aws_iam_role.devops_role.name
-  policy_arn = aws_iam_policy.eks_alb_policy.arn 
+  policy_arn = aws_iam_policy.eks_alb_policy.arn
 }
-
