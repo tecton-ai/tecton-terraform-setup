@@ -2,7 +2,7 @@
 ##### Satellite cluster #####
 #############################
 locals {
-  is_satellite_regions_enabled = length(var.satellite_regions) > 0 
+  is_satellite_regions_enabled = length(var.satellite_regions) > 0
   security_groups = flatten([
     formatlist("arn:aws:ec2:%s:%s:security-group/*", var.satellite_regions, var.account_id),
     formatlist("arn:aws:ec2:%s:%s:vpc/*", var.satellite_regions, var.account_id)
@@ -68,7 +68,14 @@ POLICY
 resource "aws_iam_policy" "eks_node_satellite" {
   for_each = toset(var.satellite_regions)
   name     = "tecton-${var.deployment_name}-${each.value}-eks-worker-policy"
-  policy   = data.template_file.eks_policy_json.rendered
+  policy = templatefile(
+    "${path.module}/../templates/eks_policy.json",
+    {
+      ACCOUNT_ID = var.account_id,
+      DEPLOYMENT_NAME = var.deployment_name,
+      REGION          = var.region
+    }
+  )
   tags     = local.tags
 }
 
@@ -91,16 +98,6 @@ resource "aws_iam_role_policy_attachment" "eks_node_satellite_policy" {
   }
   policy_arn = each.value[0]
   role       = aws_iam_role.eks_node_satellite[each.value[1]].name
-}
-
-# EKS [Common : Databricks and EMR]
-data "template_file" "satellite_ca_policy_json" {
-  count    = local.is_satellite_regions_enabled ? 1 : 0
-  template = file("${path.module}/../templates/satellite_ca_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-  }
 }
 
 data "aws_iam_policy_document" "s3_replication_policy" {
@@ -198,7 +195,12 @@ resource "aws_iam_policy" "s3_batch_replication" {
 resource "aws_iam_policy" "satellite_ca" {
   count = local.is_satellite_regions_enabled ? 1 : 0
   name  = "tecton-satellite-ca-policy"
-  policy = data.template_file.satellite_ca_policy_json[0].rendered
+  policy =   templatefile("${path.module}/../templates/satellite_ca_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+    }
+  )
   tags = local.tags
 }
 
@@ -231,30 +233,25 @@ resource "aws_iam_role_policy_attachment" "cross_account_satellite_region" {
   role       = aws_iam_role.eks_node_role.name
 }
 
-# DEVOPS [Common : Databricks and EMR]
-data "template_file" "satellite_devops_policy_json" {
-  count    = local.is_satellite_regions_enabled ? 1 : 0
-  template = file("${path.module}/../templates/satellite_devops_policy.json")
-  vars = {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    SECURITY_GROUPS = jsonencode(local.security_groups)
-    SATELLITE_REPLICATION_POLICY = jsonencode(
-      concat(
-        [
-          aws_iam_policy.s3_batch_replication[0].arn,
-          aws_iam_policy.s3_replication[0].arn
-        ]
-      )
-    )
-  }
-}
-
 # DEVOPS [Common: Databricks and EMR]
 resource "aws_iam_policy" "satellite_devops" {
   count  = local.is_satellite_regions_enabled ? 1 : 0
   name   = "tecton-${var.deployment_name}-satellite-devops"
-  policy = data.template_file.satellite_devops_policy_json[0].rendered
+  policy = templatefile("${path.module}/../templates/satellite_devops_policy.json",
+    {
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      SECURITY_GROUPS = jsonencode(local.security_groups)
+      SATELLITE_REPLICATION_POLICY = jsonencode(
+        concat(
+          [
+            aws_iam_policy.s3_batch_replication[0].arn,
+            aws_iam_policy.s3_replication[0].arn
+          ]
+        )
+      )
+    }
+  )
   tags   = local.tags
 }
 
@@ -266,24 +263,18 @@ resource "aws_iam_role_policy_attachment" "satellite_devops" {
 }
 
 # Fargate satellite [Common : Databricks and EMR]
-data "template_file" "eks_satellite_fargate_node" {
-  for_each = toset(var.satellite_regions)
-
-  template = file("${path.module}/../templates/fargate_eks_role.json")
-  vars = {
-    ACCOUNT_ID          = var.account_id
-    ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-    DEPLOYMENT_NAME     = var.deployment_name
-    REGION              = each.value
-  }
-}
-
-# Fargate satellite [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_satellite_node" {
   for_each = toset(var.satellite_regions)
 
   name   = "tecton-${var.deployment_name}-${each.value}-eks-fargate-node"
-  policy = data.template_file.eks_satellite_fargate_node[each.value].rendered
+  policy = templatefile("${path.module}/../templates/fargate_eks_role.json",
+    {
+      ACCOUNT_ID          = var.account_id
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME     = var.deployment_name
+      REGION              = each.value
+    }
+  )
   tags   = local.tags
 }
 
