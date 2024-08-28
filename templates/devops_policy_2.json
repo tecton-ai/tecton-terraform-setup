@@ -130,7 +130,8 @@
                 "rds:CreateDBInstance",
                 "rds:ListTagsForResource",
                 "rds:CreateDBParameterGroup",
-                "rds:ModifyDBParameterGroup"
+                "rds:ModifyDBParameterGroup",
+                "rds:DeleteDBParameterGroup",
             ],
             "Effect": "Allow",
             "Resource": [
