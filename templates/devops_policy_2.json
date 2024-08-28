@@ -19,7 +19,9 @@
                 "dynamodb:DescribeBackup",
                 "dynamodb:DeleteBackup"
             ],
-            "Resource": ["arn:aws:dynamodb:*:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
+            "Resource": [
+                "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
         },
         {
             "Sid": "DynamoDBGlobal",
@@ -73,7 +75,9 @@
                 "es:DeleteElasticsearchDomain"
             ],
             "Effect": "Allow",
-            "Resource": ["arn:aws:es:*:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"]
+            "Resource": [
+                "arn:aws:es:*:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"
+            ]
         },
         {
             "Sid": "CreateTectonHostedZoneForElasticSearch",
@@ -123,7 +127,8 @@
                 "rds:ModifyDBInstance",
                 "rds:CreateDBInstance",
                 "rds:ListTagsForResource",
-                "rds:CreateDBParameterGroup"
+                "rds:CreateDBParameterGroup",
+                "rds:ModifyDBParameterGroup"
             ],
             "Effect": "Allow",
             "Resource": [
@@ -141,7 +146,11 @@
             ],
             "Effect": "Allow",
             "Resource": "*",
-            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-owned": "true"
+                }
+            }
         },
         {
             "Sid": "AddTagsToCertificateForTectonAIDomain",
@@ -160,7 +169,11 @@
             ],
             "Effect": "Allow",
             "Resource": "*",
-            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-owned": "true"
+                }
+            }
         }
     ]
 }
