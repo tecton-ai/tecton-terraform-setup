@@ -106,7 +106,8 @@
         {
             "Sid": "RdsReadAccess",
             "Action": [
-                "rds:DescribeDBInstances"
+                "rds:DescribeDBInstances",
+                "rds:DescribeDBParameterGroups"
             ],
             "Effect": "Allow",
             "Resource": [
