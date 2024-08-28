@@ -109,7 +109,8 @@
                 "arn:aws:rds:*:${ACCOUNT_ID}:db:*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*"
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:terraform-*"
             ]
         },
         {
