@@ -102,7 +102,7 @@
         {
             "Sid": "RdsReadAccess",
             "Action": [
-                "rds:DescribeDBInstances"
+                "rds:DescribeDBInstances",
             ],
             "Effect": "Allow",
             "Resource": [
@@ -121,7 +121,8 @@
                 "rds:DescribeDBSubnetGroups",
                 "rds:ModifyDBInstance",
                 "rds:CreateDBInstance",
-                "rds:ListTagsForResource"
+                "rds:ListTagsForResource",
+                "rds:CreateDBParameterGroup"
             ],
             "Effect": "Allow",
             "Resource": [
