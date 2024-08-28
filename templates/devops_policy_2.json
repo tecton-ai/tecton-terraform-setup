@@ -131,7 +131,7 @@
                 "rds:ListTagsForResource",
                 "rds:CreateDBParameterGroup",
                 "rds:ModifyDBParameterGroup",
-                "rds:DeleteDBParameterGroup",
+                "rds:DeleteDBParameterGroup"
             ],
             "Effect": "Allow",
             "Resource": [
