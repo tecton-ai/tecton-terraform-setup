@@ -102,7 +102,7 @@
         {
             "Sid": "RdsReadAccess",
             "Action": [
-                "rds:DescribeDBInstances",
+                "rds:DescribeDBInstances"
             ],
             "Effect": "Allow",
             "Resource": [
