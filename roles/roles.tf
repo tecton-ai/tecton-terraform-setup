@@ -1,20 +1,20 @@
 locals {
-  tags                                = { "tecton-accessible:${var.deployment_name}" : "true" }
+  tags = { "tecton-accessible:${var.deployment_name}" : "true" }
   fargate_kinesis_delivery_stream_arn = format(
     "arn:aws:firehose:%s:%s:deliverystream/tecton-%s-fargate-log-delivery-stream",
     var.region,
     var.account_id,
     var.deployment_name
   )
-  all_regions                         = concat(var.satellite_regions, [var.region])
+  all_regions                    = concat(var.satellite_regions, [var.region])
   satellite_feature_server_roles = formatlist("arn:aws:iam::%s:role/tecton-%s-%s-fargate-fs", var.account_id, var.deployment_name, var.satellite_regions)
   feature_server_roles = concat(
-      [format("arn:aws:iam::%s:role/tecton-%s-fargate-fs", var.account_id, var.deployment_name)],
-      local.satellite_feature_server_roles
+    [format("arn:aws:iam::%s:role/tecton-%s-fargate-fs", var.account_id, var.deployment_name)],
+    local.satellite_feature_server_roles
   )
   feature_server_policies = concat(
     [aws_iam_policy.eks_fargate_node_policy[0].arn],
-    [for region in var.satellite_regions: aws_iam_policy.eks_fargate_satellite_node[region].arn]
+    [for region in var.satellite_regions : aws_iam_policy.eks_fargate_satellite_node[region].arn]
   )
   data_validation_worker_roles = var.data_validation_on_fargate_enabled ? [
     format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
@@ -26,7 +26,7 @@ locals {
     formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
     ["arn:aws:s3:::tecton-${var.deployment_name}"]
   )
-  s3_objects = formatlist("%s/*", local.s3_buckets)
+  s3_objects              = formatlist("%s/*", local.s3_buckets)
   data_validation_enabled = var.fargate_enabled && var.data_validation_on_fargate_enabled
 }
 
@@ -34,7 +34,7 @@ locals {
 resource "aws_iam_policy" "eks_fargate_node_policy" {
   count = var.fargate_enabled ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-eks-fargate-node-policy"
+  name = "tecton-${var.deployment_name}-eks-fargate-node-policy"
   policy = templatefile(
     "${path.module}/../templates/fargate_eks_role.json",
     {
@@ -44,13 +44,13 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
       REGION              = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # Data validation [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_data_validation_worker" {
   count = local.data_validation_enabled ? 1 : 0
-  name   = "tecton-${var.deployment_name}-eks-fargate-data-validation-worker-policy"
+  name  = "tecton-${var.deployment_name}-eks-fargate-data-validation-worker-policy"
   policy = templatefile(
     "${path.module}/../templates/data_validation_worker_policy.json",
     {
@@ -60,26 +60,26 @@ resource "aws_iam_policy" "eks_fargate_data_validation_worker" {
       REGION              = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_fargate_policy" {
   count = var.fargate_enabled ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-devops-fargate-policy"
+  name = "tecton-${var.deployment_name}-devops-fargate-policy"
   policy = templatefile(
     "${path.module}/../templates/devops_fargate.json",
     {
-      ACCOUNT_ID              = var.account_id
-      DEPLOYMENT_NAME         = var.deployment_name
-      FARGATE_ROLES           = jsonencode(
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+      FARGATE_ROLES = jsonencode(
         concat(
           local.feature_server_roles,
           local.data_validation_worker_roles
         )
       )
-      FARGATE_POLICY_ARNS     = jsonencode(
+      FARGATE_POLICY_ARNS = jsonencode(
         concat(
           local.feature_server_policies,
           local.data_validation_worker_policies
@@ -87,18 +87,18 @@ resource "aws_iam_policy" "devops_fargate_policy" {
       )
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 locals {
   assume_role_policy = var.external_id != "" ? (
     templatefile("${path.module}/../templates/assume_role_external_id.json", {
-        ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-        EXTERNAL_ID         = var.external_id}
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      EXTERNAL_ID = var.external_id }
     )
     ) : (
-      templatefile("${path.module}/../templates/assume_role.json", {ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id})
-    )
+    templatefile("${path.module}/../templates/assume_role.json", { ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id })
+  )
 }
 # Database Migrator [Common : Databricks and EMR]
 resource "aws_iam_role" "database_migrator" {
@@ -109,15 +109,15 @@ resource "aws_iam_role" "database_migrator" {
 
 # Database Migrator [Common : Databricks and EMR]
 resource "aws_iam_policy" "database_migrator_policy" {
-  name   = "tecton-${var.deployment_name}-database-migrator"
+  name = "tecton-${var.deployment_name}-database-migrator"
   policy = templatefile(
     "${path.module}/../templates/database_migrator_policy.json",
     {
-      ACCOUNT_ID      = var.account_id
-      REGION          = var.region
+      ACCOUNT_ID = var.account_id
+      REGION     = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "database_migrator_policy_to_eks_node_role" {
@@ -134,7 +134,7 @@ resource "aws_iam_role" "devops_role" {
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_policy_1" {
-  name   = "tecton-${var.deployment_name}-devops-policy-1"
+  name = "tecton-${var.deployment_name}-devops-policy-1"
   policy = templatefile(
     "${path.module}/../templates/devops_policy_1.json",
     {
@@ -145,27 +145,27 @@ resource "aws_iam_policy" "devops_policy_1" {
       S3_OBJECTS             = jsonencode(local.s3_objects)
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_policy_2" {
-  name   = "tecton-${var.deployment_name}-devops-policy-2"
+  name = "tecton-${var.deployment_name}-devops-policy-2"
   policy = templatefile(
     "${path.module}/../templates/devops_policy_2.json",
     {
-      ACCOUNT_ID             = var.account_id
-      DEPLOYMENT_NAME        = var.deployment_name
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_ingest_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-devops-ingest-policy"
+  name = "tecton-${var.deployment_name}-devops-ingest-policy"
   policy = templatefile(
     "${path.module}/../templates/devops_ingest_policy.json",
     {
@@ -174,12 +174,12 @@ resource "aws_iam_policy" "devops_ingest_policy" {
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_policy" {
-  name   = "tecton-${var.deployment_name}-devops-eks-policy"
+  name = "tecton-${var.deployment_name}-devops-eks-policy"
   policy = templatefile(
     "${path.module}/../templates/devops_eks_policy.json",
     {
@@ -188,27 +188,27 @@ resource "aws_iam_policy" "devops_eks_policy" {
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_eks_vpc_endpoint_policy" {
   count = var.enable_eks_ingress_vpc_endpoint ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-devops-eks-vpce"
+  name = "tecton-${var.deployment_name}-devops-eks-vpce"
   policy = templatefile(
     "${path.module}/../templates/devops_eks_vpc_endpoint_policy.json",
     {
       DEPLOYMENT_NAME = var.deployment_name
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_policy" "devops_elasticache_policy" {
-  count  = var.elasticache_enabled ? 1 : 0
-  name   = "tecton-${var.deployment_name}-devops-elasticache-policy"
+  count = var.elasticache_enabled ? 1 : 0
+  name  = "tecton-${var.deployment_name}-devops-elasticache-policy"
   policy = templatefile(
     "${path.module}/../templates/devops_elasticache_policy.json",
     {
@@ -217,7 +217,7 @@ resource "aws_iam_policy" "devops_elasticache_policy" {
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # DEVOPS [Common : Databricks and EMR]
@@ -328,16 +328,16 @@ POLICY
 
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_node_policy" {
-  name   = "tecton-${var.deployment_name}-eks-worker-policy"
+  name = "tecton-${var.deployment_name}-eks-worker-policy"
   policy = templatefile(
     "${path.module}/../templates/eks_policy.json",
     {
-      ACCOUNT_ID = var.account_id,
+      ACCOUNT_ID      = var.account_id,
       DEPLOYMENT_NAME = var.deployment_name,
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # EKS NODE [Common : Databricks and EMR]
@@ -360,7 +360,7 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy" {
 
 # ALB [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_alb_policy" {
-  name   = "tecton-${var.deployment_name}-eks-alb-policy"
+  name = "tecton-${var.deployment_name}-eks-alb-policy"
   policy = templatefile(
     "${path.module}/../templates/alb_policy.json",
     {
@@ -370,15 +370,15 @@ resource "aws_iam_policy" "eks_alb_policy" {
       DEPLOYMENT_NAME = var.deployment_name
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 
 # Spark Access Policy : EMR only
 resource "aws_iam_policy" "emr_access_policy" {
-  count  = var.create_emr_roles ? 1 : 0
-  name   = "tecton-${var.deployment_name}-spark-access-policy-emr"
-  policy =   templatefile("${path.module}/../templates/emr_ca_policy.json",
+  count = var.create_emr_roles ? 1 : 0
+  name  = "tecton-${var.deployment_name}-spark-access-policy-emr"
+  policy = templatefile("${path.module}/../templates/emr_ca_policy.json",
     {
       ACCOUNT_ID       = var.account_id
       DEPLOYMENT_NAME  = var.deployment_name
@@ -387,7 +387,7 @@ resource "aws_iam_policy" "emr_access_policy" {
       SPARK_ROLE       = aws_iam_role.emr_spark_role[0].name
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # EKS NODE : EMR Only attachment
@@ -410,7 +410,7 @@ locals {
         REGION          = var.region
       }
     )
-  ) : (
+    ) : (
     templatefile("${path.module}/../templates/spark_policy.json",
       {
         ACCOUNT_ID      = var.account_id
@@ -469,15 +469,15 @@ resource "aws_iam_role" "online_ingest_role" {
 resource "aws_iam_policy" "online_ingest_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-online-ingest"
-  policy =   templatefile("${path.module}/../templates/online_ingest_role.json",
+  name = "tecton-${var.deployment_name}-online-ingest"
+  policy = templatefile("${path.module}/../templates/online_ingest_role.json",
     {
       ACCOUNT_ID      = var.account_id
       DEPLOYMENT_NAME = var.deployment_name
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "online_ingest_attachment" {
@@ -511,7 +511,7 @@ resource "aws_iam_role" "offline_ingest_role" {
 // and SQS in case of DLQ.
 resource "aws_iam_policy" "offline_ingest_role_policy" {
   count = var.enable_ingest_api ? 1 : 0
-  name   = "tecton-${var.deployment_name}-offline-ingest"
+  name  = "tecton-${var.deployment_name}-offline-ingest"
   policy = templatefile("${path.module}/../templates/offline_ingest_role.json",
     {
       ACCOUNT_ID      = var.account_id
@@ -519,7 +519,7 @@ resource "aws_iam_policy" "offline_ingest_role_policy" {
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "offline_ingest_attachment" {
@@ -546,15 +546,15 @@ resource "aws_iam_role_policy_attachment" "offline_lambda_role_vpc" {
 resource "aws_iam_policy" "online_ingest_management_policy" {
   count = var.enable_ingest_api ? 1 : 0
 
-  name   = "tecton-${var.deployment_name}-ingest-manage"
-  policy =   templatefile("${path.module}/../templates/online_ingest_management_policy.json",
+  name = "tecton-${var.deployment_name}-ingest-manage"
+  policy = templatefile("${path.module}/../templates/online_ingest_management_policy.json",
     {
       ACCOUNT_ID      = var.account_id
       DEPLOYMENT_NAME = var.deployment_name
       REGION          = var.region
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "online_ingest_management_policy_attachment" {
@@ -588,9 +588,9 @@ POLICY
 
 # CROSS-ACCOUNT ACCESS FOR SPARK : Databricks
 resource "aws_iam_policy" "cross_account_databricks_policy" {
-  count  = var.create_emr_roles ? 0 : 1
-  name   = "tecton-${var.deployment_name}-cross-account-databricks-policy"
-  policy =   templatefile(
+  count = var.create_emr_roles ? 0 : 1
+  name  = "tecton-${var.deployment_name}-cross-account-databricks-policy"
+  policy = templatefile(
     "${path.module}/../templates/cross_account_databricks.json",
     {
       ACCOUNT_ID      = var.account_id
@@ -680,9 +680,9 @@ POLICY
 
 # SPARK MASTER POLICY : EMR
 resource "aws_iam_policy" "emr_master_policy" {
-  count  = var.create_emr_roles ? 1 : 0
-  name   = "tecton-${var.deployment_name}-master-policy-emr"
-  policy =   templatefile("${path.module}/../templates/emr_master_policy.json",
+  count = var.create_emr_roles ? 1 : 0
+  name  = "tecton-${var.deployment_name}-master-policy-emr"
+  policy = templatefile("${path.module}/../templates/emr_master_policy.json",
     {
       ACCOUNT_ID      = var.account_id
       DEPLOYMENT_NAME = var.deployment_name
@@ -690,7 +690,7 @@ resource "aws_iam_policy" "emr_master_policy" {
       SPARK_ROLE      = aws_iam_role.emr_spark_role[0].name
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 # SPARK MASTER POLICY ATTACHMENT : EMR

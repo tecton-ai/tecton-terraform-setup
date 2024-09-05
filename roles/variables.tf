@@ -83,7 +83,7 @@ variable "data_validation_on_fargate_enabled" {
 }
 
 variable "vpc_id" {
-  type = string
+  type    = string
   default = null
 }
 

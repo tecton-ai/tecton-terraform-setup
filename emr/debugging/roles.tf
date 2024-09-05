@@ -3,13 +3,13 @@ locals {
 }
 
 resource "aws_iam_policy" "emr_debugging_policy" {
-  name   = "tecton-${var.deployment_name}-cross-account-emr-debugging"
+  name = "tecton-${var.deployment_name}-cross-account-emr-debugging"
   policy = templatefile("${path.module}/../../templates/emr_debugging_policy.json",
     {
       DEPLOYMENT_NAME = var.deployment_name
     }
   )
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "emr_debugging_policy" {
