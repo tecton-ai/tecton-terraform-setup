@@ -32,7 +32,7 @@ locals {
   # Rift compute running on data plane
   enable_rift_on_data_plane = true
   # Required when control plane ingress has Privatelink enabled
-  tecton-vpce-service-name = "tecton-vpce-service-name"
+  tecton_vpce_service_name = "tecton-vpce-service-name"
 }
 
 module "tecton" {
