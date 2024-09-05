@@ -1,10 +1,13 @@
 locals {
   tags            = { "tecton-accessible:${var.deployment_name}" : "true" }
   spark_role_name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
+  # Include var.use_rift_cross_account_policy for backward compatibility
+  use_rift_compute_on_control_plane = var.use_rift_compute_on_control_plane || var.use_rift_cross_account_policy
+  use_spark_compute                 = var.use_spark_compute || !var.use_rift_cross_account_policy
 }
 
 data "aws_iam_role" "spark_role" {
-  count = var.use_rift_cross_account_policy ? 0 : 1
+  count = local.use_spark_compute ? 0 : 1
   name  = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
@@ -52,7 +55,7 @@ data "aws_iam_policy_document" "cross_account_role_assume_role" {
 }
 
 resource "aws_iam_policy" "cross_account_policy_spark" {
-  count = var.use_rift_cross_account_policy ? 0 : 1
+  count = local.use_spark_compute ? 1 : 0
 
   name = "tecton-${var.deployment_name}-cross-account-policy"
   policy = templatefile("${path.module}/../templates/ca_policy.json", {
@@ -66,9 +69,9 @@ resource "aws_iam_policy" "cross_account_policy_spark" {
 
 
 resource "aws_iam_policy" "cross_account_policy_rift" {
-  count = var.use_rift_cross_account_policy ? 1 : 0
+  count = local.use_rift_compute_on_control_plane ? 1 : 0
 
-  name = "tecton-${var.deployment_name}-cross-account-policy"
+  name = "tecton-${var.deployment_name}-cross-account-policy-rift"
   policy = templatefile("${path.module}/../templates/rift_ca_policy.json", {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
@@ -81,14 +84,24 @@ locals {
   cross_account_policy_arn = var.use_rift_cross_account_policy ? aws_iam_policy.cross_account_policy_rift[0].arn : aws_iam_policy.cross_account_policy_spark[0].arn
 }
 
-resource "aws_iam_role_policy_attachment" "cross_account_policy_attachment" {
-  policy_arn = local.cross_account_policy_arn
+resource "aws_iam_role_policy_attachment" "spark_cross_account_policy_attachment" {
+  count = local.use_spark_compute ? 1 : 0
+
+  policy_arn = aws_iam_policy.cross_account_policy_spark[0].arn
+  role       = aws_iam_role.cross_account_role.name
+}
+
+
+resource "aws_iam_role_policy_attachment" "rift_cross_account_policy_attachment" {
+  count = local.use_rift_compute_on_control_plane ? 1 : 0
+
+  policy_arn = aws_iam_policy.cross_account_policy_rift[0].arn
   role       = aws_iam_role.cross_account_role.name
 }
 
 # SPARK ROLE
 resource "aws_iam_policy" "common_spark_policy" {
-  count = var.use_rift_cross_account_policy ? 0 : 1
+  count = local.use_spark_compute ? 1 : 0
 
   name = "tecton-${var.deployment_name}-common-spark-policy"
   policy = templatefile("${path.module}/../templates/spark_policy.json", {
@@ -99,7 +112,7 @@ resource "aws_iam_policy" "common_spark_policy" {
   tags = local.tags
 }
 resource "aws_iam_role_policy_attachment" "common_spark_policy_attachment" {
-  count = var.use_rift_cross_account_policy ? 0 : 1
+  count = local.use_spark_compute ? 1 : 0
 
   policy_arn = aws_iam_policy.common_spark_policy[0].arn
   role       = local.spark_role_name
@@ -116,6 +129,7 @@ resource "aws_iam_policy" "satellite_region_policy" {
   })
   tags = local.tags
 }
+
 resource "aws_iam_role_policy_attachment" "satellite_region_policy_attachment" {
   count      = var.satellite_region == null ? 0 : 1
   policy_arn = aws_iam_policy.satellite_region_policy[0].arn

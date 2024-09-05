@@ -87,8 +87,20 @@ variable "kms_key_additional_principals" {
 
 variable "use_rift_cross_account_policy" {
   type        = bool
-  description = "Whether or not to use rift version of IAM policies for cross-account access"
+  description = "(Deprecated in favor of var.use_rift_compute_on_control_plane) Whether or not to use rift version of IAM policies for cross-account access"
   default     = false
+}
+
+variable "use_rift_compute_on_control_plane" {
+  type        = bool
+  description = "Whether or not to enable Rift compute on control plane"
+  default     = false
+}
+
+variable "use_spark_compute" {
+  type        = bool
+  description = "Whether or not to enable Spark compute"
+  default     = true
 }
 
 variable "cross_account_role_allow_sts_metadata" {

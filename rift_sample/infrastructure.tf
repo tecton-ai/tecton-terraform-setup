@@ -45,7 +45,7 @@ module "tecton" {
 
   # Control plane root principal
   s3_read_write_principals      = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
-  use_rift_cross_account_policy = true
+  use_rift_compute_on_control_plane = !local.enable_rift_on_data_plane
 }
 
 module "rift" {
