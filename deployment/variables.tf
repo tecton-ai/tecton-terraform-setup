@@ -90,3 +90,9 @@ variable "use_rift_cross_account_policy" {
   description = "Whether or not to use rift version of IAM policies for cross-account access"
   default     = false
 }
+
+variable "cross_account_role_allow_sts_metadata" {
+  type        = bool
+  description = "Enable sts:SetSourceIdentity and sts:TagSession permissions on the cross-role account."
+  default     = false
+}
