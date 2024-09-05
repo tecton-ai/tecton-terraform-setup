@@ -17,7 +17,22 @@ resource "aws_iam_role" "cross_account_role" {
   assume_role_policy   = data.aws_iam_policy_document.cross_account_role_assume_role.json
 }
 
+data "aws_iam_policy_document" "cross_account_role_assume_role_metadata" {
+  statement {
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = distinct([
+        "arn:aws:iam::153453085158:root",
+        "arn:aws:iam::${var.tecton_assuming_account_id}:root"
+      ])
+    }
+    actions = ["sts:SetSourceIdentity", "sts:TagSession"]
+  }
+}
+
 data "aws_iam_policy_document" "cross_account_role_assume_role" {
+  source_policy_documents = var.cross_account_role_allow_sts_metadata ? [data.aws_iam_policy_document.cross_account_role_assume_role_metadata.json] : []
   statement {
     effect = "Allow"
     principals {
