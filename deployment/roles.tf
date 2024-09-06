@@ -7,7 +7,7 @@ locals {
 }
 
 data "aws_iam_role" "spark_role" {
-  count = local.use_spark_compute ? 0 : 1
+  count = local.use_spark_compute ? 1 : 0
   name  = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
 }
 
@@ -78,10 +78,6 @@ resource "aws_iam_policy" "cross_account_policy_rift" {
     REGION          = var.region
   })
   tags = local.tags
-}
-
-locals {
-  cross_account_policy_arn = var.use_rift_cross_account_policy ? aws_iam_policy.cross_account_policy_rift[0].arn : aws_iam_policy.cross_account_policy_spark[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "spark_cross_account_policy_attachment" {
