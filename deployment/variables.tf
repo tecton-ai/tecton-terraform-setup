@@ -88,7 +88,8 @@ variable "kms_key_additional_principals" {
 variable "use_rift_cross_account_policy" {
   type        = bool
   description = "(Deprecated in favor of var.use_rift_compute_on_control_plane) Whether or not to use rift version of IAM policies for cross-account access"
-  default     = false
+  default     = null
+  nullable    = true
 }
 
 variable "use_rift_compute_on_control_plane" {
