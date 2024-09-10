@@ -19,7 +19,8 @@
                 "dynamodb:Query",
                 "dynamodb:TagResource",
                 "dynamodb:UpdateTable",
-                "dynamodb:UpdateTimeToLive"
+                "dynamodb:UpdateTimeToLive",
+                "dynamodb:DescribeTimeToLive"
             ],
             "Resource": [
                 "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
