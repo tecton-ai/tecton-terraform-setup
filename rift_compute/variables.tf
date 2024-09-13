@@ -35,6 +35,11 @@ variable "subnet_azs" {
   description = "List of AZs to create subnets in."
 }
 
+variable "control_plane_bucket_destination" {
+  type        = string
+  description = "ARN of the Tecton control plane bucket, which hosts materialization parameters"
+}
+
 variable "tecton_vpce_service_name" {
   type        = string
   default     = null
