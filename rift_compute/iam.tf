@@ -46,6 +46,28 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   }
 
   statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+    ]
+    resources = [
+      "arn:aws:ec2:*:*:network-interface/*",
+    ]
+    # TODO: restrict based on tags
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+    ]
+    resources = [
+      [for subnet in aws_subnet.private : subnet.arn],
+    ]
+  }
+
+  statement {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
     resources = [aws_iam_role.rift_compute.arn]
@@ -72,6 +94,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
       "ec2:DescribeReservedInstancesOfferings",
       "ec2:DescribeSpotInstanceRequests",
       "ec2:DescribeSpotPriceHistory",
+      "ec2:DescribeNetworkInterfaces",
       "ssm:GetParameters"
     ]
     resources = ["*"]
