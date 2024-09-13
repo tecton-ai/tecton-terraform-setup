@@ -49,12 +49,32 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     effect = "Allow"
     actions = [
       "ec2:CreateNetworkInterface",
+    ]
+    resources = [
+      "arn:aws:ec2:*:*:network-interface/*",
+    ]
+    # deny unless the resource will be tagged w/ tecton_rift_workflow_id
+    condition {
+      test     = "Null"
+      variable = "aws:RequestTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
       "ec2:DeleteNetworkInterface",
     ]
     resources = [
       "arn:aws:ec2:*:*:network-interface/*",
     ]
-    # TODO: restrict based on tags
+    # deny unless the resource is tagged w/ tecton_rift_workflow_id
+    condition {
+      test     = "Null"
+      variable = "ec2:ResourceTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
   }
 
   statement {
