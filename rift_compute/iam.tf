@@ -82,9 +82,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     actions = [
       "ec2:CreateNetworkInterface",
     ]
-    resources = [
-      [for subnet in aws_subnet.private : subnet.arn],
-    ]
+    resources = [for subnet in aws_subnet.private : subnet.arn]
   }
 
   statement {
