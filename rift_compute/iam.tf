@@ -83,7 +83,6 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     effect = "Allow"
     actions = [
       "ec2:CreateNetworkInterface",
-      "ec2:AttachNetworkInterface"
     ]
     resources = [
       "arn:aws:ec2:*:${local.account_id}:network-interface/*"
