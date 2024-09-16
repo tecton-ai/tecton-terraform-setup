@@ -86,6 +86,14 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   }
 
   statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+    ]
+    resources = [aws_security_group.rift_compute.arn]
+  }
+
+  statement {
     effect    = "Allow"
     actions   = ["iam:PassRole"]
     resources = [aws_iam_role.rift_compute.arn]
