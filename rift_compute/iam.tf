@@ -313,7 +313,6 @@ resource "aws_iam_policy" "rift_compute_internal" {
 
 locals {
   rift_compute_policies = {
-    rift_compute         = aws_iam_policy.rift_compute,
     rift_compute_logs    = aws_iam_policy.rift_compute_logs,
     offline_store_access = aws_iam_policy.offline_store_access,
     dynamo_db_access     = aws_iam_policy.rift_dynamodb_access,
