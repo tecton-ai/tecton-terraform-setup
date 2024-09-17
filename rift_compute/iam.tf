@@ -19,13 +19,9 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:StartInstances",
-      "ec2:RunInstances",
       "ec2:StopInstances",
       "ec2:TerminateInstances",
       "ec2:CreateTags",
-      "ec2:DescribeInstances",
-      "ec2:DescribeInstanceStatus"
     ]
     resources = [
       "arn:aws:ec2:*:${local.account_id}:instance/*",
@@ -40,14 +36,46 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
+      "ec2:StartInstances",
+      "ec2:RunInstances",
+    ]
+    resources = [
+      "arn:aws:ec2:*:${local.account_id}:instance/*",
+    ]
+    condition {
+      test     = "Null"
+      variable = "aws:RequestTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
+  }
+
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeInstances",
+      "ec2:DescribeInstanceStatus"
+    ]
+    # Describe* permissions do not support resource-level permissions:
+    # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
+    resources = ["*"]
+    condition {
+      test     = "Null"
+      variable = "ec2:ResourceTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
       "ec2:RunInstances",
     ]
     resources = flatten([
       "arn:aws:ec2:*::image/*", # TODO: Restrict to specific AMI ARN
-      "arn:aws:ec2:*:${local.account_id}:security-group/${aws_security_group.rift_compute.id}",
+      aws_security_group.rift_compute.arn,
       [for subnet in aws_subnet.private : subnet.arn],
       "arn:aws:ec2:*:${local.account_id}:network-interface/tecton-rift-*", 
-      "arn:aws:ec2:*:${local.account_id}:volume/tecton-rift-*"
     ])
   }
 
@@ -70,20 +98,12 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:CreateVolume",
-      "ec2:AttachVolume",
-    ]
-    resources = [
-      "arn:aws:ec2:*:${local.account_id}:volume/tecton-rift-*",
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
       "ec2:CreateNetworkInterface",
     ]
-    resources = [aws_security_group.rift_compute.arn]
+    resources = flatten([
+      aws_security_group.rift_compute.arn,
+      [for subnet in aws_subnet.private : subnet.arn],
+    ])
   }
 
   statement {
