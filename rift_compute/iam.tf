@@ -60,11 +60,6 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     # Describe* permissions do not support resource-level permissions:
     # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
     resources = ["*"]
-    condition {
-      test     = "Null"
-      variable = "ec2:RequestTag/tecton_rift_workflow_id"
-      values   = ["false"]
-    }
   }
 
   statement {
@@ -100,7 +95,10 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     actions = [
       "ec2:CreateNetworkInterface",
     ]
-    resources = [aws_security_group.rift_compute.arn]
+    resources = flatten([
+      aws_security_group.rift_compute.arn,
+      [for subnet in aws_subnet.private : subnet.arn],
+    ])
   }
 
   statement {
