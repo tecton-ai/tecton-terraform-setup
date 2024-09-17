@@ -62,7 +62,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     resources = ["*"]
     condition {
       test     = "Null"
-      variable = "ec2:ResourceTag/tecton_rift_workflow_id"
+      variable = "ec2:RequestTag/tecton_rift_workflow_id"
       values   = ["false"]
     }
   }
@@ -100,10 +100,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     actions = [
       "ec2:CreateNetworkInterface",
     ]
-    resources = flatten([
-      aws_security_group.rift_compute.arn,
-      [for subnet in aws_subnet.private : subnet.arn],
-    ])
+    resources = [aws_security_group.rift_compute.arn]
   }
 
   statement {
