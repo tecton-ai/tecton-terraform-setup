@@ -54,7 +54,8 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     effect = "Allow"
     actions = [
       "ec2:DescribeInstances",
-      "ec2:DescribeInstanceStatus"
+      "ec2:DescribeInstanceStatus",
+      "ec2:DescribeNetworkInterfaces"
     ]
     # Describe* permissions do not support resource-level permissions:
     # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
@@ -82,6 +83,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     effect = "Allow"
     actions = [
       "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface"
     ]
     resources = [
       "arn:aws:ec2:*:${local.account_id}:network-interface/*"
@@ -224,26 +226,6 @@ resource "aws_iam_policy" "rift_compute_logs" {
           format("%s/*", var.s3_log_destination)
         ]
       }
-    ]
-  })
-}
-
-resource "aws_iam_policy" "rift_compute" {
-  name = lookup(var.resource_name_overrides, "rift_compute", "tecton-rift-compute")
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject"
-        ]
-        Resource = [
-          var.control_plane_bucket_destination,
-          format("%s/*", var.control_plane_bucket_destination)
-        ]
-      },
     ]
   })
 }
