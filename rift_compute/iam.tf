@@ -73,7 +73,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
       "arn:aws:ec2:*::image/*", # TODO: Restrict to specific AMI ARN
       "arn:aws:ec2:*:${local.account_id}:volume/*",
       "arn:aws:ec2:*:${local.account_id}:network-interface/*",
-      # TODO: should we stop using the default security group?
+      # TODO: Stop using the default security group once orchestrator change is in place
       #aws_security_group.rift_compute.arn,
       "arn:aws:ec2:*:${local.account_id}:security-group/${aws_vpc.rift.default_security_group_id}",
       [for subnet in aws_subnet.private : subnet.arn],
