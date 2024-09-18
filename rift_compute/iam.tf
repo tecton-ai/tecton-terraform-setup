@@ -72,7 +72,9 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     resources = flatten([
       "arn:aws:ec2:*::image/*", # TODO: Restrict to specific AMI ARN
       "arn:aws:ec2:*:${local.account_id}:network-interface/*",
-      aws_security_group.rift_compute.arn,
+      # TODO: should we stop using the default security group?
+      #aws_security_group.rift_compute.arn,
+      aws_vpc.rift.default_security_group_id
       [for subnet in aws_subnet.private : subnet.arn],
     ])
   }
