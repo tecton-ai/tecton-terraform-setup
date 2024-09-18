@@ -201,8 +201,7 @@ resource "aws_iam_policy" "rift_ecr_readonly" {
     Statement = [
       {
         Effect = "Allow"
-        Action = [ # TODO: scope this down + test
-          "ecr:GetAuthorizationToken",
+        Action = [
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:GetRepositoryPolicy",
@@ -218,6 +217,13 @@ resource "aws_iam_policy" "rift_ecr_readonly" {
         Resource = [
           aws_ecr_repository.rift_env.arn
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = ["*"]
       }
     ]
   })
