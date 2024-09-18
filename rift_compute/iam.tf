@@ -77,7 +77,6 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:CreateNetworkInterface",
       "ec2:DeleteNetworkInterface"
     ]
     resources = [
@@ -86,6 +85,21 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     condition {
       test     = "Null"
       variable = "ec2:ResourceTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface"
+    ]
+    resources = [
+      "arn:aws:ec2:*:${local.account_id}:network-interface/*"
+    ]
+    condition {
+      test     = "Null"
+      variable = "aws:RequestTag/tecton_rift_workflow_id"
       values   = ["false"]
     }
   }
