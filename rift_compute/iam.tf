@@ -55,7 +55,9 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     actions = [
       "ec2:DescribeInstances",
       "ec2:DescribeInstanceStatus",
-      "ec2:DescribeNetworkInterfaces"
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:CreateTags",
+      "ec2:DeleteTags"
     ]
     # Describe* permissions do not support resource-level permissions:
     # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
