@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     ]
     resources = flatten([
       "arn:aws:ec2:*::image/*", # TODO: Restrict to specific AMI ARN
-      "arn:aws:ec2:*:${local.account_id}:volumne/*",
+      "arn:aws:ec2:*:${local.account_id}:volume/*",
       "arn:aws:ec2:*:${local.account_id}:network-interface/*",
       # TODO: should we stop using the default security group?
       #aws_security_group.rift_compute.arn,
