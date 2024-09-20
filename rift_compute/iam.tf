@@ -19,57 +19,13 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:StartInstances",
-      "ec2:RunInstances",
       "ec2:StopInstances",
-      "ec2:TerminateInstances"
+      "ec2:TerminateInstances",
+      "ec2:CreateTags",
     ]
     resources = [
       "arn:aws:ec2:*:${local.account_id}:instance/*",
     ]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:RunInstances",
-    ]
-    resources = [
-      "arn:aws:ec2:*::image/*",
-      "arn:aws:ec2:*::snapshot/*",
-      "arn:aws:ec2:*:*:subnet/*",
-      "arn:aws:ec2:*:*:network-interface/*",
-      "arn:aws:ec2:*:*:security-group/*",
-      "arn:aws:ec2:*:*:key-pair/*",
-      "arn:aws:ec2:*:*:volume/*"
-    ]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:CreateNetworkInterface",
-    ]
-    resources = [
-      "arn:aws:ec2:*:*:network-interface/*",
-    ]
-    # deny unless the resource will be tagged w/ tecton_rift_workflow_id
-    condition {
-      test     = "Null"
-      variable = "aws:RequestTag/tecton_rift_workflow_id"
-      values   = ["false"]
-    }
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:DeleteNetworkInterface",
-    ]
-    resources = [
-      "arn:aws:ec2:*:*:network-interface/*",
-    ]
-    # deny unless the resource is tagged w/ tecton_rift_workflow_id
     condition {
       test     = "Null"
       variable = "ec2:ResourceTag/tecton_rift_workflow_id"
@@ -80,9 +36,78 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:CreateNetworkInterface",
+      "ec2:StartInstances",
+      "ec2:RunInstances",
     ]
-    resources = [for subnet in aws_subnet.private : subnet.arn]
+    resources = [
+      "arn:aws:ec2:*:${local.account_id}:instance/*",
+    ]
+    condition {
+      test     = "Null"
+      variable = "aws:RequestTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
+  }
+
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeInstances",
+      "ec2:DescribeInstanceStatus",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:CreateTags",
+      "ec2:DeleteTags"
+    ]
+    # Describe* permissions do not support resource-level permissions:
+    # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:RunInstances",
+    ]
+    resources = flatten([
+      "arn:aws:ec2:*::image/*", # TODO: Restrict to specific AMI ARN
+      "arn:aws:ec2:*:${local.account_id}:volume/*",
+      "arn:aws:ec2:*:${local.account_id}:network-interface/*",
+      # TODO: Stop using the default security group once orchestrator change is in place
+      #aws_security_group.rift_compute.arn,
+      "arn:aws:ec2:*:${local.account_id}:security-group/${aws_vpc.rift.default_security_group_id}",
+      [for subnet in aws_subnet.private : subnet.arn],
+    ])
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:DeleteNetworkInterface"
+    ]
+    resources = [
+      "arn:aws:ec2:*:${local.account_id}:network-interface/*"
+    ]
+    condition {
+      test     = "Null"
+      variable = "ec2:ResourceTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface"
+    ]
+    resources = [
+      "arn:aws:ec2:*:${local.account_id}:network-interface/*"
+    ]
+    condition {
+      test     = "Null"
+      variable = "aws:RequestTag/tecton_rift_workflow_id"
+      values   = ["false"]
+    }
   }
 
   statement {
@@ -90,7 +115,10 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     actions = [
       "ec2:CreateNetworkInterface",
     ]
-    resources = [aws_security_group.rift_compute.arn]
+    resources = flatten([
+      aws_security_group.rift_compute.arn,
+      [for subnet in aws_subnet.private : subnet.arn],
+    ])
   }
 
   statement {
@@ -102,25 +130,6 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
-      "ec2:CreateTags",
-      "ec2:DeleteTags",
-      "ec2:AttachVolume",
-      "ec2:CreateVolume",
-      "ec2:DescribeVolumes",
-      "ec2:AssociateIamInstanceProfile",
-      "ec2:DisassociateIamInstanceProfile",
-      "ec2:ReplaceIamInstanceProfileAssociation",
-      "ec2:CreatePlacementGroups",
-      "ec2:AllocateAddress",
-      "ec2:DescribeInstances",
-      "ec2:DescribeIamInstanceProfileAssociations",
-      "ec2:DescribeInstanceStatus",
-      "ec2:DescribePlacementGroups",
-      "ec2:DescribePrefixLists",
-      "ec2:DescribeReservedInstancesOfferings",
-      "ec2:DescribeSpotInstanceRequests",
-      "ec2:DescribeSpotPriceHistory",
-      "ec2:DescribeNetworkInterfaces",
       "ssm:GetParameters"
     ]
     resources = ["*"]
@@ -155,6 +164,72 @@ resource "aws_iam_role" "rift_compute" {
   })
 }
 
+resource "aws_iam_instance_profile" "rift_compute" {
+  name = lookup(var.resource_name_overrides, "rift_compute", "tecton-rift-compute")
+  role = aws_iam_role.rift_compute.name
+}
+
+resource "aws_iam_policy" "rift_dynamodb_access" {
+  name = "tecton-rift-dynamodb-access"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:BatchGetItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:CreateTable",
+          "dynamodb:DeleteItem",
+          "dynamodb:DescribeTable",
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query"
+        ]
+        Resource = [
+          "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*",
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "rift_ecr_readonly" {
+  name = "tecton-rift-ecr-readonly"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage",
+          "ecr:GetLifecyclePolicy",
+          "ecr:GetLifecyclePolicyPreview",
+          "ecr:ListTagsForResource",
+          "ecr:DescribeImageScanFindings"
+        ]
+        Resource = [
+          aws_ecr_repository.rift_env.arn
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = ["*"]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy" "rift_compute_logs" {
   name = lookup(var.resource_name_overrides, "rift_compute_logs", "tecton-rift-compute-logs")
   policy = jsonencode({
@@ -166,8 +241,7 @@ resource "aws_iam_policy" "rift_compute_logs" {
           "s3:GetObject",
           "s3:ListObject",
           "s3:HeadObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
+          "s3:PutObject"
         ]
         Resource = [
           var.s3_log_destination,
@@ -178,68 +252,11 @@ resource "aws_iam_policy" "rift_compute_logs" {
   })
 }
 
-data "aws_iam_policy" "ecr_readonly" {
-  arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-resource "aws_iam_policy" "rift_compute" {
-  name = lookup(var.resource_name_overrides, "rift_compute", "tecton-rift-compute")
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "sts:AssumeRole"
-        ]
-        Resource = ["*"]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "secretsmanager:*"
-        ]
-        Resource = ["*"]
-        Condition = {
-          "StringNotEquals" = {
-            "secretsmanager:ResourceAccount" : local.account_id
-          }
-        }
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "kms:*"
-        ]
-        Resource = ["*"]
-        Condition = {
-          "StringNotEquals" = {
-            "kms:ResourceAccount" : local.account_id
-          }
-        }
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject"
-        ]
-        Resource = ["*"]
-        Condition = {
-          "StringNotEquals" = {
-            "s3:ResourceAccount" : local.account_id
-          }
-        }
-      },
-    ]
-  })
-}
-
 resource "aws_iam_policy" "offline_store_access" {
   name = lookup(var.resource_name_overrides, "offline_store_access", "tecton-offline-store-access")
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [for statement in [
+    Statement = [
       {
         Effect = "Allow"
         Action = ["s3:ListBucket", "s3:HeadBucket"]
@@ -250,10 +267,12 @@ resource "aws_iam_policy" "offline_store_access" {
       {
         Effect = "Allow"
         Action = ["s3:*"]
-        Resource = [
+        Resource = compact([
           format("%s/%s", var.offline_store_bucket_arn, var.offline_store_key_prefix),
-          format("%s/%s*", var.offline_store_bucket_arn, var.offline_store_key_prefix)
-        ]
+          format("%s/%s*", var.offline_store_bucket_arn, var.offline_store_key_prefix),
+          var.enable_custom_model ? format("%s/%s", var.offline_store_bucket_arn, "tecton-model-artifacts") : null,
+          var.enable_custom_model ? format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts") : null
+        ])
       },
       {
         Effect   = "Allow"
@@ -276,15 +295,21 @@ resource "aws_iam_policy" "offline_store_access" {
           format("%s/%s", var.offline_store_bucket_arn, "internal/*"),
         ]
       },
-      var.enable_custom_model ? {
+      {
         Effect = "Allow"
-        Action = ["s3:*"]
-        Resource = [
-          format("%s/%s", var.offline_store_bucket_arn, "tecton-model-artifacts"),
-          format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts")
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject"
         ]
-      } : null
-    ] : statement if statement != null]
+        Resource = ["*"]
+        # Allow access to public S3 buckets
+        Condition = {
+          "StringNotEquals" = {
+            "s3:ResourceAccount" : local.account_id
+          }
+        }
+      }
+    ]
   })
 }
 
@@ -321,22 +346,13 @@ resource "aws_iam_policy" "rift_compute_internal" {
   })
 }
 
-resource "aws_iam_instance_profile" "rift_compute" {
-  name = lookup(var.resource_name_overrides, "rift_compute", "tecton-rift-compute")
-  role = aws_iam_role.rift_compute.name
-}
-
-data "aws_iam_policy" "dynamodb_full_access" {
-  arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-}
 
 locals {
   rift_compute_policies = {
-    rift_compute         = aws_iam_policy.rift_compute,
     rift_compute_logs    = aws_iam_policy.rift_compute_logs,
-    offline_store_access = aws_iam_policy.offline_store_access
-    dynamo_db_access     = data.aws_iam_policy.dynamodb_full_access
-    ecr_readonly         = data.aws_iam_policy.ecr_readonly
+    offline_store_access = aws_iam_policy.offline_store_access,
+    dynamo_db_access     = aws_iam_policy.rift_dynamodb_access,
+    ecr_readonly         = aws_iam_policy.rift_ecr_readonly
   }
 }
 
