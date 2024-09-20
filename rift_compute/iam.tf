@@ -187,7 +187,7 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
           "dynamodb:UpdateItem"
         ]
         Resource = [
-          "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*_job_metadata",
+          "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*",
         ]
       }
     ]
