@@ -293,6 +293,20 @@ resource "aws_iam_policy" "offline_store_access" {
         Resource = [
           format("%s/%s", var.offline_store_bucket_arn, "internal/*"),
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetObject"
+        ]
+        Resource = ["*"]
+        # Allow access to public S3 buckets
+        Condition = {
+          "StringNotEquals" = {
+            "s3:ResourceAccount" : local.account_id
+          }
+        }
       }
     ]
   })
