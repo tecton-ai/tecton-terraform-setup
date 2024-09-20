@@ -184,7 +184,8 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
           "dynamodb:DescribeTable",
           "dynamodb:GetItem",
           "dynamodb:PutItem",
-          "dynamodb:UpdateItem"
+          "dynamodb:UpdateItem",
+          "dynamodb:Query"
         ]
         Resource = [
           "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*",
