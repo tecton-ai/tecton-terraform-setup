@@ -70,7 +70,6 @@ data "aws_iam_policy_document" "manage_rift_compute" {
       "ec2:RunInstances",
     ]
     resources = flatten([
-      "arn:aws:ec2:*::image/*", # TODO: Restrict to specific AMI ARN
       "arn:aws:ec2:*:${local.account_id}:volume/*",
       "arn:aws:ec2:*:${local.account_id}:network-interface/*",
       aws_security_group.rift_compute.arn,
@@ -120,6 +119,21 @@ data "aws_iam_policy_document" "manage_rift_compute" {
       aws_security_group.rift_compute.arn,
       [for subnet in aws_subnet.private : subnet.arn],
     ])
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:RunInstances",
+    ]
+    resources = [
+      "arn:aws:ec2:*::image/*"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "ec2:Owner"
+      values   = ["amazon", "472542229217"]
+    }
   }
 
   statement {
