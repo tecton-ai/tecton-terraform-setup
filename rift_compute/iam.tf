@@ -83,6 +83,7 @@ data "aws_iam_policy_document" "manage_rift_compute" {
   statement {
     effect = "Allow"
     actions = [
+      "ec2:RunInstances",
       "ec2:DeleteNetworkInterface"
     ]
     resources = [
