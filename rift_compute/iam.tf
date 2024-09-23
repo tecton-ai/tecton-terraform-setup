@@ -71,7 +71,6 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     ]
     resources = flatten([
       "arn:aws:ec2:*:${local.account_id}:volume/*",
-      "arn:aws:ec2:*:${local.account_id}:network-interface/*",
       aws_security_group.rift_compute.arn,
       # TODO (BAT-14731): Stop using the default security group once orchestrator change is in place
       "arn:aws:ec2:*:${local.account_id}:security-group/${aws_vpc.rift.default_security_group_id}",
