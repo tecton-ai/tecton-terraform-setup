@@ -210,6 +210,7 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
         Action = [
           "sts:AssumeRole"
         ]
+        # Used for assume into cross-account-intermediary role when Rift is in control plane account.
         Resource = ["arn:aws:iam::${local.account_id}:role/${cluster_name}-cross-account-intermediate"]
       }
     ]
