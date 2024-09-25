@@ -204,6 +204,13 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
         Resource = [
           "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*",
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sts:AssumeRole"
+        ]
+        Resource = ["arn:aws:iam::${local.account_id}:role/${cluster_name}-cross-account-intermediate"]
       }
     ]
   })
