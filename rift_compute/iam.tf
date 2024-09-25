@@ -204,6 +204,14 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
         Resource = [
           "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*",
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sts:AssumeRole"
+        ]
+        # Used for assume into cross-account-intermediary role when Rift is in control plane account.
+        Resource = ["arn:aws:iam::${local.account_id}:role/${var.cluster_name}-cross-account-intermediate"]
       }
     ]
   })
