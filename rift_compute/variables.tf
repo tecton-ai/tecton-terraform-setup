@@ -64,3 +64,9 @@ variable "additional_rift_compute_policy_statements" {
   description = "Additional IAM policy statements to attach to the rift_compute role"
   default     = []
 }
+
+variable "offline_store_kms_key_arn" {
+  type        = string
+  description = "ARN of KMS key used to encrypt offline feature store."
+  default     = null
+}

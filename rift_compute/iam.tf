@@ -1,3 +1,7 @@
+locals {
+  use_kms_key = var.offline_store_kms_key_arn != null
+}
+
 # rift-compute-manager role, used by orchestrator for creating/managing EC2 instances running rift materialization jobs.
 resource "aws_iam_role" "rift_compute_manager" {
   name = lookup(var.resource_name_overrides, "rift_compute_manager", "tecton-rift-compute-manager")
@@ -278,7 +282,7 @@ resource "aws_iam_policy" "offline_store_access" {
   name = lookup(var.resource_name_overrides, "offline_store_access", "tecton-offline-store-access")
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Effect = "Allow"
         Action = ["s3:ListBucket", "s3:HeadBucket"]
@@ -330,8 +334,17 @@ resource "aws_iam_policy" "offline_store_access" {
             "s3:ResourceAccount" : local.account_id
           }
         }
-      }
-    ]
+      }],
+      local.use_kms_key ? [{
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey"
+        ]
+        Resource = [
+          var.offline_store_kms_key_arn
+        ]
+      }] : [])
   })
 }
 
