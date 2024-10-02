@@ -58,3 +58,9 @@ variable "enable_custom_model" {
   default     = false
   description = "If should grant worker node access to read model artifacts from s3. Still WIP and by default it doesn't."
 }
+
+variable "tecton_control_plane_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "CIDR blocks for the NLB that serves the Tecton Control Plane."
+}

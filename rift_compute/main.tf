@@ -2,6 +2,19 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
 }
 
+data "http" "chronosphere_ips" {
+  url = "https://chronosphere.io/ips.txt"
+}
+
+data "dns_a_record_set" "fluentbit_ips" {
+  host = "packages.fluentbit.io"
+}
+
+locals {
+  chronosphere_ips = split("\n", trimspace(data.http.chronosphere_ips.response_body))
+  fluentbit_ips = data.dns_a_record_set.fluentbit_ips.addrs
+}
+
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
@@ -47,7 +60,12 @@ resource "aws_security_group" "rift_compute" {
 resource "aws_security_group_rule" "rift_compute_egress" {
   security_group_id = aws_security_group.rift_compute.id
   type              = "egress"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = concat(
+    [for ip in local.chronosphere_ips : "${ip}/32"],
+    [for ip in local.fluentbit_ips : "${ip}/32"],
+    var.tecton_control_plane_cidr_blocks,
+    ["0.0.0.0/0"]
+  )
   from_port         = "-1"
   to_port           = "-1"
   protocol          = "-1"
