@@ -70,3 +70,34 @@ variable "kms_key_arn" {
   description = "ARN of KMS key used to encrypt online/offline feature store."
   default     = null
 }
+
+variable "tecton_control_plane_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "CIDR blocks for the Tecton Control Plane."
+}
+
+variable "apply_egress_restrictions_security_group" {
+  type        = bool
+  default     = false
+  description = "If true, will apply egress restrictions to rift-compute security group (IP-based)"
+}
+
+variable "additional_egress_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "Additional CIDR blocks to allow egress to (if using restricted egress security group)."
+}
+
+variable "use_network_firewall" {
+  type        = bool
+  default     = false
+  description = "If true, will use AWS Network Firewall to restrict egress."
+}
+
+variable "additional_allowed_egress_domains" {
+  type        = list(string)
+  default     = []
+  description = "Additional domains to allow egress to (if using network firewall)"
+}
+

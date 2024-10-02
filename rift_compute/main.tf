@@ -2,6 +2,21 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
 }
 
+data "http" "chronosphere_ips" {
+  url = "https://chronosphere.io/ips.txt"
+}
+
+data "dns_a_record_set" "fluentbit_ips" {
+  host = "packages.fluentbit.io"
+}
+
+locals {
+  # Public chronosphere IPs + tecton.chronosphere.io
+  chronosphere_ips = concat(split("\n", trimspace(data.http.chronosphere_ips.response_body)), ["34.120.216.19/32"])
+  # IPs for fluentbit packages
+  fluentbit_ips = data.dns_a_record_set.fluentbit_ips.addrs
+}
+
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
@@ -44,11 +59,63 @@ resource "aws_security_group" "rift_compute" {
   vpc_id = aws_vpc.rift.id
 }
 
-resource "aws_security_group_rule" "rift_compute_egress" {
+# Rule for Gateway endpoints (S3 and DynamoDB)
+resource "aws_security_group_rule" "rift_compute_egress_gateway" {
+  count             = var.apply_egress_restrictions_security_group ? 1 : 0
+  security_group_id = aws_security_group.rift_compute.id
+  type              = "egress"
+  prefix_list_ids   = [
+    aws_vpc_endpoint.dynamodb.prefix_list_id,
+    aws_vpc_endpoint.s3.prefix_list_id,
+  ]
+  from_port         = "-1"
+  to_port           = "-1"
+  protocol          = "-1"
+}
+
+# Rule for Interface endpoints
+resource "aws_security_group_rule" "rift_compute_egress_interface" {
+  security_group_id        = aws_security_group.rift_compute.id
+  type                     = "egress"
+  from_port                = "-1"
+  to_port                  = "-1"
+  protocol                 = "-1"
+  source_security_group_id = aws_security_group.aws_vpc_endpoints_security_group.id
+}
+
+# Rule for other allowed CIDR blocks
+resource "aws_security_group_rule" "rift_compute_egress_cidr" {
+  count             = var.apply_egress_restrictions_security_group ? 1 : 0
+  security_group_id = aws_security_group.rift_compute.id
+  type              = "egress"
+  cidr_blocks       = concat(
+    [for ip in local.chronosphere_ips : "${ip}/32"],
+    [for ip in local.fluentbit_ips : "${ip}/32"],
+    var.tecton_control_plane_cidr_blocks,
+    var.additional_egress_cidr_blocks
+  )
+  from_port         = "-1"
+  to_port           = "-1"
+  protocol          = "-1"
+}
+
+# Default allow all rule if not applying security group restrictions
+resource "aws_security_group_rule" "rift_compute_egress_all" {
+  count             = var.apply_egress_restrictions_security_group ? 0 : 1
   security_group_id = aws_security_group.rift_compute.id
   type              = "egress"
   cidr_blocks       = ["0.0.0.0/0"]
   from_port         = "-1"
   to_port           = "-1"
   protocol          = "-1"
+}
+
+resource "aws_security_group_rule" "rift_compute_vpce_egress" {
+  count = var.tecton_vpce_service_name != null ? 1 : 0
+  security_group_id = aws_security_group.rift_compute.id
+  type = "egress"
+  from_port = "-1"
+  to_port = "-1"
+  protocol = "-1"
+  source_security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
 }
