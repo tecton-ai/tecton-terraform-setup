@@ -63,7 +63,8 @@ resource "aws_security_group_rule" "rift_compute_egress" {
   cidr_blocks       = var.apply_egress_restrictions ? concat(
     [for ip in local.chronosphere_ips : "${ip}/32"],
     [for ip in local.fluentbit_ips : "${ip}/32"],
-    var.tecton_control_plane_cidr_blocks) : ["0.0.0.0/0"]
+    var.tecton_control_plane_cidr_blocks,
+    var.additional_egress_cidr_blocks) : ["0.0.0.0/0"]
   from_port         = "-1"
   to_port           = "-1"
   protocol          = "-1"

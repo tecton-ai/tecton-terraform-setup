@@ -62,11 +62,17 @@ variable "enable_custom_model" {
 variable "tecton_control_plane_cidr_blocks" {
   type        = list(string)
   default     = []
-  description = "CIDR blocks for the NLB that serves the Tecton Control Plane."
+  description = "CIDR blocks for the Tecton Control Plane."
 }
 
 variable "apply_egress_restrictions" {
   type        = bool
   default     = false
   description = "If true, will apply egress restrictions to rift-compute"
+}
+
+variable "additional_egress_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "Additional CIDR blocks to allow egress to."
 }
