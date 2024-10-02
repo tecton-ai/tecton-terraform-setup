@@ -25,3 +25,8 @@ output "anyscale_docker_target_repo" {
   # input for kustomization.yaml: `ANYSCALE_DOCKER_TARGET_REPO`
   value = aws_ecr_repository.rift_env.repository_url
 }
+
+output "nat_gateway_public_ips" {
+  description = "List of public IPs associated with the NAT Gateways"
+  value       = [for eip in aws_eip.rift : eip.public_ip]
+}
