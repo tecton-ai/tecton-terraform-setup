@@ -60,13 +60,21 @@ resource "aws_security_group" "rift_compute" {
 resource "aws_security_group_rule" "rift_compute_egress" {
   security_group_id = aws_security_group.rift_compute.id
   type              = "egress"
-  cidr_blocks       = concat(
+  cidr_blocks       = var.apply_egress_restrictions ? concat(
     [for ip in local.chronosphere_ips : "${ip}/32"],
     [for ip in local.fluentbit_ips : "${ip}/32"],
-    var.tecton_control_plane_cidr_blocks,
-    ["0.0.0.0/0"]
-  )
+    var.tecton_control_plane_cidr_blocks) : ["0.0.0.0/0"]
   from_port         = "-1"
   to_port           = "-1"
   protocol          = "-1"
+}
+
+resource "aws_security_group_rule" "rift_compute_vpce_egress" {
+  count = var.tecton_vpce_service_name != null ? 1 : 0
+  security_group_id = aws_security_group.rift_compute.id
+  type = "egress"
+  from_port = "-1"
+  to_port = "-1"
+  protocol = "-1"
+  source_security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
 }

@@ -64,3 +64,9 @@ variable "tecton_control_plane_cidr_blocks" {
   default     = []
   description = "CIDR blocks for the NLB that serves the Tecton Control Plane."
 }
+
+variable "apply_egress_restrictions" {
+  type        = bool
+  default     = false
+  description = "If true, will apply egress restrictions to rift-compute"
+}
