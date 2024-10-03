@@ -368,6 +368,14 @@ resource "aws_iam_policy" "rift_compute_internal" {
   })
 }
 
+resource "aws_iam_policy" "additional_rift_compute_policy" {
+  count = length(var.additional_rift_compute_policy_statements) > 0 ? 1 : 0
+  name  = lookup(var.resource_name_overrides, "additional_rift_compute_policy", "tecton-additional-rift-compute-policy")
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = var.additional_rift_compute_policy_statements
+  })
+}
 
 locals {
   rift_compute_policies = {
@@ -382,6 +390,12 @@ resource "aws_iam_role_policy_attachment" "rift_compute_policies" {
   for_each   = local.rift_compute_policies
   role       = aws_iam_role.rift_compute.name
   policy_arn = each.value.arn
+}
+
+resource "aws_iam_role_policy_attachment" "rift_compute_additional_policy" {
+  count      = length(var.additional_rift_compute_policy_statements) > 0 ? 1 : 0
+  role       = aws_iam_role.rift_compute.name
+  policy_arn = aws_iam_policy.additional_rift_compute_policy[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "rift_compute_internal_policies" {
