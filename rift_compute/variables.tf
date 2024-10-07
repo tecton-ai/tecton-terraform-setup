@@ -65,8 +65,8 @@ variable "additional_rift_compute_policy_statements" {
   default     = []
 }
 
-variable "offline_store_kms_key_arn" {
+variable "kms_key_arn" {
   type        = string
-  description = "ARN of KMS key used to encrypt offline feature store."
+  description = "ARN of KMS key used to encrypt online/offline feature store."
   default     = null
 }

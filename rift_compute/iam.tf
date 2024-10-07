@@ -1,5 +1,5 @@
 locals {
-  use_kms_key = var.offline_store_kms_key_arn != null
+  use_kms_key = var.kms_key_arn != null
 }
 
 # rift-compute-manager role, used by orchestrator for creating/managing EC2 instances running rift materialization jobs.
@@ -342,7 +342,7 @@ resource "aws_iam_policy" "offline_store_access" {
           "kms:GenerateDataKey"
         ]
         Resource = [
-          var.offline_store_kms_key_arn
+          var.kms_key_arn
         ]
       }] : [])
   })
