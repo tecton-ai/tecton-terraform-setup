@@ -9,6 +9,11 @@ locals {
     ".ecr.aws",
     ".amazonaws.com",
     ".aws.amazon.com",
+    # Crowdstrike
+    ".crowdstrike.com",
+    ".cloudsink.net",
+    ".githubusercontent.com",
+    "crowdstrike.github.io",
   ]
 
 }
