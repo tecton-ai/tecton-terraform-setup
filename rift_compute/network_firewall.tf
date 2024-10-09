@@ -80,11 +80,11 @@ resource "aws_networkfirewall_rule_group" "rift_compute_egress_allowed_domains" 
 module "firewall_subnet_cidrs" {
   source          = "hashicorp/subnets/cidr"
   version         = "1.0.0"
-  base_cidr_block = local.vpc_cidr
-  networks = [for az in var.subnet_azs :
+  base_cidr_block = "10.0.24.0/22"  # Start from the next available /22 block
+  networks = [for i, az in var.subnet_azs :
     {
       name     = "firewall-${az}"
-      new_bits = floor((32 - local.base_cidr_mask) / length(var.subnet_azs)) + 2
+      new_bits = 2  # This will create /24 subnets within the /22 block
     }
   ]
 }
