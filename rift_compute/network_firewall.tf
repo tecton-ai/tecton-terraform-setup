@@ -92,7 +92,7 @@ module "firewall_subnet_cidrs" {
 resource "aws_subnet" "firewall_subnet" {
   for_each = var.use_network_firewall ? module.firewall_subnet_cidrs.network_cidr_blocks : {}
   vpc_id            = aws_vpc.rift.id
-  availability_zone = split("-", each.key)[1]
+  availability_zone = join("-", slice(split("-", each.key), 1, length(split("-", each.key))))
   cidr_block        = each.value
   tags = {
     Name = format("tecton-rift-firewall-%s", each.key)
