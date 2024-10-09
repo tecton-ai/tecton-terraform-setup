@@ -75,6 +75,7 @@ resource "aws_security_group_rule" "rift_compute_egress_gateway" {
 
 # Rule for Interface endpoints
 resource "aws_security_group_rule" "rift_compute_egress_interface" {
+  count                    = var.apply_egress_restrictions_security_group ? 1 : 0
   security_group_id        = aws_security_group.rift_compute.id
   type                     = "egress"
   from_port                = "-1"

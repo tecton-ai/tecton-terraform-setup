@@ -127,6 +127,7 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 resource "aws_vpc_endpoint" "ecr" {
+  count = var.apply_egress_restrictions_security_group ? 1 : 0
   vpc_id       = aws_vpc.rift.id
   service_name = format("com.amazonaws.%s.ecr.dkr", data.aws_region.current.name)
   vpc_endpoint_type = "Interface"
@@ -135,6 +136,7 @@ resource "aws_vpc_endpoint" "ecr" {
 }
 
 resource "aws_vpc_endpoint" "ecr_api" {
+  count        = var.apply_egress_restrictions_security_group ? 1 : 0
   vpc_id       = aws_vpc.rift.id
   service_name = format("com.amazonaws.%s.ecr.api", data.aws_region.current.name)
   vpc_endpoint_type = "Interface"
@@ -143,6 +145,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 }
 
 resource "aws_vpc_endpoint" "kms" {
+  count        = var.apply_egress_restrictions_security_group ? 1 : 0
   vpc_id       = aws_vpc.rift.id
   service_name = format("com.amazonaws.%s.kms", data.aws_region.current.name)
   vpc_endpoint_type = "Interface"
