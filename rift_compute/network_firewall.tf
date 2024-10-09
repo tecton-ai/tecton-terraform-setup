@@ -45,16 +45,24 @@ resource "aws_networkfirewall_firewall_policy" "rift_egress" {
   count = var.use_network_firewall ? 1 : 0
   name  = "tecton-rift-egress-firewall-policy"
   firewall_policy {
-    stateful_default_actions           = ["aws:alert_established", "aws:drop_established"]
-    stateless_default_actions          = ["aws:forward_to_sfe"]
+    # Temporarily allow all traffic to troubleshoot
+    stateful_default_actions = [
+      "aws:alert_established",
+      # "aws:drop_established",
+      # "aws:pass"
+    ]
+    stateless_default_actions = [
+      # "aws:forward_to_sfe",
+      "aws:pass"
+    ]
     stateless_fragment_default_actions = ["aws:pass"]
     stateful_engine_options {
       rule_order = "STRICT_ORDER"
     }
-    stateful_rule_group_reference {
-      priority     = 1
-      resource_arn = aws_networkfirewall_rule_group.rift_compute_egress_allowed_domains[0].arn
-    }
+    # stateful_rule_group_reference {
+    #   priority     = 1
+    #   resource_arn = aws_networkfirewall_rule_group.rift_compute_egress_allowed_domains[0].arn
+    # }
   }
 }
 
