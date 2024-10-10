@@ -14,8 +14,6 @@ locals {
     ".cloudsink.net",
     ".githubusercontent.com",
     "crowdstrike.github.io",
-    # Temporary -- allow all domains to troubleshoot:
-    "."
   ]
 
 }
