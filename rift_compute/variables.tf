@@ -70,3 +70,16 @@ variable "kms_key_arn" {
   description = "ARN of KMS key used to encrypt online/offline feature store."
   default     = null
 }
+
+variable "use_network_firewall" {
+  type        = bool
+  default     = false
+  description = "If true, will use AWS Network Firewall to restrict egress."
+}
+
+variable "additional_allowed_egress_domains" {
+  type        = list(string)
+  default     = []
+  description = "Additional domains to allow egress to (if using network firewall)"
+}
+
