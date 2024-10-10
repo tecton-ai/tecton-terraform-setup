@@ -63,6 +63,7 @@ resource "aws_nat_gateway" "rift" {
 }
 
 resource "aws_route" "internet_gateway" {
+  count = var.use_network_firewall ? 0 : 1
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.rift.id
@@ -142,6 +143,22 @@ resource "aws_vpc_endpoint_subnet_association" "tecton_privatelink" {
   vpc_endpoint_id = aws_vpc_endpoint.tecton_privatelink[0].id
   subnet_id       = each.value
 }
+
+resource "aws_security_group" "aws_vpc_endpoints_security_group" {
+  name        = "aws-vpc-endpoints-security-group"
+  description = "Security group applied to the vpc endpoints for aws services (e.g. dynamodb, s3) that are accessed by the rift compute VPC."
+  vpc_id      = aws_vpc.rift.id
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+
+
 
 resource "aws_security_group" "tecton_privatelink_cross_vpc" {
   count       = var.tecton_vpce_service_name != null ? 1 : 0

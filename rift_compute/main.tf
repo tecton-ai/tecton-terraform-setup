@@ -52,3 +52,4 @@ resource "aws_security_group_rule" "rift_compute_egress" {
   to_port           = "-1"
   protocol          = "-1"
 }
+

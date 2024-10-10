@@ -30,3 +30,7 @@ output "nat_gateway_public_ips" {
   description = "List of public IPs associated with the NAT Gateways"
   value       = [for eip in aws_eip.rift : eip.public_ip]
 }
+
+output "rift_compute_security_group_id" {
+  value = aws_security_group.rift_compute.id
+}

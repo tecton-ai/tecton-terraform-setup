@@ -59,4 +59,11 @@ module "rift" {
   offline_store_bucket_arn                = format("arn:aws:s3:::%s", module.tecton.s3_bucket.bucket)
   subnet_azs                              = ["us-west-2a", "us-west-2b", "us-wesb-2c"]
   tecton_vpce_service_name                = local.tecton_vpce_service_name
+
+  # Egress from rift compute will be open to internet by default.
+  # To restrict egress based on known list of domains (found in rift_compute/network_firewall.tf), set the following:
+  # use_network_firewall = true
+  # Domains can be extended as needed:
+  # additional_allowed_egress_domains = [...]
+
 }
