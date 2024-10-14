@@ -63,6 +63,7 @@ resource "aws_nat_gateway" "rift" {
 }
 
 resource "aws_route" "internet_gateway" {
+  count = var.use_network_firewall ? 0 : 1
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.rift.id
@@ -142,6 +143,7 @@ resource "aws_vpc_endpoint_subnet_association" "tecton_privatelink" {
   vpc_endpoint_id = aws_vpc_endpoint.tecton_privatelink[0].id
   subnet_id       = each.value
 }
+
 
 resource "aws_security_group" "tecton_privatelink_cross_vpc" {
   count       = var.tecton_vpce_service_name != null ? 1 : 0
