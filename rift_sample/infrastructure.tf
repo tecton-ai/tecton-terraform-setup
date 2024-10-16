@@ -8,17 +8,18 @@ terraform {
 }
 
 provider "aws" {
+  # Replace with your region
   region = "us-west-2"
 }
 
-# this example assumes that Databricks and Tecton are deployed to the same account
 locals {
   # Deployment name must be less than 22 characters (AWS limitation)
   deployment_name = "my-deployment-name"
 
-  # The region and account_id of this Tecton account you just created
+  # The region and account_id of this Tecton / AWS account
   region     = "us-west-2"
   account_id = "1234567890"
+  subnet_azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
 
   # Get from your Tecton rep
   tecton_control_plane_account_id = "987654321"
@@ -51,13 +52,13 @@ module "tecton" {
 
 module "rift" {
   count                                   = local.enable_rift_on_data_plane ? 1 : 0
-  source                                  = "../modules/rift_compute"
+  source                                  = "../rift_compute"
   cluster_name                            = local.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", local.tecton_control_plane_account_id, local.tecton_control_plane_role_name)]
-  control_plane_account_id                = local.control_plane_account_id
+  control_plane_account_id                = local.tecton_control_plane_account_id
   s3_log_destination                      = format("%s/rift-logs", module.tecton.s3_bucket.bucket)
   offline_store_bucket_arn                = format("arn:aws:s3:::%s", module.tecton.s3_bucket.bucket)
-  subnet_azs                              = ["us-west-2a", "us-west-2b", "us-wesb-2c"]
+  subnet_azs                              = local.subnet_azs
   tecton_vpce_service_name                = local.tecton_vpce_service_name
 
   # Egress from rift compute will be open to internet by default.
