@@ -56,7 +56,7 @@ module "rift" {
   cluster_name                            = local.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", local.tecton_control_plane_account_id, local.tecton_control_plane_role_name)]
   control_plane_account_id                = local.tecton_control_plane_account_id
-  s3_log_destination                      = format("%s/rift-logs", module.tecton.s3_bucket.bucket)
+  s3_log_destination                      = format("arn:aws:s3:::%s/rift-logs", module.tecton.s3_bucket.bucket)
   offline_store_bucket_arn                = format("arn:aws:s3:::%s", module.tecton.s3_bucket.bucket)
   subnet_azs                              = local.subnet_azs
   tecton_vpce_service_name                = local.tecton_vpce_service_name
