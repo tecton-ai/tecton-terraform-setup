@@ -48,6 +48,7 @@ module "tecton" {
   s3_read_write_principals          = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
   use_rift_compute_on_control_plane = !local.enable_rift_on_data_plane
   use_spark_compute                 = false # Set to true if also enable Spark compute
+  use_rift_cross_account_policy     = true
 }
 
 module "rift" {
