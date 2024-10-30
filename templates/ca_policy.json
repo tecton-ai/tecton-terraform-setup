@@ -18,6 +18,7 @@
                 "dynamodb:PutItem",
                 "dynamodb:Query",
                 "dynamodb:TagResource",
+                "dynamodb:ListTagsOfResource",
                 "dynamodb:UpdateTable"
             ],
             "Resource": [
