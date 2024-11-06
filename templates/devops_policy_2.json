@@ -17,7 +17,9 @@
                 "dynamodb:UpdateTable",
                 "dynamodb:CreateBackup",
                 "dynamodb:DescribeBackup",
-                "dynamodb:DeleteBackup"
+                "dynamodb:DeleteBackup",
+                "dynamodb:UpdateTimeToLive",
+                "dynamodb:DescribeTimeToLive"
             ],
             "Resource": ["arn:aws:dynamodb:*:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
         },
