@@ -12,7 +12,7 @@ resource "aws_iam_role" "rift_compute_manager" {
         Action = ["sts:AssumeRole", "sts:SetSourceIdentity", "sts:TagSession"]
         Effect = "Allow"
         Principal = {
-          AWS = concat([var.rift_compute_manager_assuming_role_arns], ["arn:aws:iam::${var.control_plane_account_id}:root"])
+          AWS = concat(var.rift_compute_manager_assuming_role_arns, ["arn:aws:iam::${var.control_plane_account_id}:root"])
         }
       }
     ]
