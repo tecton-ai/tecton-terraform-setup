@@ -12,7 +12,7 @@ resource "aws_iam_role" "rift_compute_manager" {
         Action = ["sts:AssumeRole", "sts:SetSourceIdentity", "sts:TagSession"]
         Effect = "Allow"
         Principal = {
-          AWS = var.rift_compute_manager_assuming_role_arns
+          AWS = "arn:aws:iam::${var.control_plane_account_id}:root"
         }
       }
     ]
