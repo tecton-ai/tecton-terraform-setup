@@ -27,6 +27,9 @@ is tracked.
 ```hcl
 module "privatelink-cross-vpc" {
   source = "github.com/tecton-ai-ext/tecton-terraform-setup//privatelink/cross_vpc"
+  providers = {
+    aws = aws
+  }
 
   dns_name = "<deployment_name>.tecton.ai"
   vpc_endpoint_service_name = "<vpc_endpoint_service_name>"
