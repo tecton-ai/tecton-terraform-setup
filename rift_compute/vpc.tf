@@ -141,7 +141,7 @@ resource "aws_vpc_endpoint" "tecton_privatelink" {
 resource "aws_vpc_endpoint_subnet_association" "tecton_privatelink" {
   for_each        = var.tecton_vpce_service_name != null ? aws_subnet.private : {}
   vpc_endpoint_id = aws_vpc_endpoint.tecton_privatelink[0].id
-  subnet_id       = each.value
+  subnet_id       = each.value.id
 }
 
 
