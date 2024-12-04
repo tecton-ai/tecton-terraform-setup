@@ -29,7 +29,6 @@ module "public_private_subnet_cidrs" {
 resource "aws_vpc" "rift" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = (var.tecton_vpce_service_name != null)
-  enable_dns_support   = (var.tecton_vpce_service_name != null)
 }
 
 resource "aws_subnet" "private" {
