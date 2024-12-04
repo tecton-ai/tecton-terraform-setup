@@ -27,7 +27,8 @@ module "public_private_subnet_cidrs" {
 }
 
 resource "aws_vpc" "rift" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = (var.tecton_vpce_service_name != null)
 }
 
 resource "aws_subnet" "private" {
@@ -141,7 +142,7 @@ resource "aws_vpc_endpoint" "tecton_privatelink" {
 resource "aws_vpc_endpoint_subnet_association" "tecton_privatelink" {
   for_each        = var.tecton_vpce_service_name != null ? aws_subnet.private : {}
   vpc_endpoint_id = aws_vpc_endpoint.tecton_privatelink[0].id
-  subnet_id       = each.value
+  subnet_id       = each.value.id
 }
 
 
