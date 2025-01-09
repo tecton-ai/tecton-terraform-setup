@@ -17,13 +17,13 @@ locals {
   deployment_name = "my-deployment-name"
 
   # The region and account_id of this Tecton / AWS account
-  region     = "us-west-2"
-  account_id = "1234567890"
+  region     = "us-west-2" # Replace with your region
+  account_id = "1234567890" # Replace with your account ID
 
   # Get from your Tecton rep
-  tecton_control_plane_account_id = "987654321"
+  tecton_control_plane_account_id = "987654321" # Replace with your Tecton control plane account ID
   # Get from your Tecton rep
-  cross_account_external_id = "tecton-external-id"
+  cross_account_external_id = "tecton-external-id" # Replace with your Tecton external ID
 }
 
 module "tecton" {

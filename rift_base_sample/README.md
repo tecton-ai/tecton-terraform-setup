@@ -1,4 +1,4 @@
-## rift_controlplane_sample
+## rift_base_sample
 
 This directory contains a starter/sample configuration for deploying a baseline tecton dataplane for the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine enabled.
 

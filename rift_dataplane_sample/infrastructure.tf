@@ -17,16 +17,16 @@ locals {
   deployment_name = "my-deployment-name"
 
   # The region and account_id of this Tecton / AWS account
-  region     = "us-west-2"
-  account_id = "1234567890"
-  subnet_azs = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  region     = "us-west-2" # Replace with your region
+  account_id = "1234567890" # Replace with your account ID
+  subnet_azs = ["us-west-2a", "us-west-2b", "us-west-2c"] # Replace with your subnet AZs
 
   # Get from your Tecton rep
-  tecton_control_plane_account_id = "987654321"
+  tecton_control_plane_account_id = "987654321" # Replace with your Tecton control plane account ID 
   # Get from your Tecton rep
-  cross_account_external_id = "tecton-external-id"
+  cross_account_external_id = "tecton-external-id" # Replace with your Tecton external ID
   # Get from your Tecton rep
-  tecton_control_plane_role_name = "tecton-control-plane-role"
+  tecton_control_plane_role_name = "tecton-control-plane-role" # Replace with your Tecton control plane role name
 
   # OPTIONAL:
   # Required when control plane ingress has Privatelink enabled
