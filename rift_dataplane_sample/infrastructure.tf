@@ -23,17 +23,14 @@ locals {
 
   # Get from your Tecton rep
   tecton_control_plane_account_id = "987654321"
-
   # Get from your Tecton rep
   cross_account_external_id = "tecton-external-id"
-
   # Get from your Tecton rep
   tecton_control_plane_role_name = "tecton-control-plane-role"
 
-  # Rift compute running on data plane
-  enable_rift_on_data_plane = true
+  # OPTIONAL:
   # Required when control plane ingress has Privatelink enabled
-  tecton_vpce_service_name = "tecton-vpce-service-name"
+  # tecton_vpce_service_name = "tecton-vpce-service-name"
 }
 
 module "tecton" {
@@ -46,13 +43,11 @@ module "tecton" {
 
   # Control plane root principal
   s3_read_write_principals          = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
-  use_rift_compute_on_control_plane = !local.enable_rift_on_data_plane
   use_spark_compute                 = false # Set to true if also enable Spark compute
   use_rift_cross_account_policy     = true
 }
 
 module "rift" {
-  count                                   = local.enable_rift_on_data_plane ? 1 : 0
   source                                  = "../rift_compute"
   cluster_name                            = local.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", local.tecton_control_plane_account_id, local.tecton_control_plane_role_name)]
@@ -60,8 +55,9 @@ module "rift" {
   s3_log_destination                      = format("arn:aws:s3:::%s/rift-logs", module.tecton.s3_bucket.bucket)
   offline_store_bucket_arn                = format("arn:aws:s3:::%s", module.tecton.s3_bucket.bucket)
   subnet_azs                              = local.subnet_azs
-  tecton_vpce_service_name                = local.tecton_vpce_service_name
 
+  # OPTIONAL
+  # tecton_vpce_service_name                = local.tecton_vpce_service_name
   # Egress from rift compute will be open to internet by default.
   # To restrict egress based on known list of domains (found in rift_compute/network_firewall.tf), set the following:
   # use_network_firewall = true
