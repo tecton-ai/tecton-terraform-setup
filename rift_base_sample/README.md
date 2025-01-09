@@ -19,4 +19,4 @@ Finally, there are a set of `outputs` from the module that will need to be share
 2. Run `terraform plan` to see/review the list of resources that will be created.
 3. `terraform apply` to create all the resources.
 4. Copy the outputs and share values with your Tecton rep to proceed to the next step of the deployment process. If Rift compute will run in Tecton control-plane, then this is the last Terraform step for your cluster setup.
-5. (_If running Rift compute in your data plane_) Add the additional values/module in `infrastructure.tf` and `outputs.tf` from [rift_dataplane_sample/](../rift_dataplane_sample/) and follow instructions [there](../rift_dataplane_sample/README.md#steps-to-deploy) after Tecton rep shares your next inputs.
+5. (_If running Rift compute in your data plane_) Go to [rift_dataplane_sample/](../rift_dataplane_sample/) and follow instructions [there](../rift_dataplane_sample/README.md#steps-to-deploy) after Tecton rep shares your next inputs.

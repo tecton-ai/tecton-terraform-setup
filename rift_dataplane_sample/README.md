@@ -1,12 +1,12 @@
 ## rift_dataplane_sample
 
-This directory contains a starter/sample configuration for deploying a tecton dataplane with the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine enabled. It is meant for configurations where the Rift compute runs in your data plane account.
+This directory contains a starter/sample configuration for deploying the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
 
 ⚠️ As a _first_ step before applying this plan directly, you must apply the terraform in [rift_base_sample/](../rift_base_sample/) and share the outputs with your Tecton rep. They will then share the additional values needed for your inputs to the additional module in this file.
 
-It contains a `locals` block ([here](./infrastructure.tf#L15)) which defines a set of inputs, which you should replace with values from your environment (region/account ID) and with values given to you by your Tecton rep.
+It has a `locals` block ([here](./infrastructure.tf#L15)) which defines a set of inputs, which you should replace with values from your environment (region/account ID) and with values given to you by your Tecton rep.
 
-It also contains two `module` blocks ([tecton](./infrastructure.tf#L38) and [rift](./infrastructure.tf#L52))which, when applied, will create the necessary resources in your account. The `deployment` module should already be in place/have already previously been applied at the time of running this, as you will have already added it in `rift_controlplane_sample` -- so what is new here will be the `rift` module and associated inputs/outputs. The `rift` module source is available at [rift_compute](../rift_compute/).
+It contains the [rift](./infrastructure.tf#L52)) module which, when applied, will create the necessary resources in your account. The `deployment` module should already be in place/have already previously been applied at the time of running this, as you will have already added it in `rift_base_sample` -- so what is added here will be just the `rift` module (IAM resources, VPC) and associated inputs/outputs. The `rift` module source is available at [rift_compute](../rift_compute/).
 
 Finally, there are a set of `outputs` from the modules that will need to be shared with Tecton in order to complete the control-plane deployment.
 
@@ -14,10 +14,10 @@ Finally, there are a set of `outputs` from the modules that will need to be shar
 
 1. Prepare and apply baseline [rift_base_sample/](../rift_base_sample/), share outputs with Tecton rep.
 2. Get all Rift-related input values from Tecton.
-2. Replace all variables in `locals` block with ^values specific to your deployment.
+2. Replace all variables in `locals` block [here](./infrastructure.tf#L15) with ^values specific to your deployment.
 3. Run `terraform plan` to see/review the list of resources that will be created.
 4. `terraform apply` to create all the resources.
-5.  Copy the outputs and share values with your Tecton rep to proceed to the next step of the deployment process.
+5.  Copy the outputs and share values with your Tecton rep to complete the deployment process.
 
 
 #### Variables/inputs reference
