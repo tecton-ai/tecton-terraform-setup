@@ -96,6 +96,12 @@ variable "fargate_enabled" {
   type        = bool
 }
 
+variable "enable_feature_server_as_compute_instance_groups" {
+  default     = false
+  description = "Whether to manage the resources related to the Feature Server running as compute instance groups. Turned off by default. Should be disabled for VPC deployments, where customers create the role themselves."
+  type        = bool
+}
+
 variable "data_validation_on_fargate_enabled" {
   default     = false
   description = <<EOT
@@ -188,6 +194,7 @@ module "roles" {
   fargate_enabled                    = var.fargate_enabled
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
   vpc_id                             = module.eks_subnets.vpc_id
+  enable_feature_server_as_compute_instance_groups = var.enable_feature_server_as_compute_instance_groups
 }
 
 module "notebook_cluster" {

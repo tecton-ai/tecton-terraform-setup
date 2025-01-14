@@ -45,13 +45,13 @@ resource "aws_iam_policy" "eks_fargate_asg_policy" {
 
 resource "aws_iam_role_policy_attachment" "serving_fsg_asg" {
   count      = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
-  role       = aws_iam_role.serving_instance_group[0].name
+  role       = aws_iam_role.serving_instance_group_role[0].name
   policy_arn = aws_iam_policy.eks_fargate_asg_policy[0].arn
 }
 
 # FSG [Common : Databricks and EMR]
 resource "aws_iam_policy" "serving_group_asg_node_policy" {
-  count = var.fargate_enabled ? 1 : 0
+  count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
 
   name = "tecton-${var.deployment_name}-serving-group-asg-node-policy"
   policy = templatefile(
@@ -68,6 +68,7 @@ resource "aws_iam_policy" "serving_group_asg_node_policy" {
 
 #FSG: [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "serving_group_asg_node_policy_attachment" {
+  count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
   role       = aws_iam_role.serving_instance_group_role[0].name
   policy_arn = aws_iam_policy.serving_group_asg_node_policy[0].arn
 }
@@ -95,7 +96,7 @@ resource "aws_iam_policy" "fsg_invoke_lambda" {
 
 resource "aws_iam_role_policy_attachment" "fsg_invoke_inline_policy" {
   count      = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
-  role       = aws_iam_role.serving_instance_group[0].name
+  role       = aws_iam_role.serving_instance_group_role[0].name
   policy_arn = aws_iam_policy.fsg_invoke_lambda[0].arn
 }
 
@@ -118,21 +119,18 @@ resource "aws_iam_policy" "fsg_ec2_health_check" {
 data "aws_iam_policy" "fsg_instance_group_cloudwatch" {
   count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   arn   = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-  name  = "tecton-${var.deployment_name}-fsg-instance-group-cloudwatch"
 }
 
 # AWS Managed Policy
 data "aws_iam_policy" "fsg_instance_group_ecr_readonly" {
   count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   arn   = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  name  = "tecton-${var.deployment_name}-fsg-instance-group-ecr-readonly"
 }
 
 # AWS Managed Policy
 data "aws_iam_policy" "serving_ssm_management" {
   count      = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  name  = "tecton-${var.deployment_name}-fsg-serving-ssm-management"
 }
 
 # FSG Log Aggregation Policy
@@ -162,7 +160,7 @@ resource "aws_iam_policy" "fsg_log_permissions" {
 resource "aws_iam_instance_profile" "serving_instance_group_profile" {
   count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   name  = "tecton-${var.deployment_name}-fsg-instance-group-profile"
-  role  = aws_iam_role.serving_instance_group[0].name
+  role  = aws_iam_role.serving_instance_group_role[0].name
 }
 
 
@@ -171,7 +169,7 @@ locals {
     ecr_readonly     = data.aws_iam_policy.fsg_instance_group_ecr_readonly[0].arn
     ec2_health_check = aws_iam_policy.fsg_ec2_health_check[0].arn
     cloudwatch       = data.aws_iam_policy.fsg_instance_group_cloudwatch[0].arn
-    serving_ssm      = aws_iam_policy.serving_ssm_management[0].arn
+    serving_ssm      = data.aws_iam_policy.serving_ssm_management[0].arn
     log_aggregation  = aws_iam_policy.fsg_log_permissions[0].arn
   } : {}
 }
@@ -186,6 +184,6 @@ resource "aws_iam_role_policy_attachment" "serving_instance_group_policy_attachm
 
 resource "aws_iam_role_policy_attachment" "feature_server_s3_log_permissions" {
   count      = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
-  role       = aws_iam_role.serving_instance_group[0].name
+  role       = aws_iam_role.serving_instance_group_role[0].name
   policy_arn = aws_iam_policy.fsg_log_permissions[0].arn
 }

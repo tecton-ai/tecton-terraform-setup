@@ -50,7 +50,7 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
 
 # Fargate [Common : Databricks and EMR]
 resource "aws_iam_policy" "fsg_management_policy" {
-  count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
+  count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
 
   name = "tecton-${var.deployment_name}-fsg-management"
   policy = templatefile(
@@ -68,6 +68,7 @@ resource "aws_iam_policy" "fsg_management_policy" {
 
 #FSG: [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "fsg_management_policy_attachment" {
+  count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
   role       = aws_iam_role.eks_node_role.name
   policy_arn = aws_iam_policy.fsg_management_policy[0].arn
 }
