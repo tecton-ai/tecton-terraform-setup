@@ -296,7 +296,7 @@ resource "aws_iam_policy" "offline_store_access" {
           format("%s/%s", var.offline_store_bucket_arn, var.offline_store_key_prefix),
           format("%s/%s*", var.offline_store_bucket_arn, var.offline_store_key_prefix),
           format("%s/%s", var.offline_store_bucket_arn, "tecton-model-artifacts"),
-          format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts"),
+          format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts")
         ])
       },
       {
@@ -415,3 +415,4 @@ resource "aws_iam_role_policy_attachment" "rift_compute_internal_policies" {
   role       = aws_iam_role.rift_compute.name
   policy_arn = aws_iam_policy.rift_compute_internal.arn
 }
+# ----------------
