@@ -53,8 +53,8 @@ output "fargate_data_validation_worker_policy_name" {
   value = var.data_validation_on_fargate_enabled ? aws_iam_policy.eks_fargate_data_validation_worker[0].name : ""
 }
 
-output "feature_server_compute_group_role" {
-  value = var.enable_feature_server_as_compute_instance_groups ? aws_iam_role.serving_instance_group_role[0] : null
+output "feature_server_compute_group_role_name" {
+  value = var.enable_feature_server_as_compute_instance_groups ? aws_iam_role.serving_instance_group_role[0].name : null
 }
 
 output "feature_server_compute_instance_group" {

@@ -1,0 +1,41 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ElasticacheClusterCreation",
+            "Effect": "Allow",
+            "Action": [
+                "elasticache:CreateReplicationGroup",
+                "elasticache:DeleteReplicationGroup",
+                "elasticache:DescribeReplicationGroups",
+                "elasticache:ModifyReplicationGroup",
+                "elasticache:ModifyReplicationGroupShardConfiguration",
+
+                "elasticache:CreateServerlessCache",
+                "elasticache:DeleteServerlessCache",
+                "elasticache:DescribeServerlessCaches",
+                "elasticache:ModifyServerlessCache",
+
+                "elasticache:DescribeCacheSubnetGroups",
+                "elasticache:DescribeEvents",
+                "elasticache:ListTagsForResource"
+            ],
+            "Resource": [
+                "arn:aws:elasticache:${REGION}:${ACCOUNT_ID}:subnetgroup:*",
+                "arn:aws:elasticache:${REGION}:${ACCOUNT_ID}:replicationgroup:*",
+                "arn:aws:elasticache:${REGION}:${ACCOUNT_ID}:parametergroup:*",
+                "arn:aws:elasticache:${REGION}:${ACCOUNT_ID}:cluster:*"
+            ]
+        },
+        {
+            "Sid": "ElasticacheCreateServiceLinkedRole",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:PutRolePolicy"
+            ],
+            "Resource": "arn:aws:iam::*:role/aws-service-role/elasticache.amazonaws.com/AWSServiceRoleForElastiCache*",
+            "Condition": {"StringLike": {"iam:AWSServiceName": "elasticache.amazonaws.com"}}
+        }
+    ]
+}

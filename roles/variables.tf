@@ -77,6 +77,12 @@ variable "enable_feature_server_as_compute_instance_groups" {
   description = "Whether to create resources needed to manage feature server as compute instance groups. Turned off by default. Should be disabled for VPC deployments, where customers create the role themselves."
 }
 
+variable "enable_cache_in_feature_server_group" {
+  type        = bool
+  default     = false
+  description = "Whether to give the permissions to modify cache resources in the control plane. Will not enable if the cluster is VPC"
+}
+
 variable "data_validation_on_fargate_enabled" {
   default     = false
   type        = bool

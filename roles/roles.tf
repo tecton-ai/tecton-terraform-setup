@@ -48,7 +48,7 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
 }
 
 
-# Fargate [Common : Databricks and EMR]
+# FSG [Common : Databricks and EMR]
 resource "aws_iam_policy" "fsg_management_policy" {
   count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
 
@@ -96,6 +96,31 @@ resource "aws_iam_role_policy_attachment" "serving_fsg_asg_policy_attachment" {
   role       = aws_iam_role.eks_node_role.name
   policy_arn = aws_iam_policy.feature_server_asg_policy[0].arn
 }
+
+# FSG [Common : Databricks and EMR]
+resource "aws_iam_policy" "manage_elasticache_policy" {
+  count = var.enable_cache_in_feature_server_group && var.enable_feature_server_as_compute_instance_groups ? 1 : 0
+
+  name = "tecton-${var.deployment_name}-eks-node-policy-manage-elasticache"
+  policy = templatefile(
+    "${path.module}/../templates/fsg_elasticache_policy.json",
+    {
+      ACCOUNT_ID          = var.account_id
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME     = var.deployment_name
+      REGION              = var.region
+    }
+  )
+  tags = local.tags
+}
+
+resource "aws_iam_policy_attachment" "eks_node_manage_elasticache" {
+  count      = var.enable_cache_in_feature_server_group && var.enable_feature_server_as_compute_instance_groups ? 1 : 0
+  name = "tecton-${var.deployment_name}-eks-node-role-manage-elasticache"
+  roles      = [aws_iam_role.eks_node_role.name]
+  policy_arn = aws_iam_policy.manage_elasticache_policy[0].arn
+}
+
 
 
 # Data validation [Common : Databricks and EMR]
