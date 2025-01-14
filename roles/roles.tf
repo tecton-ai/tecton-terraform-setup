@@ -47,6 +47,56 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
   tags = local.tags
 }
 
+
+# Fargate [Common : Databricks and EMR]
+resource "aws_iam_policy" "fsg_management_policy" {
+  count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
+
+  name = "tecton-${var.deployment_name}-fsg-management"
+  policy = templatefile(
+    "${path.module}/../templates/fsg_management.json",
+    {
+      ACCOUNT_ID          = var.account_id
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME     = var.deployment_name
+      REGION              = var.region
+    }
+  )
+  tags = local.tags
+}
+
+
+#FSG: [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "fsg_management_policy_attachment" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.fsg_management_policy[0].arn
+}
+
+
+# FSG [Common : Databricks and EMR]
+resource "aws_iam_policy" "feature_server_asg_policy" {
+  count = var.fargate_enabled && var.enable_feature_server_as_compute_instance_groups ? 1 : 0
+
+  name = "tecton-${var.deployment_name}-feature-server-asg-policy"
+  policy = templatefile(
+    "${path.module}/../templates/feature_server_asg.json",
+    {
+      ACCOUNT_ID          = var.account_id
+      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME     = var.deployment_name
+      REGION              = var.region
+    }
+  )
+  tags = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "serving_fsg_asg_policy_attachment" {
+  count      = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.feature_server_asg_policy[0].arn
+}
+
+
 # Data validation [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_data_validation_worker" {
   count = local.data_validation_enabled ? 1 : 0

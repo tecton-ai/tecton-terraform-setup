@@ -71,6 +71,12 @@ variable "fargate_enabled" {
   description = "Enable fargate on all the clusters, including the main cluster and satellite-region clusters, if `var.satellite_regions` specified. Default: false."
 }
 
+variable "enable_feature_server_as_compute_instance_groups" {
+  default     = false
+  type        = bool
+  description = "Whether to create resources needed to manage feature server as compute instance groups. Turned off by default. Should be disabled for VPC deployments, where customers create the role themselves."
+}
+
 variable "data_validation_on_fargate_enabled" {
   default     = false
   type        = bool
