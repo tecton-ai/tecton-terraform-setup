@@ -1,0 +1,31 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "S3LogPermissions",
+        "Effect": "Allow",
+        "Action": [
+            "s3:PutObject",
+            "s3:PutObjectAcl"
+        ],
+        "Resource": [
+            "arn:aws:s3:::tecton-logs-aggregation/tecton-${DEPLOYMENT_NAME}*",
+            "arn:aws:s3:::tecton-logs-aggregation/tecton-${DEPLOYMENT_NAME}/*"
+        ]
+      },
+      {
+        "Sid": "EksFargateAsg",
+        "Effect": "Allow",
+        "Action": [
+            "autoscaling:DescribeAutoScalingGroups",
+            "autoscaling:SetInstanceHealth",
+            "ec2:DescribeInstances",
+
+            "lambda:InvokeFunction"
+        ],
+        "Resource": [
+            "*"
+        ]
+      }
+    ]
+}

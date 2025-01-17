@@ -90,6 +90,7 @@
                 "elasticloadbalancing:ModifyLoadBalancerAttributes",
                 "elasticloadbalancing:CreateLoadBalancer",
                 "elasticloadbalancing:DeleteLoadBalancer",
+                "elasticloadbalancing:SetSecurityGroups",
                 "autoscaling:AttachLoadBalancerTargetGroups",
                 "autoscaling:DetachLoadBalancerTargetGroups"
             ],
@@ -100,7 +101,9 @@
                 "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:loadbalancer/app/${DEPLOYMENT_NAME_CONCAT}*",
                 "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup::autoScalingGroupName/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*"
+                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/eks-*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:loadbalancer/app/serve-${DEPLOYMENT_NAME_CONCAT}/*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:loadbalancer/app/serve-${DEPLOYMENT_NAME}/*"
             ]
         },
         {
