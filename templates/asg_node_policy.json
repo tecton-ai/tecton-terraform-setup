@@ -19,12 +19,10 @@
         "Action": [
             "autoscaling:DescribeAutoScalingGroups",
             "autoscaling:SetInstanceHealth",
-            "ec2:DescribeInstances",
-
-            "lambda:InvokeFunction"
+            "ec2:DescribeInstances"
         ],
         "Resource": [
-            "*"
+          "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/tecton*"
         ]
       },
       {
@@ -35,7 +33,7 @@
             "iam:PassRole"
         ],
         "Resource": [
-            "*"
+          "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*"
         ]
       }
     ]

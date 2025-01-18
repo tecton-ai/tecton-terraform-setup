@@ -5,6 +5,7 @@
             "Sid": "TectonEKSTargetGroup",
             "Effect": "Allow",
             "Action": [
+                "ec2:CreateTags",
                 "elasticloadbalancing:CreateTargetGroup",
                 "elasticloadbalancing:AddTags",
                 "elasticloadbalancing:ModifyTargetGroupAttributes",
@@ -35,6 +36,7 @@
             "Sid": "ElasticacheClusterCreation",
             "Effect": "Allow",
             "Action": [
+                "ec2:CreateTags",
                 "elasticache:CreateReplicationGroup",
                 "elasticache:DeleteReplicationGroup",
                 "elasticache:DescribeReplicationGroups",
@@ -74,6 +76,7 @@
             "Sid": "ElasticacheCreateServiceLinkedRole",
             "Effect": "Allow",
             "Action": [
+                "ec2:CreateTags",
                 "iam:CreateServiceLinkedRole",
                 "iam:PutRolePolicy"
             ],
@@ -84,6 +87,7 @@
             "Sid": "FsgAutoscalingGroupMgmt",
             "Effect": "Allow",
             "Action": [
+                "ec2:CreateTags",
                 "autoscaling:CreateAutoScalingGroup",
                 "autoscaling:DescribeAutoScalingGroups",
                 "autoscaling:UpdateAutoScalingGroup",
@@ -94,7 +98,7 @@
                 "autoscaling:StartInstanceRefresh"
             ],
             "Resource": [
-                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/tecton*",
+                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/tecton*"
             ]
           },
           {
@@ -116,6 +120,7 @@
             "Sid": "RoleManagement",
             "Effect": "Allow",
             "Action": [
+            "ec2:CreateTags",
                "iam:GetRole",
                "iam:PassRole"
             ],
@@ -128,7 +133,15 @@
                 "ec2:CreateTags",
                 "ec2:RunInstances"
             ],
-            "Resource": "*"
+            "Resource": [
+                "arn:aws:ec2:*:${ACCOUNT_ID}:instance/*",
+                "arn:aws:ec2:*:${ACCOUNT_ID}:volume/*",
+                "arn:aws:ec2:*:${ACCOUNT_ID}:network-interface/*",
+                "arn:aws:ec2:*:${ACCOUNT_ID}:launch-template/*",
+                "arn:aws:ec2:*:${ACCOUNT_ID}:security-group/*",
+                "arn:aws:ec2:*:${ACCOUNT_ID}:subnet/*",
+                "arn:aws:ec2:*::image/ami*"
+            ]
         }
     ]
 }
