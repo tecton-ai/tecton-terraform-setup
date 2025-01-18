@@ -60,6 +60,7 @@ resource "aws_iam_policy" "feature_server_asg_policy" {
       ACCOUNT_ID          = var.account_id
       ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
       DEPLOYMENT_NAME     = var.deployment_name
+      DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
       REGION              = var.region
     }
   )

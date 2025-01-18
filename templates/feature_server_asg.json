@@ -1,25 +1,21 @@
 {
     "Version": "2012-10-17",
     "Statement": [
-        {
-            "Sid": "TectonEKSFeatureServerAsgManagement",
-            "Effect": "Allow",
-            "Action": [
-                "autoscaling:DescribeInstanceRefreshes",
-                "elasticloadbalancing:ModifyTargetGroupAttributes",
-                "elasticloadbalancing:DeleteTargetGroup",
-                "elasticloadbalancing:DeleteRule"
-            ],
-            "Resource": ["*"]
-          },
           {
             "Sid": "TectonEKSTargetGroup",
             "Effect": "Allow",
             "Action": [
                 "elasticloadbalancing:CreateTargetGroup",
-                "elasticloadbalancing:AddTags"
+                "elasticloadbalancing:AddTags",
+                "elasticloadbalancing:ModifyTargetGroupAttributes",
+                "elasticloadbalancing:DeleteTargetGroup",
+                "elasticloadbalancing:DeleteRule"
             ],
-            "Resource": ["arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-*"]
+            "Resource": [
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/${DEPLOYMENT_NAME_CONCAT}*"
+            ]
           },
           {
             "Sid": "ElasticacheClusterCreation",
@@ -48,6 +44,18 @@
             ]
         },
         {
+            "Sid": "ListenerRuleMgmt",
+            "Effect": "Allow",
+            "Action": [
+               "elasticloadbalancing:CreateRule",
+               "elasticloadbalancing:AddTags"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener-rule/*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener/*"
+            ]
+        },
+        {
             "Sid": "ElasticacheCreateServiceLinkedRole",
             "Effect": "Allow",
             "Action": [
@@ -66,6 +74,7 @@
                 "autoscaling:UpdateAutoScalingGroup",
                 "autoscaling:DeleteAutoScalingGroup",
                 "autoscaling:StartInstanceRefresh",
+                "autoscaling:DescribeInstanceRefreshes",
 
                 "autoscaling:PutScalingPolicy",
                 "autoscaling:DescribeScalingPolicies",
@@ -83,7 +92,7 @@
 
 
                 "ec2:DescribeInstances",
-                "ec2:RunInstances"
+                "ec2:RunInstances",
             ],
             "Resource": ["*"]
           },
@@ -104,19 +113,7 @@
                "iam:GetRole",
                "iam:PassRole"
             ],
-            "Resource": "*"
-          },
-          {
-            "Sid": "ListenerRuleMgmt",
-            "Effect": "Allow",
-            "Action": [
-               "elasticloadbalancing:CreateRule",
-               "elasticloadbalancing:AddTags"
-            ],
-            "Resource": [
-                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener-rule/*",
-                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener/*"
-            ]
+            "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*"
           },
           {
             "Sid": "DescribeNetworkResources",
