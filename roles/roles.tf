@@ -392,18 +392,6 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
   role       = aws_iam_role.eks_node_role.name
 }
 
-# EKS NODE [Common : Databricks and EMR]
-# resource "aws_iam_role_policy_attachment" "eks_node_policy" {
-#   for_each = toset([
-#     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-#     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
-#     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-#     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-#   ])
-#   policy_arn = each.value
-#   role       = aws_iam_role.eks_node_role.name
-# }
-
 # ALB [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_alb_policy" {
   name = "tecton-${var.deployment_name}-eks-alb-policy"
