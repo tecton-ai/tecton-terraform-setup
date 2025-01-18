@@ -8,8 +8,7 @@
                 "elasticloadbalancing:CreateTargetGroup",
                 "elasticloadbalancing:AddTags",
                 "elasticloadbalancing:ModifyTargetGroupAttributes",
-                "elasticloadbalancing:DeleteTargetGroup",
-                "elasticloadbalancing:DeleteRule"
+                "elasticloadbalancing:DeleteTargetGroup"
             ],
             "Resource": [
                 "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-*",
@@ -17,6 +16,21 @@
                 "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/${DEPLOYMENT_NAME_CONCAT}*"
             ]
           },
+
+          {
+            "Sid": "FsgDescribeResources",
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeInstanceRefreshes",
+                "autoscaling:DescribeScalingPolicies",
+                "ec2:DescribeLaunchTemplates",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:DescribeInstances"
+            ],
+            "Resource": ["*"]
+            },
+
           {
             "Sid": "ElasticacheClusterCreation",
             "Effect": "Allow",
@@ -48,7 +62,8 @@
             "Effect": "Allow",
             "Action": [
                "elasticloadbalancing:CreateRule",
-               "elasticloadbalancing:AddTags"
+               "elasticloadbalancing:AddTags",
+               "elasticloadbalancing:DeleteRule"
             ],
             "Resource": [
                 "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener-rule/*",
@@ -66,41 +81,32 @@
             "Condition": {"StringLike": {"iam:AWSServiceName": "elasticache.amazonaws.com"}}
         },
         {
-            "Sid": "FsgEc2Access",
+            "Sid": "FsgAutoscalingGroupMgmt",
             "Effect": "Allow",
             "Action": [
                 "autoscaling:CreateAutoScalingGroup",
                 "autoscaling:DescribeAutoScalingGroups",
                 "autoscaling:UpdateAutoScalingGroup",
                 "autoscaling:DeleteAutoScalingGroup",
-                "autoscaling:StartInstanceRefresh",
-                "autoscaling:DescribeInstanceRefreshes",
-
-                "autoscaling:PutScalingPolicy",
-                "autoscaling:DescribeScalingPolicies",
-                "autoscaling:DeletePolicy",
-
                 "autoscaling:EnableMetricsCollection",
-
-                "ec2:CreateLaunchTemplate",
-                "ec2:DescribeLaunchTemplates",
-                "ec2:DeleteLaunchTemplate",
-
-                "ec2:CreateLaunchTemplateVersion",
-                "ec2:DescribeLaunchTemplateVersions",
-                "ec2:DeleteLaunchTemplateVersions",
-
-
-                "ec2:DescribeInstances",
-                "ec2:RunInstances",
+                "autoscaling:PutScalingPolicy",
+                "autoscaling:DeletePolicy",
+                "autoscaling:StartInstanceRefresh"
             ],
-            "Resource": ["*"]
+            "Resource": [
+                "arn:aws:autoscaling:*:${ACCOUNT_ID}:autoScalingGroup:*:autoScalingGroupName/tecton*",
+            ]
           },
           {
             "Sid": "FsgEc2LaunchTemplate",
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateTags"
+                "ec2:CreateTags",
+                "ec2:CreateLaunchTemplateVersion",
+                "ec2:CreateLaunchTemplate",
+                "ec2:DeleteLaunchTemplate",
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:DeleteLaunchTemplateVersions"
             ],
             "Resource": [
                 "arn:aws:ec2:*:${ACCOUNT_ID}:launch-template/*"
@@ -119,7 +125,8 @@
             "Sid": "DescribeNetworkResources",
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateTags"
+                "ec2:CreateTags",
+                "ec2:RunInstances"
             ],
             "Resource": "*"
         }
