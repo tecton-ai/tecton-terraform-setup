@@ -26,6 +26,17 @@
         "Resource": [
             "*"
         ]
+      },
+      {
+        "Sid": "EksFargatePassRole",
+        "Effect": "Allow",
+        "Action": [
+            "iam:GetRole",
+            "iam:PassRole"
+        ],
+        "Resource": [
+            "*"
+        ]
       }
     ]
 }

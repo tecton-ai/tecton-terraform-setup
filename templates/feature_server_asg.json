@@ -13,6 +13,15 @@
             "Resource": ["*"]
           },
           {
+            "Sid": "TectonEKSTargetGroup",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:CreateTargetGroup",
+                "elasticloadbalancing:AddTags"
+            ],
+            "Resource": ["arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:targetgroup/tecton-*"]
+          },
+          {
             "Sid": "ElasticacheClusterCreation",
             "Effect": "Allow",
             "Action": [
@@ -71,9 +80,51 @@
                 "ec2:CreateLaunchTemplateVersion",
                 "ec2:DescribeLaunchTemplateVersions",
                 "ec2:DeleteLaunchTemplateVersions",
-                "ec2:DescribeInstances"
+
+
+                "ec2:DescribeInstances",
+                "ec2:RunInstances"
             ],
             "Resource": ["*"]
-          }
+          },
+          {
+            "Sid": "FsgEc2LaunchTemplate",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "arn:aws:ec2:*:${ACCOUNT_ID}:launch-template/*"
+            ]
+          },
+          {
+            "Sid": "RoleManagement",
+            "Effect": "Allow",
+            "Action": [
+               "iam:GetRole",
+               "iam:PassRole"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Sid": "ListenerRuleMgmt",
+            "Effect": "Allow",
+            "Action": [
+               "elasticloadbalancing:CreateRule",
+               "elasticloadbalancing:AddTags"
+            ],
+            "Resource": [
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener-rule/*",
+                "arn:aws:elasticloadbalancing:*:${ACCOUNT_ID}:listener/*"
+            ]
+          },
+          {
+            "Sid": "DescribeNetworkResources",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:CreateTags"
+            ],
+            "Resource": "*"
+        }
     ]
 }
