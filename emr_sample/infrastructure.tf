@@ -98,7 +98,7 @@ variable "fargate_enabled" {
 
 variable "enable_feature_server_as_compute_instance_groups" {
   default     = false
-  description = "Whether to manage the resources related to the Feature Server running as compute instance groups. Turned off by default. Should be disabled for VPC deployments, where customers create the role themselves."
+  description = "Whether to manage the resources related to the Feature Server running as compute instance groups. Turned off by default. This will provision roles and policies to allow Tecton to provision feature server groups. Requires fargate to be enabled."
   type        = bool
 }
 

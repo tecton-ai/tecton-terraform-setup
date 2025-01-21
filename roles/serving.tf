@@ -23,10 +23,11 @@ resource "aws_iam_role" "serving_instance_group_role" {
 
 
 # FSG [Common : Databricks and EMR]
-resource "aws_iam_policy" "eks_fargate_asg_policy" {
+# Policy to access our log aggregation stack and manage autoscaling group.
+resource "aws_iam_policy" "fsg_node_policy" {
   count = var.fargate_enabled && var.enable_feature_server_as_compute_instance_groups ? 1 : 0
 
-  name = "tecton-${var.deployment_name}-eks-fargate-asg-policy"
+  name = "tecton-${var.deployment_name}-fsg-node-policy"
   policy = templatefile(
     "${path.module}/../templates/asg_node_policy.json",
     {
@@ -39,19 +40,20 @@ resource "aws_iam_policy" "eks_fargate_asg_policy" {
   tags = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "serving_fsg_asg" {
+resource "aws_iam_role_policy_attachment" "fsg_node_policy_attachment" {
   count      = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
   role       = aws_iam_role.serving_instance_group_role[0].name
-  policy_arn = aws_iam_policy.eks_fargate_asg_policy[0].arn
+  policy_arn = aws_iam_policy.fsg_node_policy[0].arn
 }
 
 # FSG [Common : Databricks and EMR]
-resource "aws_iam_policy" "serving_group_asg_node_policy" {
+# Policy for ec2 nodes to access Dynamo, S3, and ECR.
+resource "aws_iam_policy" "fsg_node_resource_policy" {
   count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
 
-  name = "tecton-${var.deployment_name}-serving-group-asg-node-policy"
+  name = "tecton-${var.deployment_name}-fsg-node-resource-policy"
   policy = templatefile(
-    "${path.module}/../templates/fargate_eks_role.json",
+    "${path.module}/../templates/asg_node_resource_access.json",
     {
       ACCOUNT_ID          = var.account_id
       ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
@@ -62,32 +64,36 @@ resource "aws_iam_policy" "serving_group_asg_node_policy" {
   tags = local.tags
 }
 
-#FSG: [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "serving_group_asg_node_policy_attachment" {
+# FSG: [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "fsg_node_resource_policy_attachment" {
   count = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
   role       = aws_iam_role.serving_instance_group_role[0].name
-  policy_arn = aws_iam_policy.serving_group_asg_node_policy[0].arn
+  policy_arn = aws_iam_policy.fsg_node_resource_policy[0].arn
 }
 
+# FSG: [Common : Databricks and EMR]
 # AWS Managed Policy
 data "aws_iam_policy" "fsg_instance_group_cloudwatch" {
   count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   arn   = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
+# FSG: [Common : Databricks and EMR]
 # AWS Managed Policy
 data "aws_iam_policy" "fsg_instance_group_ecr_readonly" {
   count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   arn   = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+# FSG: [Common : Databricks and EMR]
 # AWS Managed Policy
 data "aws_iam_policy" "serving_ssm_management" {
   count      = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# Instance Profile Output
+# FSG: [Common : Databricks and EMR]
+# Instance Profile For AutoScaling Group
 resource "aws_iam_instance_profile" "serving_instance_group_profile" {
   count = local.enable_feature_server_as_compute_instance_groups ? 1 : 0
   name  = "tecton-${var.deployment_name}-fsg-instance-group-profile"

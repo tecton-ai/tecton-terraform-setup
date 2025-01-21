@@ -50,12 +50,12 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
 
 # FSG [Common : Databricks and EMR]
 # Includes ASG Mgmt Policies, Elasticache Policies, and EC2 Mgmt Access
-resource "aws_iam_policy" "feature_server_asg_policy" {
+resource "aws_iam_policy" "eks_asg_management_policy" {
   count = var.fargate_enabled && var.enable_feature_server_as_compute_instance_groups ? 1 : 0
 
-  name = "tecton-${var.deployment_name}-feature-server-asg-policy"
+  name = "tecton-${var.deployment_name}-eks_asg_management_policy"
   policy = templatefile(
-    "${path.module}/../templates/feature_server_asg.json",
+    "${path.module}/../templates/eks_asg_management.json",
     {
       ACCOUNT_ID          = var.account_id
       ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
@@ -70,7 +70,7 @@ resource "aws_iam_policy" "feature_server_asg_policy" {
 resource "aws_iam_role_policy_attachment" "serving_fsg_asg_policy_attachment" {
   count      = var.enable_feature_server_as_compute_instance_groups ? 1 : 0
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = aws_iam_policy.feature_server_asg_policy[0].arn
+  policy_arn = aws_iam_policy.eks_asg_management_policy[0].arn
 }
 
 
@@ -367,10 +367,19 @@ resource "aws_iam_policy" "eks_node_policy" {
   tags = local.tags
 }
 
-resource "aws_iam_policy" "eks_node_default_amzn_policy" {
-  name = "tecton-${var.deployment_name}-eks-default-amzn-policy"
+# EKS NODE [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
+  policy_arn = aws_iam_policy.eks_node_policy.arn
+  role       = aws_iam_role.eks_node_role.name
+}
+
+# EKS NODE [Common : Databricks and EMR]
+# This replaces the previous policy attachments that attached "AmazonSSMManagedInstanceCore", "AmazonEKSWorkerNodePolicy", "AmazonEC2ContainerRegistryReadOnly", "AmazonEKS_CNI_Policy".
+# The permissions within the document are the exact same as the above policies but AWS does not allow more than 10 policies per role so we need to condense them into one policy.
+resource "aws_iam_policy" "eks_node_default_amazon_policy" {
+  name = "tecton-${var.deployment_name}-eks-default-amazon-policy"
   policy = templatefile(
-    "${path.module}/../templates/amzn_eks_node_policies.json",
+    "${path.module}/../templates/amazon_eks_node_policies.json",
     {
       ACCOUNT_ID      = var.account_id,
       DEPLOYMENT_NAME = var.deployment_name,
@@ -381,14 +390,8 @@ resource "aws_iam_policy" "eks_node_default_amzn_policy" {
 }
 
 # EKS NODE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "eks_amzn_policy_attachment" {
-  policy_arn = aws_iam_policy.eks_node_default_amzn_policy.arn
-  role       = aws_iam_role.eks_node_role.name
-}
-
-# EKS NODE [Common : Databricks and EMR]
-resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
-  policy_arn = aws_iam_policy.eks_node_policy.arn
+resource "aws_iam_role_policy_attachment" "eks_amazon_policy_attachment" {
+  policy_arn = aws_iam_policy.eks_node_default_amazon_policy.arn
   role       = aws_iam_role.eks_node_role.name
 }
 
