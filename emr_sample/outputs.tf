@@ -48,6 +48,7 @@ output "roles" {
     fargate_node_policy_name                    = (var.apply_layer > 1) ? module.roles[0].eks_fargate_node_policy_name : ""
 
     fargate_data_validation_worker_policy_name  = (var.apply_layer > 1) ? module.roles[0].fargate_data_validation_worker_policy_name : ""
+    iam_profiles_arn  =                           (var.apply_layer > 1) ? module.roles[0].feature_server_compute_instance_group : ""
   }
 }
 
