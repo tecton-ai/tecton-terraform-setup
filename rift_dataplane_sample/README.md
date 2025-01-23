@@ -2,7 +2,7 @@
 
 This directory contains a starter/sample configuration for deploying the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
 
-⚠️ As a _first_ step before applying this plan directly, you must apply the terraform in [rift_base_sample/](../rift_base_sample/) and share the outputs with your Tecton rep. They will then share the additional values needed for your inputs to the additional module in this file.
+⚠️ As a _first_ step before applying this plan directly, you must apply the terraform in [rift_base_sample/](../rift_base_sample/) to create your base dataplane resources. If you are creating a new cluster, your tecton rep will share the additional values needed for your inputs to the additional module in this file.
 
 It has a `locals` block ([here](./infrastructure.tf#L15)) which defines a set of inputs, which you should replace with values from your environment (region/account ID) and with values given to you by your Tecton rep.
 
@@ -12,9 +12,8 @@ Finally, there are a set of `outputs` from the modules that will need to be shar
 
 ### Steps to deploy
 
-1. Prepare and apply baseline [rift_base_sample/](../rift_base_sample/), share outputs with Tecton rep.
-2. Get all Rift-related input values from Tecton.
-2. Replace all variables in `locals` block [here](./infrastructure.tf#L15) with ^values specific to your deployment.
+1. Prepare and apply baseline [rift_base_sample/](../rift_base_sample/) with inputs provided from Tecton rep.
+2. After applying `rift_base_sample`, move on to this module. Replace all variables in `locals` block [here](./infrastructure.tf#L15) with additional values specific to your deployment (also provided by Tecton rep).
 3. Run `terraform plan` to see/review the list of resources that will be created.
 4. `terraform apply` to create all the resources.
 5.  Copy the outputs and share values with your Tecton rep to complete the deployment process.
