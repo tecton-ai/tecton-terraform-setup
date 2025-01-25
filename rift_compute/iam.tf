@@ -295,8 +295,8 @@ resource "aws_iam_policy" "offline_store_access" {
         Resource = compact([
           format("%s/%s", var.offline_store_bucket_arn, var.offline_store_key_prefix),
           format("%s/%s*", var.offline_store_bucket_arn, var.offline_store_key_prefix),
-          var.enable_custom_model ? format("%s/%s", var.offline_store_bucket_arn, "tecton-model-artifacts") : null,
-          var.enable_custom_model ? format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts") : null
+          format("%s/%s", var.offline_store_bucket_arn, "tecton-model-artifacts"),
+          format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts")
         ])
       },
       {
