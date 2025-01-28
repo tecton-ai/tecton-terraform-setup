@@ -53,12 +53,6 @@ variable "is_internal_workload" {
   description = "Flag to indicate if the workload is internal to Tecton. Set it to true if for dev and demo clusters."
 }
 
-variable "enable_custom_model" {
-  type        = bool
-  default     = false
-  description = "If should grant worker node access to read model artifacts from s3. Still WIP and by default it doesn't."
-}
-
 variable "additional_rift_compute_policy_statements" {
   type        = list(any)
   description = "Additional IAM policy statements to attach to the rift_compute role"
