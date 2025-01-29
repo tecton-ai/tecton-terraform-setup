@@ -4,7 +4,9 @@
         {
             "Effect": "Allow",
             "Action": [
-                "ec2:CreateSecurityGroup"
+                "ec2:CreateSecurityGroup",
+
+                "ec2:CreateTags"
             ],
             "Resource": "*"
         },
@@ -68,12 +70,40 @@
             }
         },
         {
+            "Sid": "ServerGroupSgPermissions",
             "Effect": "Allow",
             "Action": [
                 "ec2:AuthorizeSecurityGroupIngress",
-                "ec2:RevokeSecurityGroupIngress"
+                "ec2:AuthorizeSecurityGroupEgress",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupEgress",
+                "ec2:DeleteSecurityGroup"
             ],
-            "Resource": "*"
+            "Resource": "arn:aws:ec2:*:*:security-group/*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-owned": "true"
+                }
+            }
+        },
+        {
+            "Sid": "ServerGroupNodePermissions",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:AuthorizeSecurityGroupEgress",
+                "ec2:AuthorizeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupEgress",
+                "ec2:DeleteSecurityGroup"
+            ],
+            "Resource": "arn:aws:ec2:*:*:security-group/*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                }
+            }
         },
         {
             "Effect": "Allow",
