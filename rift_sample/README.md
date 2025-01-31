@@ -1,6 +1,6 @@
-## rift_dataplane_sample
+## rift_sample
 
-This directory contains a starter/sample configuration for deploying the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
+This directory contains a starter/sample configuration for deploying a Tecton data-plane with the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
 
 It has a `locals` block ([here](./infrastructure.tf#L15)) which defines a set of inputs, which you should replace with values from your environment (region/account ID) and with values given to you by your Tecton rep.
 
