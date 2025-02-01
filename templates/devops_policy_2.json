@@ -21,7 +21,9 @@
                 "dynamodb:UpdateTimeToLive",
                 "dynamodb:DescribeTimeToLive"
             ],
-            "Resource": ["arn:aws:dynamodb:*:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
+            "Resource": [
+                "arn:aws:dynamodb:*:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
         },
         {
             "Sid": "DynamoDBGlobal",
@@ -75,7 +77,9 @@
                 "es:DeleteElasticsearchDomain"
             ],
             "Effect": "Allow",
-            "Resource": ["arn:aws:es:*:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"]
+            "Resource": [
+                "arn:aws:es:*:${ACCOUNT_ID}:domain/tecton-${DEPLOYMENT_NAME}"
+            ]
         },
         {
             "Sid": "CreateTectonHostedZoneForElasticSearch",
@@ -104,14 +108,17 @@
         {
             "Sid": "RdsReadAccess",
             "Action": [
-                "rds:DescribeDBInstances"
+                "rds:DescribeDBInstances",
+                "rds:DescribeDBParameterGroups",
+                "rds:DescribeDBParameters"
             ],
             "Effect": "Allow",
             "Resource": [
                 "arn:aws:rds:*:${ACCOUNT_ID}:db:*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*"
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:*"
             ]
         },
         {
@@ -123,14 +130,18 @@
                 "rds:DescribeDBSubnetGroups",
                 "rds:ModifyDBInstance",
                 "rds:CreateDBInstance",
-                "rds:ListTagsForResource"
+                "rds:ListTagsForResource",
+                "rds:CreateDBParameterGroup",
+                "rds:ModifyDBParameterGroup",
+                "rds:DeleteDBParameterGroup"
             ],
             "Effect": "Allow",
             "Resource": [
                 "arn:aws:rds:*:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*"
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:terraform-*"
             ]
         },
         {
@@ -140,7 +151,11 @@
             ],
             "Effect": "Allow",
             "Resource": "*",
-            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-owned": "true"
+                }
+            }
         },
         {
             "Sid": "AddTagsToCertificateForTectonAIDomain",
@@ -159,7 +174,11 @@
             ],
             "Effect": "Allow",
             "Resource": "*",
-            "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/tecton-owned": "true"
+                }
+            }
         }
     ]
 }
