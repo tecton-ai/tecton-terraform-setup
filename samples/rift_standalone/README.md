@@ -12,8 +12,8 @@ Finally, there are a set of `outputs` from the modules that will need to be shar
 
 ### Steps to deploy
 
-1. Prepare and apply baseline [rift_controlplane_sample/](../rift_controlplane_sample/) with inputs provided from Tecton rep.
-2. After applying `rift_controlplane_sample`, move on to this module. Replace all variables in `locals` block [here](./infrastructure.tf#L15) with additional values specific to your deployment (also provided by Tecton rep).
+1. Have a Tecton environment already set up (if you don't, then use [dataplane_rift](../dataplane_rift/) instead).
+2. Using this sample, and values provided by your Tecton rep, replace all variables in `locals` block [here](./infrastructure.tf#L15) with additional values specific to your deployment (also provided by Tecton rep).
 3. Run `terraform plan` to see/review the list of resources that will be created.
 4. `terraform apply` to create all the resources.
 5.  Copy the outputs and share values with your Tecton rep to complete the deployment process.
