@@ -1,4 +1,4 @@
-## `rift_standalone`
+## `standalone_rift`
 
 This directory contains a sample configuration for deploying the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
 
