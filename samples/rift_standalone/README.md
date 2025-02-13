@@ -1,12 +1,12 @@
-## rift_dataplane_sample
+## `rift_standalone`
 
-This directory contains a starter/sample configuration for deploying the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
+This directory contains a sample configuration for deploying the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
 
-⚠️ As a _first_ step before applying this plan directly, you must apply the terraform in [rift_controlplane_sample/](../rift_controlplane_sample/) to create your base dataplane resources. If you are creating a new cluster, your tecton rep will share the additional values needed for your inputs to the additional module in this file.
+⚠️ As a _first_ step before applying this plan directly, you must already have a Tecton environment deployed. If you are deploying a _new_ Tecton environment, you should instead use the [dataplane_rift](../dataplane_rift/) sample. 
 
 It has a `locals` block ([here](./infrastructure.tf#L15)) which defines a set of inputs, which you should replace with values from your environment (region/account ID) and with values given to you by your Tecton rep.
 
-It contains the [rift](./infrastructure.tf#L52)) module which, when applied, will create the necessary resources in your account. The `deployment` module should already be in place/have already previously been applied at the time of running this, as you will have already added it in `rift_controlplane_sample` -- so what is added here will be just the `rift` module (IAM resources, VPC) and associated inputs/outputs. The `rift` module source is available at [rift_compute](../rift_compute/).
+It contains the [rift](./infrastructure.tf#L52) module which, when applied, will create the necessary resources in your account. The `deployment` module should already be in place/have already previously been applied at the time of running this, as you will have already added it in `rift_controlplane_sample` -- so what is added here will be just the `rift` module (IAM resources, VPC) and associated inputs/outputs. The `rift` module source is available at [rift_compute](../../rift_compute/).
 
 Finally, there are a set of `outputs` from the modules that will need to be shared with Tecton in order to complete the control-plane deployment.
 

@@ -31,7 +31,7 @@ locals {
 }
 
 module "tecton" {
-  source                     = "../deployment"
+  source                     = "../../deployment"
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
   region                     = local.region
@@ -46,7 +46,7 @@ module "tecton" {
 
 
 module "rift" {
-  source                                  = "../rift_compute"
+  source                                  = "../../rift_compute"
   cluster_name                            = local.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", local.tecton_control_plane_account_id, local.tecton_control_plane_role_name)]
   control_plane_account_id                = local.tecton_control_plane_account_id

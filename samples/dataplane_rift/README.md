@@ -1,4 +1,4 @@
-## rift_sample
+## `dataplane_rift`
 
 This directory contains a starter/sample configuration for deploying a Tecton data-plane with the [Rift](https://docs.tecton.ai/docs/introduction/compute-in-tecton#rift-public-preview) compute engine for Tecton. It is meant for configurations where the Rift compute runs in your data plane account.
 
@@ -8,7 +8,7 @@ It contains two modules:
 
 * The [tecton deployment](./infrastructure.tf#L38) module which, when applied, will create the base dataplane resources in your account.
 
-* The [rift](./infrastructure.tf#L48)) module which, when applied, will create the Rift compute engine resources in your account. The `rift` module source is available at [rift_compute](../rift_compute/).
+* The [rift](./infrastructure.tf#L48) module which, when applied, will create the Rift compute engine resources in your account. The `rift` module source is available at [rift_compute](../../rift_compute/).
 
 Finally, there are a set of `outputs` from the modules that will need to be shared with Tecton in order to complete the control-plane deployment.
 

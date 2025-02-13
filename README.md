@@ -1,1 +1,1 @@
-Run the rift_sample, rift_controlplane_sample, rift_dataplane_sample, databricks_sample or emr_sample through terraform to set up your AWS environment to deploy Tecton.
+Run databricks_sample, emr_sample, samples/controlplane_rift, samples/dataplane_rift, or samples/rift_standalone through terraform to set up your AWS environment to deploy Tecton.

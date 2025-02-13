@@ -27,7 +27,7 @@ locals {
 }
 
 module "tecton" {
-  source                     = "../deployment"
+  source                     = "../../deployment"
   deployment_name            = local.deployment_name
   account_id                 = local.account_id
   region                     = local.region
