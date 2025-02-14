@@ -165,9 +165,9 @@
                 "kms:ListKeys",
                 "kms:ListAliases"
             ],
-            "Sid":      = "EKSEncryption",
-            "Effect":   = "Allow",
-            "Resource":  "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+            "Sid": "EKSEncryption",
+            "Effect": "Allow",
+            "Resource":  "arn:aws:kms:*:${ACCOUNT_ID}:key/*",
             "Condition": {
                 "StringEquals": {
                     "aws:RequestTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
