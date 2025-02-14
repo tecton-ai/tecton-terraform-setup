@@ -84,7 +84,8 @@
                 "eks:UpdateNodegroupVersion",
                 "eks:UpdateClusterConfig",
                 "eks:DescribeUpdate",
-                "eks:DeleteCluster"
+                "eks:DeleteCluster",
+                "eks:AssociateEncryptionConfig"
             ],
             "Resource": [
                 "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
@@ -147,6 +148,29 @@
             "Condition": {
                 "StringEquals": {
                     "aws:ResourceTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
+                }
+            }
+        },
+        {
+            "Action": [
+                "kms:EnableKeyRotation",
+                "kms:CreateKey",
+                "kms:DescribeKey",
+                "kms:GetKeyPolicy",
+                "kms:GetKeyRotationStatus",
+                "kms:ListResourceTags",
+                "kms:ScheduleKeyDeletion",
+                "kms:CreateGrant",
+                "kms:CreateAlias",
+                "kms:ListKeys",
+                "kms:ListAliases"
+            ],
+            "Sid":      = "EKSEncryption",
+            "Effect":   = "Allow",
+            "Resource":  "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+            "Condition": {
+                "StringEquals": {
+                    "aws:RequestTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
                 }
             }
         }
