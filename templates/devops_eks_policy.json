@@ -167,12 +167,7 @@
             ],
             "Sid": "EKSEncryption",
             "Effect": "Allow",
-            "Resource":  "arn:aws:kms:*:${ACCOUNT_ID}:key/*",
-            "Condition": {
-                "StringEquals": {
-                    "aws:RequestTag/tecton-accessible:${DEPLOYMENT_NAME}": "true"
-                }
-            }
+            "Resource":  "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
         }
     ]
 }
