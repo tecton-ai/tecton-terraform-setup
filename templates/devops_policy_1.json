@@ -107,6 +107,22 @@
             ]
         },
         {
+            "Sid": "TerraformReadRolesAndPolicies",
+            "Effect": "Allow",
+            "Action": [
+                "iam:GetRole",
+                "iam:GetPolicy",
+                "iam:ListRolePolicies",
+                "iam:GetPolicyVersion",
+                "iam:ListAttachedRolePolicies"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/AmazonEKSLoadBalancerControllerRole",
+                "arn:aws:iam::${ACCOUNT_ID}:policy/AWSLoadBalancerControllerIAMPolicy",
+                "arn:aws:iam::${ACCOUNT_ID}:policy/dev-emr-vpc-fs_secrets_policy"
+            ]
+        },
+        {
             "Sid": "DescribeLoadBalancer",
             "Effect": "Allow",
             "Action": [
