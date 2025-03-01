@@ -50,7 +50,8 @@
                 "firehose:DeleteDeliveryStream",
                 "firehose:ListTagsForDeliveryStream",
                 "firehose:DescribeDeliveryStream",
-                "firehose:ListDeliveryStreams"
+                "firehose:ListDeliveryStreams",
+                "firehose:TagDeliveryStream"
             ],
             "Resource": [
                 "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*",
