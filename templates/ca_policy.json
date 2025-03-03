@@ -55,7 +55,7 @@
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/internal/*",
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/offline-store/*",
                 "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/realtime-logs/*",
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/streaming-checkpoints/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/streaming-checkpoints/*"
             ]
         },
         {
