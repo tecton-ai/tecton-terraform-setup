@@ -1,5 +1,5 @@
 locals {
-  vpc_cidr       = "10.0.0.0/16"
+  vpc_cidr       = var.vpc_cidr
   base_cidr_mask = tonumber(split("/", local.vpc_cidr)[1])
 }
 
@@ -25,7 +25,7 @@ module "public_private_subnet_cidrs" {
 }
 
 resource "aws_vpc" "rift" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = local.vpc_cidr
   enable_dns_hostnames = (var.tecton_vpce_service_name != null)
 }
 
@@ -149,22 +149,48 @@ resource "aws_security_group" "tecton_privatelink_cross_vpc" {
   name        = "tecton-services-vpc-endpoint"
   description = "Security group for the accessing Tecton services by cross-vpc vpc endpoint"
   vpc_id      = aws_vpc.rift.id
+}
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "tecton_privatelink_egress" {
+  count             = var.tecton_vpce_service_name != null && length(var.tecton_privatelink_egress_rules) == 0 ? 1 : 0
+  description       = "Default: allow all egress"
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
+  cidr_blocks       = ["0.0.0.0/0"]
+  to_port           = 65535
+  type              = "egress"
+}
+
+resource "aws_security_group_rule" "tecton_privatelink_egress_custom" {
+  count             = var.tecton_vpce_service_name != null ? length(var.tecton_privatelink_egress_rules) : 0
+  security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
+  type              = "egress"
+  cidr_blocks       = [var.tecton_privatelink_egress_rules[count.index].cidr]
+  from_port         = var.tecton_privatelink_egress_rules[count.index].from_port
+  to_port           = var.tecton_privatelink_egress_rules[count.index].to_port
+  protocol          = var.tecton_privatelink_egress_rules[count.index].protocol
+  description       = var.tecton_privatelink_egress_rules[count.index].description
 }
 
 resource "aws_security_group_rule" "tecton_privatelink_ingress" {
-  count             = var.tecton_vpce_service_name != null ? 1 : 0
-  description       = "Allow all ingress"
+  count             = var.tecton_vpce_service_name != null && length(var.tecton_privatelink_ingress_rules) == 0 ? 1 : 0
+  description       = "Default: allow all ingress"
   from_port         = 0
   protocol          = "-1"
   security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
   cidr_blocks       = ["0.0.0.0/0"]
   to_port           = 65535
   type              = "ingress"
+}
+
+resource "aws_security_group_rule" "tecton_privatelink_ingress_custom" {
+  count             = var.tecton_vpce_service_name != null ? length(var.tecton_privatelink_ingress_rules) : 0
+  security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
+  type              = "ingress"
+  cidr_blocks       = [var.tecton_privatelink_ingress_rules[count.index].cidr]
+  from_port         = var.tecton_privatelink_ingress_rules[count.index].from_port
+  to_port           = var.tecton_privatelink_ingress_rules[count.index].to_port
+  protocol          = var.tecton_privatelink_ingress_rules[count.index].protocol
+  description       = var.tecton_privatelink_ingress_rules[count.index].description
 }
