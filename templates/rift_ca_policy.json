@@ -45,15 +45,46 @@
             ]
         },
         {
-            "Sid": "S3Object",
+            "Sid": "S3GetObject",
             "Effect": "Allow",
             "Action": [
-                "s3:GetObject",
-                "s3:DeleteObject",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/intermediate/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/internal/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/offline-store/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/realtime-logs/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/streaming-checkpoints/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/rift-logs/*"
+            ]
+        },
+        {
+            "Sid": "S3DeleteObject",
+            "Effect": "Allow",
+            "Action": [
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/offline-store/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/rift-logs/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/streaming-checkpoints/*"
+            ]
+        },
+        {
+            "Sid": "S3PutObject",
+            "Effect": "Allow",
+            "Action": [
                 "s3:PutObject"
             ],
             "Resource": [
-                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/offline-store/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/intermediate/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/internal/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/logging/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/realtime-logs/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/tecton-billable-usage/*",
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/rift-logs/*"
             ]
         },
         {
