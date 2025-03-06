@@ -5,6 +5,7 @@ locals {
 
 module "az_subnet_cidrs" {
   source          = "../remote-modules/subnets-cidr"
+  version         = "1.0.0"
   base_cidr_block = local.vpc_cidr
   networks = [for az in var.subnet_azs :
     {
@@ -17,6 +18,7 @@ module "az_subnet_cidrs" {
 module "public_private_subnet_cidrs" {
   for_each        = module.az_subnet_cidrs.network_cidr_blocks
   source          = "../remote-modules/subnets-cidr"
+  version         = "1.0.0"
   base_cidr_block = each.value
   networks = [
     { name = format("public"), new_bits = 1 },
