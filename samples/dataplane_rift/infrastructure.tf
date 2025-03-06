@@ -56,6 +56,27 @@ module "rift" {
 
   # OPTIONAL
   # tecton_vpce_service_name                = local.tecton_vpce_service_name
+  # Tecton PrivateLink Security Group Rules (apply to VPC endpoint to access Tecton ctrl plane)
+  # tecton_privatelink_ingress_rules = [
+  #   {
+  #     cidr        = "10.0.0.0/24"
+  #     from_port   = 0
+  #     to_port     = 65535
+  #     protocol    = "-1"
+  #     description = "Allow all ingress from <Internal> VPC"
+  #   }
+  # ]
+  # Tecton PrivateLink Security Group Egress Rules (apply to VPC endpoint to access Tecton ctrl plane)
+  # tecton_privatelink_egress_rules = [
+  #   {
+  #     cidr        = "10.0.0.0/24"
+  #     from_port   = 0
+  #     to_port     = 65535
+  #     protocol    = "-1"
+  #     description = "Allow all egress to <Internal> VPC"
+  #   }
+  # ]
+  #
   # Egress from rift compute will be open to internet by default.
   # To restrict egress based on known list of domains (found in rift_compute/network_firewall.tf), set the following:
   # use_network_firewall = true

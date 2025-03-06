@@ -24,3 +24,5 @@ Finally, there are a set of `outputs` from the modules that will need to be shar
 * `use_network_firewall` -- this is an optional (default `false`) parameter for the Rift compute VPC, to enable an AWS network firewall with egress restrictions/drop rules based on a fixed list of allowed domains.
   * The list of allowed domains can be extended with `additional_allowed_egress_domains` variable (list).
 * `tecton_vpce_service_name` -- this is an optional parameter for the Rift module that creates a vpc-endpoint within the rift VPC for access to the tecton control-plane. This is only applicable if your Tecton deployment has been set up with PrivateLink.
+* `tecton_privatelink_ingress_rules` -- If you use PrivateLink and set `tecton_vpce_service_name`, you can control the ingress rules on the VPC endpoint that will be created for compute jobs to access Tecton's control plane. 
+* `tecton_privatelink_egress_rules` -- Similarly, you can control the _egress_ rules on the VPC endpoint.
