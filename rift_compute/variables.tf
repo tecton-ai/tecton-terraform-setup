@@ -77,3 +77,32 @@ variable "additional_allowed_egress_domains" {
   description = "Additional domains to allow egress to (if using network firewall)"
 }
 
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC (e.g. 10.0.0.0/16)"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "tecton_privatelink_ingress_rules" {
+  description = "List of custom ingress rules for the Tecton PrivateLink endpoint security group with CIDR, ports, and protocol. If empty, a default 'allow all' rule will be created."
+  type = list(object({
+    cidr        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+  }))
+  default = []
+}
+
+variable "tecton_privatelink_egress_rules" {
+  description = "List of egress rules for the Tecton PrivateLink security group. If empty, all traffic is allowed."
+  type = list(object({
+    cidr        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+  }))
+  default = []
+}
