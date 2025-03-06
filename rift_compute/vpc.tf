@@ -1,6 +1,35 @@
 locals {
   vpc_cidr       = var.vpc_cidr
   base_cidr_mask = tonumber(split("/", local.vpc_cidr)[1])
+
+  default_egress_rule = {
+    cidr        = "0.0.0.0/0"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "-1"
+    description = "Default: allow all egress"
+  }
+
+  default_ingress_rule = {
+    cidr        = "0.0.0.0/0"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "-1"
+    description = "Default: allow all ingress"
+  }
+
+  // Use default ingress/egress rules if no custom rules provided, otherwise use custom rules
+  tecton_privatelink_egress_rules = var.tecton_vpce_service_name != null ? (
+    length(var.tecton_privatelink_egress_rules) > 0 ? 
+    var.tecton_privatelink_egress_rules : 
+    [local.default_egress_rule]
+  ) : []
+
+  tecton_privatelink_ingress_rules = var.tecton_vpce_service_name != null ? (
+    length(var.tecton_privatelink_ingress_rules) > 0 ? 
+    var.tecton_privatelink_ingress_rules : 
+    [local.default_ingress_rule]
+  ) : []
 }
 
 module "az_subnet_cidrs" {
@@ -152,45 +181,23 @@ resource "aws_security_group" "tecton_privatelink_cross_vpc" {
 }
 
 resource "aws_security_group_rule" "tecton_privatelink_egress" {
-  count             = var.tecton_vpce_service_name != null && length(var.tecton_privatelink_egress_rules) == 0 ? 1 : 0
-  description       = "Default: allow all egress"
-  from_port         = 0
-  protocol          = "-1"
-  security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
-  cidr_blocks       = ["0.0.0.0/0"]
-  to_port           = 65535
-  type              = "egress"
-}
-
-resource "aws_security_group_rule" "tecton_privatelink_egress_custom" {
-  count             = var.tecton_vpce_service_name != null ? length(var.tecton_privatelink_egress_rules) : 0
+  count             = var.tecton_vpce_service_name != null ? length(local.tecton_privatelink_egress_rules) : 0
   security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
   type              = "egress"
-  cidr_blocks       = [var.tecton_privatelink_egress_rules[count.index].cidr]
-  from_port         = var.tecton_privatelink_egress_rules[count.index].from_port
-  to_port           = var.tecton_privatelink_egress_rules[count.index].to_port
-  protocol          = var.tecton_privatelink_egress_rules[count.index].protocol
-  description       = var.tecton_privatelink_egress_rules[count.index].description
+  cidr_blocks       = [local.tecton_privatelink_egress_rules[count.index].cidr]
+  from_port         = local.tecton_privatelink_egress_rules[count.index].from_port
+  to_port           = local.tecton_privatelink_egress_rules[count.index].to_port
+  protocol          = local.tecton_privatelink_egress_rules[count.index].protocol
+  description       = local.tecton_privatelink_egress_rules[count.index].description
 }
 
 resource "aws_security_group_rule" "tecton_privatelink_ingress" {
-  count             = var.tecton_vpce_service_name != null && length(var.tecton_privatelink_ingress_rules) == 0 ? 1 : 0
-  description       = "Default: allow all ingress"
-  from_port         = 0
-  protocol          = "-1"
-  security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
-  cidr_blocks       = ["0.0.0.0/0"]
-  to_port           = 65535
-  type              = "ingress"
-}
-
-resource "aws_security_group_rule" "tecton_privatelink_ingress_custom" {
-  count             = var.tecton_vpce_service_name != null ? length(var.tecton_privatelink_ingress_rules) : 0
+  count             = var.tecton_vpce_service_name != null ? length(local.tecton_privatelink_ingress_rules) : 0
   security_group_id = aws_security_group.tecton_privatelink_cross_vpc[0].id
   type              = "ingress"
-  cidr_blocks       = [var.tecton_privatelink_ingress_rules[count.index].cidr]
-  from_port         = var.tecton_privatelink_ingress_rules[count.index].from_port
-  to_port           = var.tecton_privatelink_ingress_rules[count.index].to_port
-  protocol          = var.tecton_privatelink_ingress_rules[count.index].protocol
-  description       = var.tecton_privatelink_ingress_rules[count.index].description
+  cidr_blocks       = [local.tecton_privatelink_ingress_rules[count.index].cidr]
+  from_port         = local.tecton_privatelink_ingress_rules[count.index].from_port
+  to_port           = local.tecton_privatelink_ingress_rules[count.index].to_port
+  protocol          = local.tecton_privatelink_ingress_rules[count.index].protocol
+  description       = local.tecton_privatelink_ingress_rules[count.index].description
 }
