@@ -28,7 +28,11 @@ data "aws_iam_policy_document" "cross_account_ecr" {
     }
 
     actions = [
-      "ecr:*" # TODO @jwheeler scope down
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart",
     ]
   }
 }
