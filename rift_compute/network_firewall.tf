@@ -14,11 +14,6 @@ locals {
     ".ubuntu.com",
     "sts.amazonaws.com",
     ".amazonaws.com",
-    # Crowdstrike
-    "crowdstrike.github.io",
-    ".crowdstrike.com",
-    ".cloudsink.net",
-    ".githubusercontent.com",
   ]
 
 }
