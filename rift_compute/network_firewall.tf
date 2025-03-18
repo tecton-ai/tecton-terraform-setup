@@ -3,21 +3,18 @@
 
 locals {
   default_allowed_egress_domains = [
-    ".tecton.ai",             # tecton control plane for this cluster
+    "${var.cluster_name}.tecton.ai",  # tecton control plane for this cluster
     "tecton.chronosphere.io", # Metrics
     "packages.fluentbit.io",
-    ".ecr.aws",
-    ".amazonaws.com",
-    ".aws.amazon.com",
-    ".ubuntu.com",
-    ".canonical.com",
+    # Extract full domain from ECR repo URL (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com)
+    regex("^(https?://)?([^/]+).*", aws_ecr_repository.rift_env.repository_url)[1],
+    "extensions.duckdb.org",
     "api.snapcraft.io",
-    ".duckdb.org",
-    # Crowdstrike
-    ".crowdstrike.com",
-    ".cloudsink.net",
-    ".githubusercontent.com",
-    "crowdstrike.github.io",
+    "esm.ubuntu.com",
+    "security.ubuntu.com",
+    "archive.ubuntu.com",
+    "sts.amazonaws.com",
+    ".amazonaws.com",
   ]
 
 }
