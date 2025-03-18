@@ -11,7 +11,8 @@ locals {
     "extensions.duckdb.org",
     "api.snapcraft.io",
     "esm.ubuntu.com",
-    ".ubuntu.com",
+    "security.ubuntu.com",
+    "archive.ubuntu.com",
     "sts.amazonaws.com",
     ".amazonaws.com",
   ]
