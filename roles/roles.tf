@@ -28,6 +28,7 @@ locals {
   )
   s3_objects              = formatlist("%s/*", local.s3_buckets)
   data_validation_enabled = var.fargate_enabled && var.data_validation_on_fargate_enabled
+  enable_offline_store_reader = var.enable_rift
 }
 
 # Fargate [Common : Databricks and EMR]
@@ -356,7 +357,16 @@ POLICY
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_node_policy" {
   name = "tecton-${var.deployment_name}-eks-worker-policy"
-  policy = templatefile(
+  policy = var.enable_rift ? templatefile(
+    "${path.module}/../templates/eks_policy_with_rift.json",
+    {
+      ACCOUNT_ID      = var.account_id,
+      DEPLOYMENT_NAME = var.deployment_name,
+      REGION          = var.region,
+      RIFT_COMPUTE_MANAGER_ARN = var.rift_compute_manager_arn,
+      RIFT_ECR_REPOSITORY_ARN = var.rift_ecr_repository_arn
+    }
+  ) : templatefile(
     "${path.module}/../templates/eks_policy.json",
     {
       ACCOUNT_ID      = var.account_id,
@@ -864,4 +874,51 @@ resource "aws_iam_role_policy_attachment" "fargate_pod_execution" {
 resource "aws_iam_role_policy_attachment" "devops_eks_alb_policy_attachment" {
   role       = aws_iam_role.devops_role.name
   policy_arn = aws_iam_policy.eks_alb_policy.arn
+}
+
+# OFFLINE STORE READER [Needed for Rift]
+resource "aws_iam_role" "offline_store_reader" {
+  count = local.enable_offline_store_reader ? 1 : 0
+
+  name               = "tecton-${var.deployment_name}-offline-store-reader"
+  tags               = local.tags
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${var.account_id}:role/tecton-${var.deployment_name}-eks-worker-role"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
+}
+
+# OFFLINE STORE READER [Needed for Rift]
+resource "aws_iam_policy" "offline_store_reader_policy" {
+  count = local.enable_offline_store_reader ? 1 : 0
+
+  name = "tecton-${var.deployment_name}-offline-store-reader-policy"
+  policy = templatefile(
+    "${path.module}/../templates/offline_store_reader_policy.json",
+    {
+      OFFLINE_STORE_BUCKET_ARN = var.offline_store_bucket_arn
+      OFFLINE_STORE_KEY_PREFIX = var.offline_store_key_prefix
+      OFFLINE_STORE_CMK_ARNS   = jsonencode(var.offline_store_cmk_arns)
+      HAS_CMK                  = length(var.offline_store_cmk_arns) > 0
+    }
+  )
+  tags = local.tags
+}
+
+# OFFLINE STORE READER [Needed for Rift]
+resource "aws_iam_role_policy_attachment" "offline_store_reader_policy_attachment" {
+  count = local.enable_offline_store_reader ? 1 : 0
+
+  policy_arn = aws_iam_policy.offline_store_reader_policy[0].arn
+  role       = aws_iam_role.offline_store_reader[0].name
 }

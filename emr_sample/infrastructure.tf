@@ -113,6 +113,43 @@ variable "data_validation_on_fargate_enabled" {
   type        = bool
 }
 
+variable "rift_compute_manager_arn" {
+  type        = string
+  description = "ARN of the Rift compute manager role that the EKS worker role needs to assume"
+  default     = null
+}
+
+variable "enable_rift" {
+  default     = false
+  type        = bool
+  description = "Whether to enable Rift integration. When true, rift_ecr_repository_arn and offline_store_bucket_arn should be provided. Default: false."
+}
+
+variable "rift_ecr_repository_arn" {
+  type        = string
+  description = "ARN of the Rift ECR repository"
+  default     = null
+}
+
+variable "offline_store_bucket_arn" {
+  type        = string
+  description = "ARN of the S3 bucket containing the offline store data"
+  default     = ""
+}
+
+variable "offline_store_key_prefix" {
+  type        = string
+  description = "Key prefix for offline store data within the S3 bucket"
+  default     = "offline-store/"
+}
+
+variable "offline_store_cmk_arns" {
+  type        = list(string)
+  description = "List of ARNs for KMS CMKs used to encrypt offline store data"
+  default     = []
+}
+
+
 module "eks_subnets" {
   providers = {
     aws = aws
@@ -195,6 +232,12 @@ module "roles" {
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
   vpc_id                             = module.eks_subnets.vpc_id
   enable_feature_server_as_compute_instance_groups = var.enable_feature_server_as_compute_instance_groups
+  rift_compute_manager_arn           = var.rift_compute_manager_arn
+  enable_rift                        = var.enable_rift
+  rift_ecr_repository_arn            = var.rift_ecr_repository_arn
+  offline_store_bucket_arn           = var.offline_store_bucket_arn
+  offline_store_key_prefix           = var.offline_store_key_prefix
+  offline_store_cmk_arns             = var.offline_store_cmk_arns
 }
 
 module "notebook_cluster" {

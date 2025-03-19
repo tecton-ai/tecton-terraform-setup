@@ -59,3 +59,7 @@ output "s3_replication_policy_name" {
 output "s3_batch_replication_policy_name" {
   value = length(var.satellite_regions) > 0 ? module.roles[0].s3_batch_replication_policy_name : ""
 }
+
+output "offline_store_reader_role_arn" {
+  value = var.enable_rift ? module.roles[0].offline_store_reader_role_arn : null
+}
