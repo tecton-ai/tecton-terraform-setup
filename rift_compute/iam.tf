@@ -151,6 +151,16 @@ data "aws_iam_policy_document" "manage_rift_compute" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "servicequotas:GetServiceQuota"
+    ]
+    resources = [
+      "arn:aws:servicequotas:*:${local.account_id}:ec2/L-1216C47A"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "manage_rift_compute" {
