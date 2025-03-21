@@ -113,16 +113,16 @@ variable "data_validation_on_fargate_enabled" {
   type        = bool
 }
 
+variable "enable_rift" {
+  default     = false
+  type        = bool
+  description = "Whether to enable Rift integration. When true, rift_compute_manager_arn, rift_ecr_repository_arn and offline_store_bucket_arn should be provided. Default: false."
+}
+
 variable "rift_compute_manager_arn" {
   type        = string
   description = "ARN of the Rift compute manager role that the EKS worker role needs to assume"
   default     = null
-}
-
-variable "enable_rift" {
-  default     = false
-  type        = bool
-  description = "Whether to enable Rift integration. When true, rift_ecr_repository_arn and offline_store_bucket_arn should be provided. Default: false."
 }
 
 variable "rift_ecr_repository_arn" {
