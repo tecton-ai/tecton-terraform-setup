@@ -34,6 +34,10 @@ output "offline_ingest_role_arn" {
   value = aws_iam_role.online_ingest_role[0].arn
 }
 
+output "offline_store_reader_role_arn" {
+  value = local.enable_offline_store_reader ? aws_iam_role.offline_store_reader[0].arn : null
+}
+
 #########################################
 ################ Fargate ################
 #########################################

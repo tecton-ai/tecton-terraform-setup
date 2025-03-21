@@ -1,0 +1,165 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DynamoDB",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:CreateTable",
+                "dynamodb:DeleteItem",
+                "dynamodb:DeleteTable",
+                "dynamodb:DescribeImport",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:ImportTable",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:TagResource",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:UpdateTable",
+                "dynamodb:UpdateTimeToLive",
+                "dynamodb:DescribeTimeToLive"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "DynamoDBGlobal",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:DescribeLimits"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "S3Bucket",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}"
+            ]
+        },
+        {
+            "Sid": "S3Object",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:DeleteObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
+            ]
+        },
+        {
+            "Sid": "S3Logs",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": [
+		        "arn:aws:s3:::tecton-logs-aggregation/*"
+            ]
+        },
+        {
+            "Sid": "CreateServiceLinkedRoles",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateServiceLinkedRole",
+                "iam:DeleteServiceLinkedRole",
+                "iam:GetRole"
+            ],
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup"
+            ]
+        },
+        {
+            "Sid": "CloudwatchLogging",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogGroups",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": [
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
+                  "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group::log-stream:*"
+            ]
+        },
+        {
+            "Sid": "RiftComputeManagerAssumeRole",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ],
+            "Resource": [
+                "${RIFT_COMPUTE_MANAGER_ARN}"
+            ]
+        },
+        {
+            "Sid": "RiftECRRepositoryAccess",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:CompleteLayerUpload",
+                "ecr:DescribeImages",
+                "ecr:DescribeRepositories",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetLifecyclePolicy",
+                "ecr:GetLifecyclePolicyPreview",
+                "ecr:GetRepositoryPolicy",
+                "ecr:InitiateLayerUpload",
+                "ecr:ListImages",
+                "ecr:ListTagsForResource",
+                "ecr:PutImage",
+                "ecr:PutLifecyclePolicy",
+                "ecr:TagResource",
+                "ecr:UntagResource",
+                "ecr:UploadLayerPart"
+            ],
+            "Resource": [
+                "${RIFT_ECR_REPOSITORY_ARN}"
+            ]
+        },
+        {
+            "Sid": "RiftECRAuthorizationToken",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "RiftS3ReleasesAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-materialization-release/*"
+            ]
+        },
+        {
+            "Sid": "RiftS3ReleasesListBucket",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-materialization-release"
+            ]
+        }
+    ]
+} 
