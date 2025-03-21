@@ -26,6 +26,10 @@ output "anyscale_docker_target_repo" {
   value = aws_ecr_repository.rift_env.repository_url
 }
 
+output "rift_ecr_repo_arn" {
+  value = aws_ecr_repository.rift_env.arn
+}
+
 output "nat_gateway_public_ips" {
   description = "List of public IPs associated with the NAT Gateways"
   value       = [for eip in aws_eip.rift : eip.public_ip]
