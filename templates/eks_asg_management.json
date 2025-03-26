@@ -63,6 +63,7 @@
             "Sid": "ListenerRuleMgmt",
             "Effect": "Allow",
             "Action": [
+               "elasticloadbalancing:ModifyListener",
                "elasticloadbalancing:CreateRule",
                "elasticloadbalancing:AddTags",
                "elasticloadbalancing:DeleteRule"
@@ -131,7 +132,8 @@
             "Effect": "Allow",
             "Action": [
                 "ec2:CreateTags",
-                "ec2:RunInstances"
+                "ec2:RunInstances",
+                "ec2:UpdateSecurityGroupRuleDescriptionsIngress"
             ],
             "Resource": [
                 "arn:aws:ec2:*:${ACCOUNT_ID}:instance/*",
