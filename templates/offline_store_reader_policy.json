@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ObjectActions",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["${OFFLINE_STORE_BUCKET_ARN}/${OFFLINE_STORE_KEY_PREFIX}*"]
+    },
+    {
+      "Sid": "BucketActions",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket"],
+      "Resource": ["${OFFLINE_STORE_BUCKET_ARN}"],
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": ["${OFFLINE_STORE_KEY_PREFIX}*"]
+        }
+      }
+    }
+    %{ if HAS_CMK }
+    ,
+    {
+      "Sid": "CMKs",
+      "Effect": "Allow",
+      "Action": ["kms:Decrypt"],
+      "Resource": ${OFFLINE_STORE_CMK_ARNS}
+    }
+    %{ endif }
+  ]
+} 

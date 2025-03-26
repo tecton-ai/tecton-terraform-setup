@@ -99,3 +99,39 @@ variable "vpc_id" {
   default = null
 }
 
+variable "enable_rift" {
+  default     = false
+  type        = bool
+  description = "Whether to enable Rift integration. When true, rift_compute_manager_arn, rift_ecr_repository_arn and offline_store_bucket_arn should be provided. Default: false."
+}
+
+variable "rift_compute_manager_arn" {
+  type        = string
+  description = "ARN of the Rift compute manager role that the EKS worker role needs to assume"
+  default     = null
+}
+
+variable "rift_ecr_repository_arn" {
+  type        = string
+  description = "ARN of the Rift ECR repository"
+  default     = null
+}
+
+variable "offline_store_bucket_arn" {
+  type        = string
+  description = "ARN of the S3 bucket containing the offline store data"
+  default     = null
+}
+
+variable "offline_store_key_prefix" {
+  type        = string
+  description = "Key prefix for offline store data within the S3 bucket"
+  default     = "offline-store/"
+}
+
+variable "offline_store_cmk_arns" {
+  type        = list(string)
+  description = "List of ARNs for KMS CMKs used to encrypt offline store data"
+  default     = []
+}
+
