@@ -73,7 +73,10 @@ resource "aws_iam_policy" "eks_node_satellite" {
     {
       ACCOUNT_ID      = var.account_id,
       DEPLOYMENT_NAME = var.deployment_name,
-      REGION          = var.region
+      REGION          = var.region,
+      ENABLE_RIFT     = var.enable_rift,
+      RIFT_COMPUTE_MANAGER_ARN = var.rift_compute_manager_arn,
+      RIFT_ECR_REPOSITORY_ARN = var.rift_ecr_repository_arn
     }
   )
   tags = local.tags

@@ -357,21 +357,15 @@ POLICY
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_node_policy" {
   name = "tecton-${var.deployment_name}-eks-worker-policy"
-  policy = var.enable_rift ? templatefile(
-    "${path.module}/../templates/eks_policy_with_rift.json",
-    {
-      ACCOUNT_ID      = var.account_id,
-      DEPLOYMENT_NAME = var.deployment_name,
-      REGION          = var.region,
-      RIFT_COMPUTE_MANAGER_ARN = var.rift_compute_manager_arn,
-      RIFT_ECR_REPOSITORY_ARN = var.rift_ecr_repository_arn
-    }
-  ) : templatefile(
+  policy = templatefile(
     "${path.module}/../templates/eks_policy.json",
     {
       ACCOUNT_ID      = var.account_id,
       DEPLOYMENT_NAME = var.deployment_name,
-      REGION          = var.region
+      REGION          = var.region,
+      ENABLE_RIFT     = var.enable_rift,
+      RIFT_COMPUTE_MANAGER_ARN = var.rift_compute_manager_arn,
+      RIFT_ECR_REPOSITORY_ARN = var.rift_ecr_repository_arn
     }
   )
   tags = local.tags

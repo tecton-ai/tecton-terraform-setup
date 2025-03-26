@@ -64,7 +64,7 @@
                 "s3:PutObjectAcl"
             ],
             "Resource": [
-		        "arn:aws:s3:::tecton-logs-aggregation/*"
+                "arn:aws:s3:::tecton-logs-aggregation/*"
             ]
         },
         {
@@ -95,6 +95,71 @@
                   "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group:/aws-dynamodb/imports:log-stream:*",
                   "arn:aws:logs:${REGION}:${ACCOUNT_ID}:log-group::log-stream:*"
             ]
-        }
+        }%{ if ENABLE_RIFT },
+        {
+            "Sid": "RiftComputeManagerAssumeRole",
+            "Effect": "Allow",
+            "Action": [
+                "sts:AssumeRole",
+                "sts:TagSession"
+            ],
+            "Resource": [
+                "${RIFT_COMPUTE_MANAGER_ARN}"
+            ]
+        },
+        {
+            "Sid": "RiftECRRepositoryAccess",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:CompleteLayerUpload",
+                "ecr:DescribeImages",
+                "ecr:DescribeRepositories",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetLifecyclePolicy",
+                "ecr:GetLifecyclePolicyPreview",
+                "ecr:GetRepositoryPolicy",
+                "ecr:InitiateLayerUpload",
+                "ecr:ListImages",
+                "ecr:ListTagsForResource",
+                "ecr:PutImage",
+                "ecr:PutLifecyclePolicy",
+                "ecr:TagResource",
+                "ecr:UntagResource",
+                "ecr:UploadLayerPart"
+            ],
+            "Resource": [
+                "${RIFT_ECR_REPOSITORY_ARN}"
+            ]
+        },
+        {
+            "Sid": "RiftECRAuthorizationToken",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "RiftS3ReleasesAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-materialization-release/*"
+            ]
+        },
+        {
+            "Sid": "RiftS3ReleasesListBucket",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::tecton-materialization-release"
+            ]
+        }%{ endif }
     ]
-}
+} 
