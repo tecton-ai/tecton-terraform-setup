@@ -120,7 +120,7 @@ variable "rift_ecr_repository_arn" {
 variable "offline_store_bucket_arn" {
   type        = string
   description = "ARN of the S3 bucket containing the offline store data"
-  default     = ""
+  default     = null
 }
 
 variable "offline_store_key_prefix" {
