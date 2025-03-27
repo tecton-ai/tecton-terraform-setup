@@ -160,6 +160,14 @@
             "Effect": "Allow",
             "Resource": "*",
             "Condition": {"StringEquals": {"aws:ResourceTag/tecton-owned": "true"}}
+        },
+        {
+            "Sid": "ManageSecurityGroupRuleDescriptionsIngress",
+            "Action": [
+                "ec2:UpdateSecurityGroupRuleDescriptionsIngress"
+            ],
+            "Effect": "Allow",
+            "Resource": "arn:aws:ec2:*:${ACCOUNT_ID}:security-group/*"
         }
     ]
 }
