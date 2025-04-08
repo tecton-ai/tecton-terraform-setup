@@ -154,7 +154,6 @@
         {
             "Action": [
                 "kms:EnableKeyRotation",
-                "kms:CreateKey",
                 "kms:DescribeKey",
                 "kms:GetKeyPolicy",
                 "kms:GetKeyRotationStatus",
@@ -168,6 +167,15 @@
             "Sid": "EKSEncryption",
             "Effect": "Allow",
             "Resource":  "arn:aws:kms:*:${ACCOUNT_ID}:key/*"
+        },
+        {
+            "Action": [
+                "kms:CreateKey",
+
+            ],
+            "Sid": "EKSEncryption",
+            "Effect": "Allow",
+            "Resource":  "*"
         }
     ]
 }
