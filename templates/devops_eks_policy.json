@@ -174,7 +174,7 @@
                 "kms:ListKeys",
                 "kms:ListAliases"
             ],
-            "Sid": "EKSEncryption",
+            "Sid": "EKSEncryptionKeyCreation",
             "Effect": "Allow",
             "Resource":  "*"
         }
