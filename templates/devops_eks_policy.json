@@ -5,6 +5,7 @@
             "Sid": "EksGlobal",
             "Effect": "Allow",
             "Action": [
+                "eks:CreateCluster",
                 "eks:ListClusters"
             ],
             "Resource": [
@@ -66,29 +67,35 @@
             }
         },
         {
-            "Sid": "Eks",
+            "Sid": "Cluster",
             "Effect": "Allow",
             "Action": [
-                "eks:CreateCluster",
                 "eks:CreateNodegroup",
-                "eks:DeleteNodegroup",
-                "eks:DescribeNodegroup",
                 "eks:ListNodegroups",
                 "eks:DescribeCluster",
-                "eks:ListClusters",
                 "eks:AccessKubernetesApi",
                 "eks:ListUpdates",
                 "eks:ListFargateProfiles",
                 "eks:UpdateClusterVersion",
-                "eks:UpdateNodegroupConfig",
-                "eks:UpdateNodegroupVersion",
                 "eks:UpdateClusterConfig",
                 "eks:DescribeUpdate",
                 "eks:DeleteCluster",
                 "eks:AssociateEncryptionConfig"
             ],
             "Resource": [
-                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "Nodegroup",
+            "Effect": "Allow",
+            "Action": [
+                "eks:DeleteNodegroup",
+                "eks:DescribeNodegroup",
+                "eks:UpdateNodegroupConfig",
+                "eks:UpdateNodegroupVersion"
+            ],
+            "Resource": [
                 "arn:aws:eks:*:${ACCOUNT_ID}:nodegroup/tecton-${DEPLOYMENT_NAME}*"
             ]
         },
