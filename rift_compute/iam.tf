@@ -200,7 +200,7 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
   name = "tecton-rift-dynamodb-access"
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Effect = "Allow"
         Action = [
@@ -226,7 +226,14 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
         # Used for assume into cross-account-intermediary role when Rift is in control plane account.
         Resource = ["arn:aws:iam::${local.account_id}:role/${var.cluster_name}-cross-account-intermediate"]
       }
-    ]
+    ],
+    length(var.additional_rift_compute_intermediary_role) > 0 ? [{
+      Effect = "Allow"
+      Action = [
+        "sts:AssumeRole"
+      ]
+      Resource = var.additional_rift_compute_intermediary_role
+    }] : [])
   })
 }
 

@@ -106,3 +106,9 @@ variable "tecton_privatelink_egress_rules" {
   }))
   default = []
 }
+
+variable "additional_rift_compute_intermediary_role" {
+  type        = list(string)
+  description = "Additional IAM role ARN that the rift-compute role can assume. If provided, this will be added to the list of roles that can be assumed via the dynamodb access policy."
+  default     = []
+}
