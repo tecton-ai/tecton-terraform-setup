@@ -83,7 +83,7 @@
                 "eks:AssociateEncryptionConfig"
             ],
             "Resource": [
-                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/${DEPLOYMENT_NAME}*"
+                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*"
             ]
         },
         {
@@ -96,7 +96,7 @@
                 "eks:UpdateNodegroupVersion"
             ],
             "Resource": [
-                "arn:aws:eks:*:${ACCOUNT_ID}:nodegroup/${DEPLOYMENT_NAME}*"
+                "arn:aws:eks:*:${ACCOUNT_ID}:nodegroup/tecton-${DEPLOYMENT_NAME}*"
             ]
         },
         {
