@@ -185,14 +185,13 @@ data "aws_iam_policy_document" "secrets_management_policy_document" {
 resource "aws_iam_policy" "secrets_management_policy" {
   name   = "tecton-${var.deployment_name}-secret-management"
   description = "IAM policy for secrets manager"
-  policy = data.aws_iam_policy_document.secrets_management_policy_document[0].json
+  policy = data.aws_iam_policy_document.secrets_management_policy_document.json
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_management_policy_attachment" {
   role       = aws_iam_role.eks_node_role.name
-  policy_arn = aws_iam_policy.secrets_management_policy[0].arn
+  policy_arn = aws_iam_policy.secrets_management_policy.arn
 }
-
 
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role" "devops_role" {
