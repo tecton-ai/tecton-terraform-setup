@@ -230,6 +230,25 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
   })
 }
 
+resource "aws_iam_policy" "rift_legacy_secrets_manager_access" {
+  count = var.enable_rift_legacy_secret_manager_access ? 1 : 0
+  name = "tecton-rift-legacy-secrets-manager-access"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+            "secretsmanager:*"
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:*:${local.account_id}:secret:tecton-*",
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy" "rift_ecr_readonly" {
   name = "tecton-rift-ecr-readonly"
   policy = jsonencode({
@@ -400,15 +419,24 @@ resource "aws_iam_policy" "additional_rift_compute_policy" {
 }
 
 locals {
-  rift_compute_policies = {
+  # Base set of policies to attach to the rift_compute role
+  rift_compute_policies_base = {
     rift_compute_logs    = aws_iam_policy.rift_compute_logs,
     offline_store_access = aws_iam_policy.offline_store_access,
     dynamo_db_access     = aws_iam_policy.rift_dynamodb_access,
     ecr_readonly         = aws_iam_policy.rift_ecr_readonly
   }
+  # Include legacy Secrets Manager access policy when enabled
+  rift_compute_policies = merge(
+    local.rift_compute_policies_base,
+    var.enable_rift_legacy_secret_manager_access ? {
+      rift_legacy_secrets_manager_access = aws_iam_policy.rift_legacy_secrets_manager_access[0]
+    } : {}
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "rift_compute_policies" {
+  # Attach each policy in the computed set
   for_each   = local.rift_compute_policies
   role       = aws_iam_role.rift_compute.name
   policy_arn = each.value.arn
