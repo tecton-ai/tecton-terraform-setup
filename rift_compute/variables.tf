@@ -53,6 +53,12 @@ variable "is_internal_workload" {
   description = "Flag to indicate if the workload is internal to Tecton. Set it to true if for dev and demo clusters."
 }
 
+variable "enable_rift_legacy_secret_manager_access" {
+  type        = bool
+  default     = false
+  description = "Flag to indicate if Rift jobs access secret manager directly instead of Tecton secrets. Set it to true if for Anyscale clusters."
+}
+
 variable "additional_rift_compute_policy_statements" {
   type        = list(any)
   description = "Additional IAM policy statements to attach to the rift_compute role"

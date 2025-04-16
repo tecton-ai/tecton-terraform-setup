@@ -230,6 +230,25 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
   })
 }
 
+resource "aws_iam_policy" "rift_legacy_secrets_manager_access" {
+  name = "tecton-rift-legacy-secrets-manager-access"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret"
+        ]
+        Resource = [
+          "arn:aws:secretsmanager:*:${local.account_id}:secret:tecton-*",
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy" "rift_ecr_readonly" {
   name = "tecton-rift-ecr-readonly"
   policy = jsonencode({
@@ -409,7 +428,10 @@ locals {
 }
 
 resource "aws_iam_role_policy_attachment" "rift_compute_policies" {
-  for_each   = local.rift_compute_policies
+  for_each   = !var.enable_rift_legacy_secret_manager_access ? local.rift_compute_policies:
+  merge(local.rift_compute_policies, {
+    rift_legacy_secrets_manager_access       = aws_iam_policy.rift_legacy_secrets_manager_access
+  })
   role       = aws_iam_role.rift_compute.name
   policy_arn = each.value.arn
 }
