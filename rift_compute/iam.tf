@@ -239,8 +239,7 @@ resource "aws_iam_policy" "rift_legacy_secrets_manager_access" {
       {
         Effect = "Allow"
         Action = [
-            "secretsmanager:GetSecretValue",
-            "secretsmanager:DescribeSecret"
+            "secretsmanager:*"
         ]
         Resource = [
           "arn:aws:secretsmanager:*:${local.account_id}:secret:tecton-*",
