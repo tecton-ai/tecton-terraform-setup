@@ -56,7 +56,7 @@ variable "is_internal_workload" {
 variable "enable_rift_legacy_secret_manager_access" {
   type        = bool
   default     = false
-  description = "Flag to indicate if Rift jobs access secret manager directly instead of Tecton secrets. Set it to true if for Anyscale clusters."
+  description = "Flag to indicate if Rift jobs access secret manager directly instead of Tecton secrets. Set it to true for some Anyscale clusters."
 }
 
 variable "additional_rift_compute_policy_statements" {
