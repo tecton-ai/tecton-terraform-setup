@@ -3,7 +3,7 @@ locals {
   spark_role_name = var.create_emr_roles ? aws_iam_role.emr_spark_role[0].name : var.databricks_spark_role_name
   # Include var.use_rift_cross_account_policy for backward compatibility
   use_rift_compute_on_control_plane = var.use_rift_compute_on_control_plane || (var.use_rift_cross_account_policy == true)
-  use_spark_compute                 = var.use_spark_compute && (var.use_rift_cross_account_policy != true)
+  use_spark_compute                 = var.use_spark_compute
 }
 
 data "aws_iam_role" "spark_role" {
