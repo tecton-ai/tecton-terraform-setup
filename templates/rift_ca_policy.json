@@ -21,7 +21,9 @@
                 "dynamodb:ListTagsOfResource",
                 "dynamodb:UpdateTable",
                 "dynamodb:UpdateTimeToLive",
-                "dynamodb:DescribeTimeToLive"
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:UpdateContinuousBackups"
             ],
             "Resource": [
                 "arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"
