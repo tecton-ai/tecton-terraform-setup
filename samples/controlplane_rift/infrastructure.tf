@@ -8,34 +8,19 @@ terraform {
 }
 
 provider "aws" {
-  # Replace with your region
-  region = "us-west-2"
-}
-
-locals {
-  # Deployment name must be less than 22 characters (AWS limitation)
-  deployment_name = "my-deployment-name"
-
-  # The region and account_id of this Tecton / AWS account
-  region     = "us-west-2" # Replace with your region
-  account_id = "1234567890" # Replace with your account ID
-
-  # Get from your Tecton rep
-  tecton_control_plane_account_id = "987654321" # Replace with your Tecton control plane account ID
-  # Get from your Tecton rep
-  cross_account_external_id = "tecton-external-id" # Replace with your Tecton external ID
+  region = var.region
 }
 
 module "tecton" {
   source                     = "../../deployment"
-  deployment_name            = local.deployment_name
-  account_id                 = local.account_id
-  region                     = local.region
-  cross_account_external_id  = local.cross_account_external_id
-  tecton_assuming_account_id = local.tecton_control_plane_account_id
+  deployment_name            = var.deployment_name
+  account_id                 = var.account_id
+  region                     = var.region
+  cross_account_external_id  = var.cross_account_external_id
+  tecton_assuming_account_id = var.tecton_control_plane_account_id
 
   # Control plane root principal
-  s3_read_write_principals          = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
-  use_spark_compute                 = false # Set to true if also enable Spark compute
+  s3_read_write_principals          = [format("arn:aws:iam::%s:root", var.tecton_control_plane_account_id)]
+  use_spark_compute                 = false
   use_rift_cross_account_policy     = true
 }

@@ -1,8 +1,8 @@
 output "deployment_name" {
-  value = local.deployment_name
+  value = var.deployment_name
 }
 output "region" {
-  value = local.region
+  value = var.region
 }
 output "compute_manager_arn" {
   value = module.rift.compute_manager_arn
