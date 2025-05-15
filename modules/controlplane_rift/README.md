@@ -19,7 +19,7 @@ Before using this module, ensure you have:
 To use this module, add a module block like the following to your Terraform configuration:
 
 ```terraform
-module "tecton_controlplane_rift" {
+module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/controlplane_rift"
 
   deployment_name            = "my-tecton-deployment" # Replace with the deployment name agreed with Tecton

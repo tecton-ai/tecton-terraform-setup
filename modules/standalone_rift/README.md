@@ -23,7 +23,7 @@ This module provisions the necessary Rift compute resources (IAM Roles, VPC, ECR
 ### Sample Invocation
 
 ```terraform
-module "standalone_rift_compute" {
+module "rift" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/standalone_rift"
 
   deployment_name                 = "deployment-name" # Replace with your deployment name (existing)

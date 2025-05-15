@@ -21,7 +21,7 @@ Before using this module, ensure you have:
 ### Sample Invocation
 
 ```terraform
-module "tecton_dataplane_rift" {
+module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/dataplane_rift"
 
   deployment_name                 = "deployment-name" # Replace with the deployment name agreed with Tecton

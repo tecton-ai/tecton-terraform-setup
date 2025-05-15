@@ -9,86 +9,51 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-west-2"
-}
-
-locals {
-  # Deployment name must be less than 22 characters (AWS limitation)
-  deployment_name = "my-deployment-name"
-
-  # The region and account_id of this Tecton account you just created
-  region     = "us-west-2"
-  account_id = "1234567890"
-
-  # Get from your Tecton rep
-  tecton_control_plane_account_id = "987654321"
-
-  # get from your tecton rep
-  cross_account_external_id = "tecton-external-id"
-
-  # OPTIONAL for EMR notebook clusters in a different account (see optional block at end of file)
-  # cross_account_arn = "arn:aws:iam::9876543210:root"
+  region = var.region
 }
 
 module "tecton" {
   source                     = "../deployment"
-  deployment_name            = local.deployment_name
-  account_id                 = local.account_id
-  region                     = local.region
-  cross_account_external_id  = local.cross_account_external_id
-  tecton_assuming_account_id = local.tecton_control_plane_account_id
+  deployment_name            = var.deployment_name
+  account_id                 = var.account_id
+  region                     = var.region
+  cross_account_external_id  = var.cross_account_external_id
+  tecton_assuming_account_id = var.tecton_control_plane_account_id
 
   create_emr_roles = true
 
-  s3_read_write_principals = [format("arn:aws:iam::%s:root", local.tecton_control_plane_account_id)]
+  s3_read_write_principals = [format("arn:aws:iam::%s:root", var.tecton_control_plane_account_id)]
 }
 
 module "security_groups" {
   source          = "../emr/security_groups"
-  deployment_name = local.deployment_name
-  region          = local.region
+  deployment_name = var.deployment_name
+  region          = var.region
   emr_vpc_id      = module.subnets.vpc_id
 }
 
-# optionally, use a Tecton default vpc/subnet configuration
 module "subnets" {
   source          = "../emr/vpc_subnets"
-  deployment_name = local.deployment_name
-  region          = local.region
+  deployment_name = var.deployment_name
+  region          = var.region
 }
-
 
 module "redis" {
   source = "../emr/redis"
-  # See https://docs.tecton.ai/latest/setting-up-tecton/configuring-redis.html
-  # By default Tecton comes with DynamoDB as the online store but you can optionally choose
-  # to use Redis.
-  # Enable by setting count to 1.
-  count                   = 0
+  count  = var.enable_redis ? 1 : 0
+
   redis_subnet_id         = module.subnets.emr_subnet_id
   redis_security_group_id = module.security_groups.emr_security_group_id
-  deployment_name         = local.deployment_name
-}
-
-locals {
-  # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-  notebook_cluster_count = 0
-
-  # Set count = 1 to allow Tecton to debug EMR clusters
-  emr_debugging_count = 0
+  deployment_name         = var.deployment_name
 }
 
 module "notebook_cluster" {
   source = "../emr/notebook_cluster"
-  # See https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites
-  # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
+  count  = var.enable_notebook_cluster ? 1 : 0
 
-  # Set count = 1 once your Tecton rep confirms Tecton has been deployed in your account
-  count = local.notebook_cluster_count
-
-  region          = local.region
-  deployment_name = local.deployment_name
-  instance_type   = "m5.xlarge"
+  region          = var.region
+  deployment_name = var.deployment_name
+  instance_type   = var.notebook_instance_type
 
   subnet_id            = module.subnets.emr_subnet_id
   instance_profile_arn = module.tecton.spark_role_name
@@ -97,36 +62,20 @@ module "notebook_cluster" {
   emr_security_group_id         = module.security_groups.emr_security_group_id
   emr_service_security_group_id = module.security_groups.emr_service_security_group_id
 
-  # OPTIONAL
-  # You can provide custom bootstrap action(s)
-  # to be performed upon notebook cluster creation
-  # extra_bootstrap_actions = [
-  #   {
-  #     name = "name_of_the_step"
-  #     path = "s3://path/to/script.sh"
-  #   }
-  # ]
-
-  has_glue        = true
-  glue_account_id = local.account_id
+  extra_bootstrap_actions = var.notebook_extra_bootstrap_actions
+  has_glue                = var.notebook_has_glue
+  glue_account_id         = var.notebook_has_glue ? coalesce(var.notebook_glue_account_id, var.account_id) : null
 }
 
-# This module adds some IAM privileges to enable your Tecton technical support
-# reps to open and execute EMR notebooks in your account to help troubleshoot
-# or test code you are developing. It also will give Tecton access to your EMR
-# notebook cluster logs.
-#
-# Enable this module by setting count = 1
 module "emr_debugging" {
   source = "../emr/debugging"
+  count  = var.enable_emr_debugging && var.enable_notebook_cluster ? 1 : 0
 
-  count = local.emr_debugging_count
-
-  deployment_name         = local.deployment_name
+  deployment_name         = var.deployment_name
   cross_account_role_name = module.tecton.cross_account_role_name
-  account_id              = local.account_id
-  log_uri_bucket          = module.notebook_cluster[0].logs_s3_bucket.bucket
-  log_uri_bucket_arn      = module.notebook_cluster[0].logs_s3_bucket.arn
+  account_id              = var.account_id
+  log_uri_bucket          = var.enable_notebook_cluster ? module.notebook_cluster[0].logs_s3_bucket.bucket : null
+  log_uri_bucket_arn      = var.enable_notebook_cluster ? module.notebook_cluster[0].logs_s3_bucket.arn : null
 }
 
 ##############################################################################################
@@ -144,8 +93,6 @@ module "emr_debugging" {
 
 #   assume_role {
 #     role_arn = "another-account-role-arn"
-#     # Once you run terraform for the first time, type `terraform output`
-#     # and copy the external_id below
 #     external_id = "my_external_id"
 #   }
 #   alias = "cross_account"
@@ -159,18 +106,17 @@ module "emr_debugging" {
 #   source = "../emr/cross_account"
 
 #   cidr_block              = "10.0.0.0/16"
-#   deployment_name         = local.deployment_name
+#   deployment_name         = var.deployment_name
 #   enable_notebook_cluster = true
-#   region                  = local.region
-#   # roles below created by `aws emr create-default-roles`
-#   # note that this role also needs access to S3 and Secretsmanager
+#   region                  = var.region
 #   emr_instance_profile_name = "EMR_EC2_DefaultRole"
 #   emr_service_role_name     = "EMR_DefaultRole"
-#   glue_account_id           = local.account_id
+#   glue_account_id           = var.account_id
 # }
 
-# # gives the cross-account permissions to read the materialized data bucket
 # resource "aws_s3_bucket_policy" "read-only-access" {
+#   count = var.cross_account_principal_arn_for_s3_policy != null ? 1 : 0
+
 #   bucket = module.tecton.s3_bucket.bucket
 #   policy = jsonencode({
 #     Version = "2012-10-17"
@@ -179,12 +125,11 @@ module "emr_debugging" {
 #         Sid    = "AllowReadOnly"
 #         Effect = "Allow"
 #         Principal = {
-#           "AWS" : local.cross_account_arn
+#           "AWS" : var.cross_account_principal_arn_for_s3_policy
 #         }
 #         Action = ["s3:Get*", "s3:List*"]
 #         Resource = [
 #           module.tecton.s3_bucket.arn,
-#           # you may want to scope down the paths allowed further
 #           "${module.tecton.s3_bucket.arn}/*"
 #         ]
 #       }
