@@ -20,6 +20,39 @@ This module provisions the necessary Rift compute resources (IAM Roles, VPC, ECR
     *   Log S3 bucket name
     *   Offline Store S3 bucket name
 
+### Sample Invocation
+
+```terraform
+module "standalone_rift_compute" {
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/standalone_rift"
+
+  deployment_name                 = "deployment-name" # Replace with your deployment name (existing)
+  region                          = "us-west-2" # Replace with your region
+  account_id                      = "123456789012" # Your AWS Account ID
+  subnet_azs                      = ["us-west-2a", "us-west-2b", "us-west-2c"] # AZs in your region
+  tecton_control_plane_account_id = "987654321098" # Tecton's Control Plane Account ID
+  tecton_control_plane_role_name  = "TectonControlPlaneRole" # Role name provided by tecton
+  log_bucket_name                 = "tecton-deployment-name" # Existing S3 Bucket
+  offline_store_bucket_name       = "tecton-deployment-name" # Existing S3 Bucket
+
+  # Optional: For PrivateLink to Control Plane
+  # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
+
+  # Optional: For Network Firewall
+  # use_network_firewall = true
+  # additional_allowed_egress_domains = ["example.com", "*.example.org"]
+}
+```
+
+### Steps to Deploy
+
+1.  Ensure you have an existing Tecton environment and the prerequisite information.
+2.  Create a `.tf` file with the module invocation above, providing your specific values.
+3.  Initialize Terraform: `terraform init`
+4.  Review the plan: `terraform plan`
+5.  Apply the configuration: `terraform apply`
+6.  Verify the new Rift compute resources and their integration with your Tecton control plane.
+
 #### Inputs
 
 **Required Inputs:**
@@ -51,35 +84,3 @@ Key outputs from this module include:
 
 These outputs might be needed for configuring Tecton or for your own reference.
 
-### Sample Invocation
-
-```terraform
-module "standalone_rift_compute" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/standalone_rift"
-
-  deployment_name                 = "my-rift-cluster"
-  region                          = "us-west-2"
-  account_id                      = "123456789012" # Your AWS Account ID
-  subnet_azs                      = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  tecton_control_plane_account_id = "987654321098" # Tecton's Control Plane Account ID
-  tecton_control_plane_role_name  = "TectonControlPlaneRole" # Role name from Tecton
-  log_bucket_name                 = "my-existing-tecton-log-bucket"
-  offline_store_bucket_name       = "my-existing-tecton-offline-store-bucket"
-
-  # Optional: For PrivateLink to Control Plane
-  # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
-
-  # Optional: For Network Firewall
-  # use_network_firewall = true
-  # additional_allowed_egress_domains = ["example.com", "*.example.org"]
-}
-```
-
-### Steps to Deploy
-
-1.  Ensure you have an existing Tecton environment and the prerequisite information.
-2.  Create a `.tf` file with the module invocation above, providing your specific values.
-3.  Initialize Terraform: `terraform init`
-4.  Review the plan: `terraform plan`
-5.  Apply the configuration: `terraform apply`
-6.  Verify the new Rift compute resources and their integration with your Tecton control plane.

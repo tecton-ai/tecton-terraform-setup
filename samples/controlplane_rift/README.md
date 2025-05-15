@@ -4,9 +4,7 @@ This directory contains a Terraform module for deploying a Tecton environment us
 
 For Tecton configurations with Rift compute running in your account (**data plane**), you should instead use the [dataplane_rift](../dataplane_rift/) module.
 
-### Using this Module
-
-This module creates the necessary AWS resources in your account for a Tecton control plane deployment with Rift.
+### Using this module
 
 #### Prerequisites
 
@@ -16,6 +14,31 @@ Before using this module, ensure you have:
 3.  The following information from your Tecton representative:
     *   Tecton Control Plane Account ID
     *   Cross-Account External ID
+
+
+To use this module, add a module block like the following to your Terraform configuration:
+
+```terraform
+module "tecton_controlplane_rift" {
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/controlplane_rift"
+
+  deployment_name            = "my-tecton-deployment" # Replace with the deployment name agreed with Tecton
+  region                     = "us-west-2" # Replace with the region your account/Tecton deployment will use
+  account_id                 = "123456789012" # Replace with your AWS Account ID
+  tecton_control_plane_account_id = "987654321098" # Replace with Tecton's Control Plane Account ID
+  cross_account_external_id  = "your-tecton-external-id"   # Replace with the External ID from Tecton
+}
+```
+
+### Steps to Deploy (when using this module)
+
+1.  Create a `.tf` file (e.g., `main.tf`) with the module invocation above, replacing placeholder values.
+2.  Initialize Terraform: `terraform init`
+3.  Review the plan: `terraform plan`
+4.  Apply the configuration: `terraform apply`
+5.  Share the output values (like `cross_account_role_arn`) with your Tecton representative.
+
+### Details
 
 #### Inputs
 
@@ -34,27 +57,3 @@ The module will output several values, including:
 *   `cross_account_external_id`: The external ID used (should match your input).
 
 These outputs need to be shared with your Tecton representative to complete the deployment.
-
-### Sample Invocation
-
-To use this module, add a module block like the following to your Terraform configuration:
-
-```terraform
-module "tecton_controlplane_rift" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/controlplane_rift"
-
-  deployment_name            = "my-tecton-deployment"
-  region                     = "us-west-2" # Replace with the region your account/Tecton deployment will use
-  account_id                 = "123456789012" # Replace with your AWS Account ID
-  tecton_control_plane_account_id = "987654321098" # Replace with Tecton's Control Plane Account ID
-  cross_account_external_id  = "your-tecton-external-id"   # Replace with the External ID from Tecton
-}
-```
-
-### Steps to Deploy (when using this module)
-
-1.  Create a `.tf` file (e.g., `main.tf`) with the module invocation above, replacing placeholder values.
-2.  Initialize Terraform: `terraform init`
-3.  Review the plan: `terraform plan`
-4.  Apply the configuration: `terraform apply`
-5.  Share the output values (like `cross_account_role_arn`) with your Tecton representative.

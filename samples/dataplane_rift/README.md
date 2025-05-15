@@ -1,6 +1,6 @@
 ## `dataplane_rift`
 
-This directory contains a Terraform module for deploying Tecton's data plane resources along with the [Rift](https://docs.tecton.ai/docs/concepts/compute-in-tecton#rift) compute engine. This module is intended for configurations where Rift compute runs within your AWS data plane account.
+This directory contains a Terraform module for deploying Tecton's data plane resources along with the [Rift](https://docs.tecton.ai/docs/concepts/compute-in-tecton#rift) compute engine. This module is intended for configurations where Rift compute runs within your AWS account ('data plane').
 
 ### Using this Module
 
@@ -17,6 +17,34 @@ Before using this module, ensure you have:
     *   Tecton Control Plane Account ID
     *   Cross-Account External ID
     *   Tecton Control Plane IAM Role Name
+
+### Sample Invocation
+
+```terraform
+module "tecton_dataplane_rift" {
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/dataplane_rift"
+
+  deployment_name                 = "deployment-name" # Replace with the deployment name agreed with Tecton
+  region                          = "us-west-2" # Replace with the region your account/Tecton deployment will use
+  account_id                      = "123456789012" # Your AWS Account ID
+  subnet_azs                      = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  tecton_control_plane_account_id = "987654321098" # Tecton's Control Plane Account ID
+  cross_account_external_id       = "your-external-id"    # External ID from Tecton
+  tecton_control_plane_role_name  = "TectonControlPlaneRole" # Role name from Tecton
+
+  # Optional: For PrivateLink to Control Plane. Add _after_ deployment is complete and PrivateLink details are shared by Tecton
+  # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
+}
+```
+
+### Steps to Deploy (when using this module)
+
+1.  Create a `.tf` file (e.g., `dataplane.tf`) with the module invocation above, replacing placeholder values with your specific details.
+2.  Initialize Terraform: `terraform init`
+3.  Review the plan: `terraform plan`
+4.  Apply the configuration: `terraform apply`
+5.  Share any required output values with your Tecton representative.
+
 
 #### Inputs
 
@@ -50,35 +78,4 @@ Key outputs from this module include:
 *   `rift_compute_security_group_id`: ID of the security group for Rift compute instances.
 *   `nat_gateway_public_ips`: Public IP addresses of the NAT Gateways used by the Rift VPC.
 
-These outputs, particularly `cross_account_role_arn`, may need to be shared with your Tecton representative.
-
-### Sample Invocation
-
-```terraform
-module "tecton_dataplane_rift" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/dataplane_rift"
-
-  deployment_name                 = "my-dataplane"
-  region                          = "us-west-2"
-  account_id                      = "123456789012" # Your AWS Account ID
-  subnet_azs                      = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  tecton_control_plane_account_id = "987654321098" # Tecton's Control Plane Account ID
-  cross_account_external_id       = "your-external-id"    # External ID from Tecton
-  tecton_control_plane_role_name  = "TectonControlPlaneRole" # Role name from Tecton
-
-  # Optional: For PrivateLink to Control Plane
-  # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
-
-  # Optional: For Network Firewall
-  # use_network_firewall = true
-  # additional_allowed_egress_domains = ["example.com", "*.example.org"]
-}
-```
-
-### Steps to Deploy (when using this module)
-
-1.  Create a `.tf` file (e.g., `dataplane.tf`) with the module invocation above, replacing placeholder values with your specific details.
-2.  Initialize Terraform: `terraform init`
-3.  Review the plan: `terraform plan`
-4.  Apply the configuration: `terraform apply`
-5.  Share any required output values with your Tecton representative.
+These outputs need to be shared with your Tecton representative to complete the deployment.
