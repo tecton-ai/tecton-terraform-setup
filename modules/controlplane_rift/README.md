@@ -49,11 +49,13 @@ This module requires the following input variables:
 *   `account_id`: (string) Your AWS account ID where Tecton resources will be deployed.
 *   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
 *   `cross_account_external_id`: (string) The external ID for cross-account access (from your Tecton rep).
+*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
 
 #### Outputs
 
 The module will output several values, including:
 *   `cross_account_role_arn`: The ARN of the IAM role created for Tecton to access your account.
 *   `cross_account_external_id`: The external ID used (should match your input).
+*   `kms_key_arn`: ARN of the customer-managed key for encrypting data at rest.
 
 These outputs need to be shared with your Tecton representative to complete the deployment.

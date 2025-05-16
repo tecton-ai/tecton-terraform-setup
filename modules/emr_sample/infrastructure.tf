@@ -19,7 +19,7 @@ module "tecton" {
   region                     = var.region
   cross_account_external_id  = var.cross_account_external_id
   tecton_assuming_account_id = var.tecton_control_plane_account_id
-
+  kms_key_id                 = var.kms_key_id
   create_emr_roles = true
 
   s3_read_write_principals = [format("arn:aws:iam::%s:root", var.tecton_control_plane_account_id)]

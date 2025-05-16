@@ -37,3 +37,9 @@ variable "cross_account_external_id" {
   description = "The external ID for cross-account access by Tecton. Obtain this from your Tecton representative."
   type        = string
 } 
+
+variable "kms_key_id" {
+  description = "(Optional) The customer-managed key for encrypting data at rest."
+  type        = string
+  default     = null
+}

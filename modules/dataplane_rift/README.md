@@ -57,6 +57,7 @@ This module requires the following input variables:
 *   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
 *   `cross_account_external_id`: (string) The external ID for cross-account access (from your Tecton rep).
 *   `tecton_control_plane_role_name`: (string) The name of the Tecton control plane IAM role (from your Tecton rep).
+*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
 
 **Optional Inputs:**
 
@@ -77,5 +78,6 @@ Key outputs from this module include:
 *   `compute_instance_profile_arn`: ARN of the Rift compute instance profile.
 *   `rift_compute_security_group_id`: ID of the security group for Rift compute instances.
 *   `nat_gateway_public_ips`: Public IP addresses of the NAT Gateways used by the Rift VPC.
+*   `kms_key_arn`: ARN of the customer-managed key for encrypting data at rest.
 
 These outputs need to be shared with your Tecton representative to complete the deployment.

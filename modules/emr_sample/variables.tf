@@ -23,6 +23,12 @@ variable "cross_account_external_id" {
   type        = string
 }
 
+variable "kms_key_id" {
+  description = "(Optional) The customer-managed key for encrypting data at rest."
+  type        = string
+  default     = null
+}
+
 variable "enable_redis" {
   description = "Set to true to deploy Redis as an online store. Default is false (DynamoDB is used)."
   type        = bool

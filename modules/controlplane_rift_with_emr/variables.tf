@@ -23,6 +23,12 @@ variable "cross_account_external_id" {
   type        = string
 }
 
+variable "kms_key_id" {
+  description = "(Optional) The customer-managed key for encrypting data at rest."
+  type        = string
+  default     = null
+}
+
 variable "notebook_cluster_count" {
   description = "Set to 1 to create the EMR notebook cluster. Set to 0 to disable. Requires Tecton deployment to be confirmed by your Tecton rep."
   type        = number

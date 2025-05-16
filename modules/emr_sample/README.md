@@ -66,6 +66,7 @@ Before using this module, ensure you have:
 *   `account_id`: (string) Your AWS account ID where Tecton and EMR resources will be deployed.
 *   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
 *   `cross_account_external_id`: (string) The external ID for cross-account access by Tecton (from your Tecton rep).
+*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
 
 **Optional Inputs:**
 

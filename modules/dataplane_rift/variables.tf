@@ -28,6 +28,12 @@ variable "cross_account_external_id" {
   type        = string
 }
 
+variable "kms_key_id" {
+  description = "(Optional) The customer-managed key for encrypting data at rest."
+  type        = string
+  default     = null
+}
+
 variable "tecton_control_plane_role_name" {
   description = "The name of the Tecton control plane IAM role. Obtain this from your Tecton representative."
   type        = string

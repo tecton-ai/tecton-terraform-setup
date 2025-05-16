@@ -10,6 +10,9 @@ output "cross_account_role_arn" {
 output "cross_account_external_id" {
   value = var.cross_account_external_id
 }
+output "kms_key_arn" {
+  value = module.tecton.kms_key_arn
+}
 output "compute_manager_arn" {
   value = module.rift.compute_manager_arn
 }

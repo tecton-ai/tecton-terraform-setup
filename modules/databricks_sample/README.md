@@ -63,6 +63,7 @@ This module requires the following input variables:
 *   `databricks_workspace_url`: (string) The URL of your Databricks workspace (e.g., `mycompany.cloud.databricks.com`).
 *   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
 *   `cross_account_external_id`: (string) The external ID for cross-account access by Tecton (from your Tecton rep).
+*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
 
 #### Outputs
 
@@ -75,5 +76,5 @@ Key outputs from this module include:
 *   `spark_role_name`: The Databricks Spark role name provided as input.
 *   `spark_instance_profile_name`: The Databricks instance profile name provided as input.
 *   `databricks_workspace_url`: The Databricks workspace URL provided as input.
-*   `kms_key_arn`: ARN of the KMS key created for data encryption by Tecton.
+*   `kms_key_arn`: ARN of the customer-managed key for encrypting data at rest.
 
