@@ -2,7 +2,7 @@
 
 This Terraform module deploys the [Rift](https://docs.tecton.ai/docs/concepts/compute-in-tecton#rift) compute engine resources for an **existing** Tecton deployment. It is designed for configurations where Rift compute runs in your AWS data plane account.
 
-⚠️ **Important:** This module is intended to add Rift compute to an already deployed Tecton environment. If you are setting up a new Tecton environment from scratch, including core data plane resources (like S3 buckets, KMS keys) and Rift, you should use the [dataplane_rift](../dataplane_rift/) module instead.
+⚠️ **Important:** This module is intended to add Rift compute engine capabilities to an already deployed Tecton environment. If you are setting up a new Tecton environment from scratch, including core data plane resources (like S3 buckets, KMS keys) and Rift, you should use the [dataplane_rift](../dataplane_rift/) module instead.
 
 ### Using this Module
 
@@ -24,7 +24,7 @@ This module provisions the necessary Rift compute resources (IAM Roles, VPC, ECR
 
 ```terraform
 module "rift" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/standalone_rift"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/standalone_rift"
 
   deployment_name                 = "deployment-name" # Replace with your deployment name (existing)
   region                          = "us-west-2" # Replace with your region

@@ -29,10 +29,6 @@ To use this module, add a module block like the following to your Terraform conf
 
 ```terraform
 module "tecton" {
-  # Adjust the source path based on where you place this module in your repository structure.
-  # For example, if your repo is github.com/my-org/my-infra:
-  # source = "git::https://github.com/my-org/my-infra.git//modules/databricks_sample"
-  # Using the official Tecton repo as an example for structure:
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/databricks_sample"
 
   deployment_name                 = "tecton-databricks-prod"

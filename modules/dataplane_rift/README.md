@@ -22,7 +22,7 @@ Before using this module, ensure you have:
 
 ```terraform
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/dataplane_rift"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift"
 
   deployment_name                 = "deployment-name" # Replace with the deployment name agreed with Tecton
   region                          = "us-west-2" # Replace with the region your account/Tecton deployment will use

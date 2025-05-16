@@ -19,10 +19,6 @@ This module provisions:
 
 ```terraform
 module "tecton" {
-  # Adjust the source path based on where you place this module in your repository structure.
-  # Example for a repository named 'my-infra' at 'github.com/my-org/':
-  # source = "git::https://github.com/my-org/my-infra.git//modules/emr_sample"
-  # Using the official Tecton repo as an example for structure:
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/emr_sample"
 
   deployment_name                 = "tecton-prod-emr"

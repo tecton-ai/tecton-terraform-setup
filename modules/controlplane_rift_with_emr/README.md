@@ -21,7 +21,7 @@ Before using this module, ensure you have:
 
 ```terraform
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/controlplane_rift_with_emr"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift_with_emr"
 
   deployment_name                 = "my-tecton-deployment" # Replace with the deployment name agreed with Tecton
   region                          = "us-west-2" # Replace with the region your account/Tecton deployment will use

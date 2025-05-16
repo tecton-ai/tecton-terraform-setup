@@ -2,7 +2,7 @@
 
 This repository provides a collection of Terraform modules to help you set up and configure your AWS environment for [deploying Tecton](https://docs.tecton.ai/docs/setting-up-tecton). There are different modules for different deployment scenarios / compute engines.
 
-Each module is structured to be used as a remote module, referenced via a Git source in your Terraform configurations.
+Each module is structured to be used as a remote module, referenced via a Git source in your Terraform configurations. You can also clone this repository and reference the modules locally.
 
 Below is a list of the available modules, each with a specific focus:
 
@@ -38,7 +38,7 @@ Each module directory linked above contains its own detailed `README.md` which i
 To use any of these modules, you would typically reference its path using a Git source in your Terraform configuration. For example:
 
 ```terraform
-module "my_tecton_dataplane_rift_setup" {
+module "tecton" {
   # This example uses the dataplane_rift module
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift" # Path updated
 

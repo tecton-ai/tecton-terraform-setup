@@ -20,7 +20,7 @@ To use this module, add a module block like the following to your Terraform conf
 
 ```terraform
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//samples/controlplane_rift"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift"
 
   deployment_name            = "my-tecton-deployment" # Replace with the deployment name agreed with Tecton
   region                     = "us-west-2" # Replace with the region your account/Tecton deployment will use
