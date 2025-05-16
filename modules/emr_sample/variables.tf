@@ -68,7 +68,30 @@ variable "notebook_glue_account_id" {
   default     = null
 }
 
-# Variable related to the commented-out cross-account EMR section
+variable "enable_cross_account_emr_notebook_cluster" {
+  description = "(Optional) Set to true to include a cross-account EMR notebook cluster. Requires also setting: emr_notebook_cross_account_region, emr_notebook_cross_account_role_arn, emr_notebook_cross_account_external_id, and cross_account_principal_arn_for_s3_policy."
+  type        = bool
+  default     = false
+}
+
+variable "emr_notebook_cross_account_region" {
+  description = "(Optional) The AWS region of the cross-account EMR notebook cluster."
+  type        = string
+  default     = null
+}
+
+variable "emr_notebook_cross_account_role_arn" {
+  description = "(Optional) The ARN of the role in the cross-account EMR notebook cluster."
+  type        = string
+  default     = null
+}
+
+variable "emr_notebook_cross_account_external_id" {
+  description = "(Optional) The external ID for cross-account access by the EMR notebook cluster."
+  type        = string
+  default     = null
+}
+
 variable "cross_account_principal_arn_for_s3_policy" {
   description = "(Optional) The ARN of the principal in another account that should get read-only access to the Tecton S3 bucket. Used if setting up cross-account EMR notebooks manually or extending this module."
   type        = string

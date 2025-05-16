@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source                     = "../deployment"
+  source                     = "../../deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
@@ -26,20 +26,20 @@ module "tecton" {
 }
 
 module "security_groups" {
-  source          = "../emr/security_groups"
+  source          = "../../emr/security_groups"
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.subnets.vpc_id
 }
 
 module "subnets" {
-  source          = "../emr/vpc_subnets"
+  source          = "../../emr/vpc_subnets"
   deployment_name = var.deployment_name
   region          = var.region
 }
 
 module "redis" {
-  source = "../emr/redis"
+  source = "../../emr/redis"
   count  = var.enable_redis ? 1 : 0
 
   redis_subnet_id         = module.subnets.emr_subnet_id
@@ -48,7 +48,7 @@ module "redis" {
 }
 
 module "notebook_cluster" {
-  source = "../emr/notebook_cluster"
+  source = "../../emr/notebook_cluster"
   count  = var.enable_notebook_cluster ? 1 : 0
 
   region          = var.region
@@ -68,7 +68,7 @@ module "notebook_cluster" {
 }
 
 module "emr_debugging" {
-  source = "../emr/debugging"
+  source = "../../emr/debugging"
   count  = var.enable_emr_debugging && var.enable_notebook_cluster ? 1 : 0
 
   deployment_name         = var.deployment_name
@@ -88,51 +88,48 @@ module "emr_debugging" {
 # modules and also the relevant local vars
 ##############################################################################################
 
-# provider "aws" {
-#   region = "this-accounts-region"
+provider "aws" {
+  region = var.emr_notebook_cross_account_region
+  assume_role {
+    role_arn = var.emr_notebook_cross_account_role_arn
+    external_id = var.emr_notebook_cross_account_external_id
+  }
+  alias = "cross_account"
+}
 
-#   assume_role {
-#     role_arn = "another-account-role-arn"
-#     external_id = "my_external_id"
-#   }
-#   alias = "cross_account"
-# }
+module "cross-account-notebook" {
+  providers = {
+    aws = aws.cross_account
+  }
+  count  = var.enable_cross_account_emr_notebook_cluster ? 1 : 0
+  source = "../../emr/cross_account"
+  cidr_block              = "10.0.0.0/16"
+  deployment_name         = var.deployment_name
+  enable_notebook_cluster = true
+  region                  = var.region
+  emr_instance_profile_name = "EMR_EC2_DefaultRole"
+  emr_service_role_name     = "EMR_DefaultRole"
+  glue_account_id           = var.account_id
+}
 
-# module "cross-account-notebook" {
-#   providers = {
-#     aws = aws.cross_account
-#   }
-#   count  = 0
-#   source = "../emr/cross_account"
-
-#   cidr_block              = "10.0.0.0/16"
-#   deployment_name         = var.deployment_name
-#   enable_notebook_cluster = true
-#   region                  = var.region
-#   emr_instance_profile_name = "EMR_EC2_DefaultRole"
-#   emr_service_role_name     = "EMR_DefaultRole"
-#   glue_account_id           = var.account_id
-# }
-
-# resource "aws_s3_bucket_policy" "read-only-access" {
-#   count = var.cross_account_principal_arn_for_s3_policy != null ? 1 : 0
-
-#   bucket = module.tecton.s3_bucket.bucket
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid    = "AllowReadOnly"
-#         Effect = "Allow"
-#         Principal = {
-#           "AWS" : var.cross_account_principal_arn_for_s3_policy
-#         }
-#         Action = ["s3:Get*", "s3:List*"]
-#         Resource = [
-#           module.tecton.s3_bucket.arn,
-#           "${module.tecton.s3_bucket.arn}/*"
-#         ]
-#       }
-#     ]
-#   })
-# }
+resource "aws_s3_bucket_policy" "read-only-access" {
+  count = var.cross_account_principal_arn_for_s3_policy != null ? 1 : 0
+  bucket = module.tecton.s3_bucket.bucket
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowReadOnly"
+        Effect = "Allow"
+        Principal = {
+          "AWS" : var.cross_account_principal_arn_for_s3_policy
+        }
+        Action = ["s3:Get*", "s3:List*"]
+        Resource = [
+          module.tecton.s3_bucket.arn,
+          "${module.tecton.s3_bucket.arn}/*"
+        ]
+      }
+    ]
+  })
+}

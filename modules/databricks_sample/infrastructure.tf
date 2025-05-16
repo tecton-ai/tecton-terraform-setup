@@ -13,7 +13,7 @@ provider "aws" {
 
 # this example assumes that Databricks and Tecton are deployed to the same account
 module "tecton" {
-  source                     = "../deployment"
+  source                     = "../../deployment"
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
