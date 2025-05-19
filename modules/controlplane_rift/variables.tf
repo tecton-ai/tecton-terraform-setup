@@ -9,7 +9,7 @@ variable "region" {
 }
 
 variable "account_id" {
-  description = "The AWS account ID where Tecton will be deployed."
+  description = "ID of the AWS account where Tecton will be deployed."
   type        = string
 }
 

@@ -1,0 +1,39 @@
+name: Verify terraform docs
+on:
+  - pull_request
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Set up Go
+      uses: actions/setup-go@v5 # terraform-docs-go is a Go application
+      with:
+        go-version: 'stable' # Or a specific version if needed
+
+    - name: Install terraform-docs
+      run: go install github.com/terraform-docs/terraform-docs@v0.20.0 # Match version in pre-commit
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install pre-commit
+      run: pip install pre-commit
+
+    - name: Run terraform-docs via pre-commit
+      run: pre-commit run terraform-docs-go --all-files --config .pre-commit-config.yaml
+
+    - name: Check for documentation changes
+      run: |
+        git diff --exit-code
+        if [ $? -ne 0 ]; then
+          echo " Terraform documentation is not up-to-date. Please run 'pre-commit run terraform-docs-go --all-files' and commit the changes."
+          exit 1
+        fi
+        echo "Terraform documentation is up-to-date."

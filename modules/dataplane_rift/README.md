@@ -47,39 +47,45 @@ module "tecton" {
 4.  Apply the configuration: `terraform apply`
 5.  Share any required output values with your Tecton representative.
 
+### Details
 
-#### Inputs
+<!-- BEGIN_TF_DOCS -->
 
-This module requires the following input variables:
 
-*   `deployment_name`: (string) The name for your Tecton deployment (must be less than 22 characters).
-*   `region`: (string) The AWS region for the deployment (e.g., "us-west-2").
-*   `account_id`: (string) Your AWS account ID where Tecton resources will be deployed.
-*   `subnet_azs`: (list(string)) A list of Availability Zones for the Rift VPC subnets (e.g., `["us-west-2a", "us-west-2b", "us-west-2c"]`).
-*   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
-*   `cross_account_external_id`: (string) The external ID for cross-account access (from your Tecton rep).
-*   `tecton_control_plane_role_name`: (string) The name of the Tecton control plane IAM role (from your Tecton rep).
-*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
+## Inputs
 
-**Optional Inputs:**
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton will be deployed. | `string` | n/a | yes |
+| <a name="input_additional_allowed_egress_domains"></a> [additional\_allowed\_egress\_domains](#input\_additional\_allowed\_egress\_domains) | (Optional) List of additional domains to allow for egress if use\_network\_firewall is true. | `list(string)` | `null` | no |
+| <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name of the Tecton deployment. Must be less than 22 characters due to AWS limitations. | `string` | n/a | yes |
+| <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key for encrypting data at rest. | `string` | `null` | no |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region for the Tecton deployment. | `string` | n/a | yes |
+| <a name="input_subnet_azs"></a> [subnet\_azs](#input\_subnet\_azs) | A list of Availability Zones for the subnets. | `list(string)` | n/a | yes |
+| <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_tecton_control_plane_role_name"></a> [tecton\_control\_plane\_role\_name](#input\_tecton\_control\_plane\_role\_name) | The name of the Tecton control plane IAM role. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_tecton_privatelink_egress_rules"></a> [tecton\_privatelink\_egress\_rules](#input\_tecton\_privatelink\_egress\_rules) | (Optional) List of egress rules for the Tecton PrivateLink security group. | <pre>list(object({<br/>    cidr        = string<br/>    from_port   = number<br/>    to_port     = number<br/>    protocol    = string<br/>    description = string<br/>  }))</pre> | `null` | no |
+| <a name="input_tecton_privatelink_ingress_rules"></a> [tecton\_privatelink\_ingress\_rules](#input\_tecton\_privatelink\_ingress\_rules) | (Optional) List of ingress rules for the Tecton PrivateLink security group. | <pre>list(object({<br/>    cidr        = string<br/>    from_port   = number<br/>    to_port     = number<br/>    protocol    = string<br/>    description = string<br/>  }))</pre> | `null` | no |
+| <a name="input_tecton_vpce_service_name"></a> [tecton\_vpce\_service\_name](#input\_tecton\_vpce\_service\_name) | (Optional) The VPC endpoint service name for Tecton. Only needed if using PrivateLink. | `string` | `null` | no |
+| <a name="input_use_network_firewall"></a> [use\_network\_firewall](#input\_use\_network\_firewall) | (Optional) Set to true to restrict egress from Rift compute using a network firewall. | `bool` | `false` | no |  
+## Outputs
 
-*   `tecton_vpce_service_name`: (string, default: `null`) The VPC endpoint service name for Tecton. Only needed if your Tecton deployment uses PrivateLink for control plane access.
-*   `tecton_privatelink_ingress_rules`: (list(object), default: `null`) Custom ingress rules for the Tecton PrivateLink VPC endpoint security group.
-    *   Each object has `cidr`, `from_port`, `to_port`, `protocol`, `description`.
-*   `tecton_privatelink_egress_rules`: (list(object), default: `null`) Custom egress rules for the Tecton PrivateLink VPC endpoint security group.
-    *   Each object has `cidr`, `from_port`, `to_port`, `protocol`, `description`.
-*   `use_network_firewall`: (bool, default: `false`) Set to `true` to enable an AWS Network Firewall in the Rift VPC with egress restrictions based on a list of allowed domains.
-*   `additional_allowed_egress_domains`: (list(string), default: `null`) If `use_network_firewall` is true, this list extends the default allowed egress domains.
+| Name | Description |
+|------|-------------|
+| <a name="output_anyscale_docker_target_repo"></a> [anyscale\_docker\_target\_repo](#output\_anyscale\_docker\_target\_repo) | n/a |
+| <a name="output_compute_arn"></a> [compute\_arn](#output\_compute\_arn) | n/a |
+| <a name="output_compute_instance_profile_arn"></a> [compute\_instance\_profile\_arn](#output\_compute\_instance\_profile\_arn) | n/a |
+| <a name="output_compute_manager_arn"></a> [compute\_manager\_arn](#output\_compute\_manager\_arn) | n/a |
+| <a name="output_cross_account_external_id"></a> [cross\_account\_external\_id](#output\_cross\_account\_external\_id) | n/a |
+| <a name="output_cross_account_role_arn"></a> [cross\_account\_role\_arn](#output\_cross\_account\_role\_arn) | n/a |
+| <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | n/a |
+| <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | n/a |
+| <a name="output_nat_gateway_public_ips"></a> [nat\_gateway\_public\_ips](#output\_nat\_gateway\_public\_ips) | n/a |
+| <a name="output_region"></a> [region](#output\_region) | n/a |
+| <a name="output_rift_compute_security_group_id"></a> [rift\_compute\_security\_group\_id](#output\_rift\_compute\_security\_group\_id) | n/a |
+| <a name="output_vm_workload_subnet_ids"></a> [vm\_workload\_subnet\_ids](#output\_vm\_workload\_subnet\_ids) | n/a |
+<!-- END_TF_DOCS -->
 
-#### Outputs
-
-Key outputs from this module include:
-
-*   `cross_account_role_arn`: The ARN of the IAM role created for Tecton to access your data plane account.
-*   `compute_manager_arn`: ARN of the Rift compute manager IAM role.
-*   `compute_instance_profile_arn`: ARN of the Rift compute instance profile.
-*   `rift_compute_security_group_id`: ID of the security group for Rift compute instances.
-*   `nat_gateway_public_ips`: Public IP addresses of the NAT Gateways used by the Rift VPC.
-*   `kms_key_arn`: ARN of the customer-managed key for encrypting data at rest.
 
 These outputs need to be shared with your Tecton representative to complete the deployment.

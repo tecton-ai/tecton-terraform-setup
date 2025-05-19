@@ -1,40 +1,41 @@
 ## Pass to Tecton rep
 
 output "compute_manager_arn" {
-  # input for module/tecton-saas: `ray_cluster_manager_arn`
-  # input for kustomization.yaml: `RAY_CLUSTER_MANAGER_ROLE`
+  description = "ARN of the IAM role for Rift compute manager"
   value = aws_iam_role.rift_compute_manager.arn
 }
 
 output "compute_instance_profile_arn" {
-  # input for kustomization.yaml: `RAY_INSTANCE_PROFILE`
+  description = "ARN of the IAM instance profile for Rift compute"
   value = aws_iam_instance_profile.rift_compute.arn
 }
 
 output "compute_arn" {
-  # input for CFT `s3_read_write_principals`
+  description = "ARN of the IAM role for Rift compute"
   value = aws_iam_role.rift_compute.arn
 }
 
 output "vm_workload_subnet_ids" {
-  # input for kustomization.yaml: `RAY_INSTANCE_PROFILE`
+  description = "List (comma-separated string) of subnet IDs for Rift compute instances"
   value = join(",", [for subnet in aws_subnet.private : subnet.id])
 }
 
 output "anyscale_docker_target_repo" {
-  # input for kustomization.yaml: `ANYSCALE_DOCKER_TARGET_REPO`
+  description = "ECR repository URL for Rift compute"
   value = aws_ecr_repository.rift_env.repository_url
 }
 
 output "rift_ecr_repo_arn" {
+  description = "ARN of the ECR repository for Rift compute"
   value = aws_ecr_repository.rift_env.arn
 }
 
 output "nat_gateway_public_ips" {
-  description = "List of public IPs associated with the NAT Gateways"
+  description = "List of public IPs associated with NAT gateways in Rift VPC"
   value       = [for eip in aws_eip.rift : eip.public_ip]
 }
 
 output "rift_compute_security_group_id" {
+  description = "Security Group ID for Rift compute instances"
   value = aws_security_group.rift_compute.id
 }

@@ -51,30 +51,33 @@ module "tecton" {
 5.  Apply the configuration: `terraform apply`
 6.  Share the output values (like `cross_account_role_arn`, S3 bucket name from `module.tecton.s3_bucket.bucket`, `kms_key_arn`) with your Tecton representative. 
 
-#### Inputs
+### Details
+<!-- BEGIN_TF_DOCS -->
 
-This module requires the following input variables:
 
-*   `deployment_name`: (string) The name for your Tecton deployment (e.g., "my-tecton-for-databricks"). Must be less than 22 characters due to AWS S3 bucket naming limitations.
-*   `region`: (string) The AWS region where Tecton and Databricks resources are deployed (e.g., "us-west-2").
-*   `account_id`: (string) Your AWS account ID where Tecton and Databricks are deployed.
-*   `spark_role_name`: (string) The name of the existing IAM role used by your Databricks Spark jobs.
-*   `spark_instance_profile_name`: (string) The name of the existing IAM instance profile used by your Databricks clusters.
-*   `databricks_workspace_url`: (string) The URL of your Databricks workspace (e.g., `mycompany.cloud.databricks.com`).
-*   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
-*   `cross_account_external_id`: (string) The external ID for cross-account access by Tecton (from your Tecton rep).
-*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
+## Inputs
 
-#### Outputs
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton and Databricks are deployed. | `string` | n/a | yes |
+| <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access by Tecton. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_databricks_workspace_url"></a> [databricks\_workspace\_url](#input\_databricks\_workspace\_url) | The URL of your Databricks workspace (e.g., mycompany.cloud.databricks.com). | `string` | n/a | yes |
+| <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name for your Tecton deployment. Must be less than 22 characters due to AWS S3 bucket naming limitations. | `string` | n/a | yes |
+| <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key for encrypting data at rest. | `string` | `null` | no |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region where Tecton and Databricks resources are deployed. | `string` | n/a | yes |
+| <a name="input_spark_instance_profile_name"></a> [spark\_instance\_profile\_name](#input\_spark\_instance\_profile\_name) | The name of the IAM instance profile used by Databricks clusters. | `string` | n/a | yes |
+| <a name="input_spark_role_name"></a> [spark\_role\_name](#input\_spark\_role\_name) | The name of the IAM role used by Databricks for Spark jobs. | `string` | n/a | yes |
+| <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |  
+## Outputs
 
-Key outputs from this module include:
-
-*   `deployment_name`: The Tecton deployment name.
-*   `region`: The AWS region of the deployment.
-*   `cross_account_role_arn`: The ARN of the IAM role created for Tecton to access your account.
-*   `cross_account_external_id`: The external ID used for Tecton's cross-account access.
-*   `spark_role_name`: The Databricks Spark role name provided as input.
-*   `spark_instance_profile_name`: The Databricks instance profile name provided as input.
-*   `databricks_workspace_url`: The Databricks workspace URL provided as input.
-*   `kms_key_arn`: ARN of the customer-managed key for encrypting data at rest.
-
+| Name | Description |
+|------|-------------|
+| <a name="output_cross_account_external_id"></a> [cross\_account\_external\_id](#output\_cross\_account\_external\_id) | n/a |
+| <a name="output_cross_account_role_arn"></a> [cross\_account\_role\_arn](#output\_cross\_account\_role\_arn) | n/a |
+| <a name="output_databricks_workspace_url"></a> [databricks\_workspace\_url](#output\_databricks\_workspace\_url) | The URL of your Databricks workspace. |
+| <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | n/a |
+| <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | n/a |
+| <a name="output_region"></a> [region](#output\_region) | n/a |
+| <a name="output_spark_instance_profile_name"></a> [spark\_instance\_profile\_name](#output\_spark\_instance\_profile\_name) | n/a |
+| <a name="output_spark_role_name"></a> [spark\_role\_name](#output\_spark\_role\_name) | n/a |
+<!-- END_TF_DOCS -->

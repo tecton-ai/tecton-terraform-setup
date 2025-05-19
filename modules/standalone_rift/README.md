@@ -53,34 +53,40 @@ module "rift" {
 5.  Apply the configuration: `terraform apply`
 6.  Verify the new Rift compute resources and their integration with your Tecton control plane.
 
-#### Inputs
+### Details
 
-**Required Inputs:**
+<!-- BEGIN_TF_DOCS -->
 
-*   `deployment_name`: (string) A unique name for this specific Rift deployment (e.g., "my-rift-compute"). This is used for naming resources created by this module.
-*   `region`: (string) The AWS region where Rift resources will be deployed (e.g., "us-west-2").
-*   `account_id`: (string) Your AWS account ID where Rift resources will be deployed.
-*   `subnet_azs`: (list(string)) A list of Availability Zones for the Rift VPC subnets (e.g., `["us-west-2a", "us-west-2b", "us-west-2c"]`).
-*   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane.
-*   `tecton_control_plane_role_name`: (string) The name of the Tecton control plane IAM role that Rift will allow to assume its manager role.
-*   `log_bucket_name`: (string) The name of your existing S3 bucket where Rift logs will be stored.
-*   `offline_store_bucket_name`: (string) The name of your existing S3 bucket used as the offline store.
 
-**Optional Inputs:**
+## Inputs
 
-*   `tecton_vpce_service_name`: (string, default: `null`) The VPC endpoint service name for accessing the Tecton control plane. Required if your control plane uses PrivateLink.
-*   `use_network_firewall`: (bool, default: `false`) Set to `true` to enable an AWS Network Firewall in the Rift VPC with egress restrictions.
-*   `additional_allowed_egress_domains`: (list(string), default: `null`) If `use_network_firewall` is true, this list extends the default allowed egress domains.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Rift resources will be deployed. | `string` | n/a | yes |
+| <a name="input_additional_allowed_egress_domains"></a> [additional\_allowed\_egress\_domains](#input\_additional\_allowed\_egress\_domains) | (Optional) List of additional domains to allow for egress if use\_network\_firewall is true. | `list(string)` | `null` | no |
+| <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | A unique name for this Rift deployment, used for naming resources. Must be less than 22 characters due to AWS limitations if used for S3 bucket naming. | `string` | n/a | yes |
+| <a name="input_log_bucket_name"></a> [log\_bucket\_name](#input\_log\_bucket\_name) | The name of the S3 bucket where Rift logs will be stored. | `string` | n/a | yes |
+| <a name="input_offline_store_bucket_name"></a> [offline\_store\_bucket\_name](#input\_offline\_store\_bucket\_name) | The name of the S3 bucket used as the offline store. | `string` | n/a | yes |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region for the Rift deployment. | `string` | n/a | yes |
+| <a name="input_subnet_azs"></a> [subnet\_azs](#input\_subnet\_azs) | A list of Availability Zones for the Rift VPC subnets. | `list(string)` | n/a | yes |
+| <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_tecton_control_plane_role_name"></a> [tecton\_control\_plane\_role\_name](#input\_tecton\_control\_plane\_role\_name) | The name of the Tecton control plane IAM role that Rift will allow to assume its manager role. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_tecton_vpce_service_name"></a> [tecton\_vpce\_service\_name](#input\_tecton\_vpce\_service\_name) | (Optional) The VPC endpoint service name for Tecton. Required if the Tecton control plane uses PrivateLink for ingress. | `string` | `null` | no |
+| <a name="input_use_network_firewall"></a> [use\_network\_firewall](#input\_use\_network\_firewall) | (Optional) Set to true to restrict egress from Rift compute using an AWS Network Firewall. | `bool` | `false` | no |  
+## Outputs
 
-#### Outputs
+| Name | Description |
+|------|-------------|
+| <a name="output_anyscale_docker_target_repo"></a> [anyscale\_docker\_target\_repo](#output\_anyscale\_docker\_target\_repo) | n/a |
+| <a name="output_compute_arn"></a> [compute\_arn](#output\_compute\_arn) | n/a |
+| <a name="output_compute_instance_profile_arn"></a> [compute\_instance\_profile\_arn](#output\_compute\_instance\_profile\_arn) | n/a |
+| <a name="output_compute_manager_arn"></a> [compute\_manager\_arn](#output\_compute\_manager\_arn) | n/a |
+| <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | n/a |
+| <a name="output_nat_gateway_public_ips"></a> [nat\_gateway\_public\_ips](#output\_nat\_gateway\_public\_ips) | n/a |
+| <a name="output_region"></a> [region](#output\_region) | n/a |
+| <a name="output_rift_compute_security_group_id"></a> [rift\_compute\_security\_group\_id](#output\_rift\_compute\_security\_group\_id) | n/a |
+| <a name="output_vm_workload_subnet_ids"></a> [vm\_workload\_subnet\_ids](#output\_vm\_workload\_subnet\_ids) | n/a |
+<!-- END_TF_DOCS -->
 
-Key outputs from this module include:
 
-*   `compute_manager_arn`: ARN of the Rift compute manager IAM role.
-*   `compute_instance_profile_arn`: ARN of the Rift compute instance profile.
-*   `rift_compute_security_group_id`: ID of the security group for Rift compute instances.
-*   `nat_gateway_public_ips`: Public IP addresses of the NAT Gateways used by the Rift VPC.
-*   `vm_workload_subnet_ids`: List of subnet IDs for VM workloads.
-
-These outputs might be needed for configuring Tecton or for your own reference.
-
+These outputs need to be shared with your Tecton representative to complete the deployment.

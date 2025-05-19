@@ -57,41 +57,50 @@ Before using this module, ensure you have:
     *   Tecton Control Plane Account ID
     *   Cross-Account External ID
 
-#### Inputs
+### Details
 
-**Required Inputs:**
+<!-- BEGIN_TF_DOCS -->
 
-*   `deployment_name`: (string) A unique name for your Tecton deployment (e.g., "my-tecton-emr"). This name is used for various resources, including the S3 bucket. Must be less than 22 characters.
-*   `region`: (string) The AWS region for the Tecton and EMR deployment (e.g., "us-west-2").
-*   `account_id`: (string) Your AWS account ID where Tecton and EMR resources will be deployed.
-*   `tecton_control_plane_account_id`: (string) The AWS account ID of the Tecton control plane (from your Tecton rep).
-*   `cross_account_external_id`: (string) The external ID for cross-account access by Tecton (from your Tecton rep).
-*   (Optional) `kms_key_id`: (string) The customer-managed key (ID) for encrypting data at rest.
+## Providers
 
-**Optional Inputs:**
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 4.60 |
+## Inputs
 
-*   `enable_redis`: (bool, default: `false`) Set to `true` to deploy Redis as an online store. If `false`, DynamoDB is used by default.
-*   `enable_notebook_cluster`: (bool, default: `false`) Set to `true` to create an EMR notebook cluster. Tecton deployment needs to be confirmed by your Tecton rep first.
-*   `enable_emr_debugging`: (bool, default: `false`) Set to `true` to enable EMR debugging permissions for Tecton support. Requires `enable_notebook_cluster` to be `true`.
-*   `notebook_instance_type`: (string, default: `"m5.xlarge"`) EC2 instance type for the EMR notebook cluster.
-*   `notebook_extra_bootstrap_actions`: (list(object), default: `null`) Extra bootstrap actions for the EMR notebook cluster. Each object: `name` (string), `path` (string, S3 URI).
-*   `notebook_has_glue`: (bool, default: `true`) Whether the EMR notebook cluster should have Glue Data Catalog access.
-*   `notebook_glue_account_id`: (string, default: `null`) AWS account ID for Glue Data Catalog access for notebooks. Defaults to `var.account_id` if `null` and `notebook_has_glue` is true.
-*   `cross_account_principal_arn_for_s3_policy`: (string, default: `null`) (Advanced) ARN of a principal in another account for read-only S3 bucket access. Used for custom cross-account EMR setups.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton and EMR resources will be deployed. | `string` | n/a | yes |
+| <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access by Tecton. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_cross_account_principal_arn_for_s3_policy"></a> [cross\_account\_principal\_arn\_for\_s3\_policy](#input\_cross\_account\_principal\_arn\_for\_s3\_policy) | (Optional) The ARN of the principal in another account that should get read-only access to the Tecton S3 bucket. Used if setting up cross-account EMR notebooks manually or extending this module. | `string` | `null` | no |
+| <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name for your Tecton deployment. Must be less than 22 characters due to AWS S3 bucket naming limitations. | `string` | n/a | yes |
+| <a name="input_emr_notebook_cross_account_external_id"></a> [emr\_notebook\_cross\_account\_external\_id](#input\_emr\_notebook\_cross\_account\_external\_id) | (Optional) The external ID for cross-account access by the EMR notebook cluster. | `string` | `null` | no |
+| <a name="input_emr_notebook_cross_account_region"></a> [emr\_notebook\_cross\_account\_region](#input\_emr\_notebook\_cross\_account\_region) | (Optional) The AWS region of the cross-account EMR notebook cluster. | `string` | `null` | no |
+| <a name="input_emr_notebook_cross_account_role_arn"></a> [emr\_notebook\_cross\_account\_role\_arn](#input\_emr\_notebook\_cross\_account\_role\_arn) | (Optional) The ARN of the role in the cross-account EMR notebook cluster. | `string` | `null` | no |
+| <a name="input_enable_cross_account_emr_notebook_cluster"></a> [enable\_cross\_account\_emr\_notebook\_cluster](#input\_enable\_cross\_account\_emr\_notebook\_cluster) | (Optional) Set to true to include a cross-account EMR notebook cluster. Requires also setting: emr\_notebook\_cross\_account\_region, emr\_notebook\_cross\_account\_role\_arn, emr\_notebook\_cross\_account\_external\_id, and cross\_account\_principal\_arn\_for\_s3\_policy. | `bool` | `false` | no |
+| <a name="input_enable_emr_debugging"></a> [enable\_emr\_debugging](#input\_enable\_emr\_debugging) | Set to true to enable EMR debugging permissions for Tecton support. Requires enable\_notebook\_cluster to be true. | `bool` | `false` | no |
+| <a name="input_enable_notebook_cluster"></a> [enable\_notebook\_cluster](#input\_enable\_notebook\_cluster) | Set to true to create an EMR notebook cluster. Requires Tecton deployment to be confirmed by your Tecton rep. | `bool` | `false` | no |
+| <a name="input_enable_redis"></a> [enable\_redis](#input\_enable\_redis) | Set to true to deploy Redis as an online store. Default is false (DynamoDB is used). | `bool` | `false` | no |
+| <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key for encrypting data at rest. | `string` | `null` | no |
+| <a name="input_notebook_extra_bootstrap_actions"></a> [notebook\_extra\_bootstrap\_actions](#input\_notebook\_extra\_bootstrap\_actions) | (Optional) List of extra bootstrap actions for the EMR notebook cluster. | <pre>list(object({<br/>    name = string<br/>    path = string # S3 path to the script<br/>  }))</pre> | `null` | no |
+| <a name="input_notebook_glue_account_id"></a> [notebook\_glue\_account\_id](#input\_notebook\_glue\_account\_id) | (Optional) The AWS account ID for Glue Data Catalog access for the notebook. Defaults to the main account\_id if not specified (and notebook\_has\_glue is true). | `string` | `null` | no |
+| <a name="input_notebook_has_glue"></a> [notebook\_has\_glue](#input\_notebook\_has\_glue) | (Optional) Whether the EMR notebook cluster should have Glue Data Catalog access. | `bool` | `true` | no |
+| <a name="input_notebook_instance_type"></a> [notebook\_instance\_type](#input\_notebook\_instance\_type) | (Optional) The EC2 instance type for the EMR notebook cluster. | `string` | `"m5.xlarge"` | no |
+| <a name="input_region"></a> [region](#input\_region) | The AWS region for the Tecton and EMR deployment. | `string` | n/a | yes |
+| <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |  
+## Outputs
 
-#### Outputs
+| Name | Description |
+|------|-------------|
+| <a name="output_cross_account_external_id"></a> [cross\_account\_external\_id](#output\_cross\_account\_external\_id) | n/a |
+| <a name="output_cross_account_role_arn"></a> [cross\_account\_role\_arn](#output\_cross\_account\_role\_arn) | n/a |
+| <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | n/a |
+| <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | n/a |
+| <a name="output_notebook_cluster_id"></a> [notebook\_cluster\_id](#output\_notebook\_cluster\_id) | The ID of the EMR notebook cluster, if created. |
+| <a name="output_region"></a> [region](#output\_region) | n/a |
+| <a name="output_spark_instance_profile_arn"></a> [spark\_instance\_profile\_arn](#output\_spark\_instance\_profile\_arn) | n/a |
+| <a name="output_spark_role_arn"></a> [spark\_role\_arn](#output\_spark\_role\_arn) | n/a |
+<!-- END_TF_DOCS -->
 
-Key outputs from this module include:
 
-*   `deployment_name`: The Tecton deployment name.
-*   `region`: The AWS region of the deployment.
-*   `cross_account_role_arn`: ARN of the IAM role for Tecton control plane access.
-*   `cross_account_external_id`: External ID used for Tecton's access.
-*   `spark_role_arn`: ARN of the IAM role for EMR Spark jobs.
-*   `spark_instance_profile_arn`: ARN of the instance profile for EMR EC2 instances.
-*   `kms_key_arn`: ARN of the KMS key for Tecton data encryption.
-*   `notebook_cluster_id`: The ID of the EMR notebook cluster, if created (empty string otherwise).
-*   (Implicitly, S3 bucket name: `module.tecton.s3_bucket.bucket`)
-*   (Implicitly, VPC ID: `module.subnets.vpc_id`, EMR Subnet ID: `module.subnets.emr_subnet_id`)
-*   (Implicitly, EMR Security Group IDs: `module.security_groups.emr_security_group_id`, `module.security_groups.emr_service_security_group_id`)
-
+These outputs need to be shared with your Tecton representative to complete the deployment.
