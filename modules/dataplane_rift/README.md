@@ -2,6 +2,8 @@
 
 This directory contains a Terraform module for deploying Tecton's data plane resources along with the [Rift](https://docs.tecton.ai/docs/concepts/compute-in-tecton#rift) compute engine. This module is intended for configurations where Rift compute runs within your AWS account ('data plane').
 
+For Tecton configurations with Rift compute running in Tecton's control plane, you should instead use the [controlplane_rift](../controlplane_rift/) module.
+
 ### Using this Module
 
 This module provisions:

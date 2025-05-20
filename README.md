@@ -2,16 +2,16 @@
 
 This repository provides a collection of Terraform modules to help you set up and configure your AWS environment for [deploying Tecton](https://docs.tecton.ai/docs/setting-up-tecton). There are different modules for different deployment scenarios / compute engines.
 
-Each module is structured to be used as a remote module, referenced via a Git source in your Terraform configurations. You can also clone this repository and reference the modules locally.
+Each is structured to be used as a remote Terraform module, referenced via a [Git repository source](https://developer.hashicorp.com/terraform/language/modules/sources#generic-git-repository).
 
 Below is a list of the available modules, each with a specific focus:
 
 ## Available Modules
 
-*   **[Tecton with Databricks Compute](./modules/databricks_sample/README.md)**
+*   **[Tecton with Databricks Compute](./modules/databricks/README.md)**
     *   Deploys Tecton resources and configures them for use with an existing Databricks environment in the same AWS account.
 
-*   **[Tecton with EMR Compute](./modules/emr_sample/README.md)**
+*   **[Tecton with EMR Compute](./modules/emr/README.md)**
     *   Deploys Tecton resources along with infrastructure for AWS EMR, including networking, security groups, and IAM roles for Tecton-managed EMR. Options include an EMR notebook cluster and Redis.
 
 *   **[Tecton with Rift Compute in Control Plane](./modules/controlplane_rift/README.md)**

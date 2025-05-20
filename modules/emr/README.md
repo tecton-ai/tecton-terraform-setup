@@ -1,4 +1,4 @@
-## `emr_sample` Tecton Module
+## `emr` Tecton Module
 
 This Terraform module deploys a comprehensive Tecton environment integrated with AWS EMR (Elastic MapReduce). It sets up the necessary Tecton data plane resources, EMR-specific infrastructure (VPC, subnets, security groups), and IAM roles for Tecton-managed EMR clusters. This module also includes options for deploying an EMR notebook cluster for interactive development and Redis as an alternative online store.
 
@@ -19,7 +19,7 @@ This module provisions:
 
 ```terraform
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/emr_sample"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/emr"
 
   deployment_name                 = "tecton-prod-emr"
   region                          = "us-east-1"

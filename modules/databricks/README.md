@@ -1,4 +1,4 @@
-## `databricks_sample` Tecton Module
+## `databricks` Tecton Module
 
 This Terraform module deploys core Tecton resources and configures them for integration with an existing Databricks environment. It assumes that Tecton and Databricks are deployed within the same AWS account.
 
@@ -29,7 +29,7 @@ To use this module, add a module block like the following to your Terraform conf
 
 ```terraform
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/databricks_sample"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/databricks"
 
   deployment_name                 = "tecton-databricks-prod"
   region                          = "us-east-1"
