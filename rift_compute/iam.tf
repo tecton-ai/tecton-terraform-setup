@@ -19,153 +19,21 @@ resource "aws_iam_role" "rift_compute_manager" {
   })
 }
 
-data "aws_iam_policy_document" "manage_rift_compute" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:StopInstances",
-      "ec2:TerminateInstances",
-      "ec2:CreateTags",
-    ]
-    resources = [
-      "arn:aws:ec2:*:${local.account_id}:instance/*",
-    ]
-    condition {
-      test     = "Null"
-      variable = "ec2:ResourceTag/tecton_rift_workflow_id"
-      values   = ["false"]
-    }
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:StartInstances",
-      "ec2:RunInstances",
-    ]
-    resources = [
-      "arn:aws:ec2:*:${local.account_id}:instance/*",
-    ]
-    condition {
-      test     = "Null"
-      variable = "aws:RequestTag/tecton_rift_workflow_id"
-      values   = ["false"]
-    }
-  }
-
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:DescribeInstances",
-      "ec2:DescribeInstanceStatus",
-      "ec2:DescribeInstanceTypes",
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:CreateTags",
-      "ec2:DeleteTags"
-    ]
-    # Describe* permissions do not support resource-level permissions:
-    # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-policies-ec2-console.html
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:RunInstances",
-    ]
-    resources = flatten([
+resource "aws_iam_policy" "manage_rift_compute" {
+  name   = lookup(var.resource_name_overrides, "manage_rift_compute", "manage-rift-compute")
+  policy = templatefile("${path.module}/../templates/manage_rift_compute_policy.json", {
+    ACCOUNT_ID                  = local.account_id,
+    RIFT_COMPUTE_ROLE_ARN       = aws_iam_role.rift_compute.arn,
+    STMT4_RESOURCES_JSON_STRING = jsonencode(flatten([
       "arn:aws:ec2:*:${local.account_id}:volume/*",
       aws_security_group.rift_compute.arn,
       [for subnet in aws_subnet.private : subnet.arn],
-    ])
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:RunInstances",
-      "ec2:DeleteNetworkInterface"
-    ]
-    resources = [
-      "arn:aws:ec2:*:${local.account_id}:network-interface/*"
-    ]
-    condition {
-      test     = "Null"
-      variable = "ec2:ResourceTag/tecton_rift_workflow_id"
-      values   = ["false"]
-    }
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:CreateNetworkInterface"
-    ]
-    resources = [
-      "arn:aws:ec2:*:${local.account_id}:network-interface/*"
-    ]
-    condition {
-      test     = "Null"
-      variable = "aws:RequestTag/tecton_rift_workflow_id"
-      values   = ["false"]
-    }
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:CreateNetworkInterface",
-    ]
-    resources = flatten([
+    ])),
+    STMT7_RESOURCES_JSON_STRING = jsonencode(flatten([
       aws_security_group.rift_compute.arn,
       [for subnet in aws_subnet.private : subnet.arn],
-    ])
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:RunInstances",
-    ]
-    resources = [
-      "arn:aws:ec2:*::image/*"
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "ec2:Owner"
-      values   = ["amazon", "472542229217"]
-    }
-  }
-
-  statement {
-    effect    = "Allow"
-    actions   = ["iam:PassRole"]
-    resources = [aws_iam_role.rift_compute.arn]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ssm:GetParameters"
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "servicequotas:GetServiceQuota"
-    ]
-    resources = [
-      "arn:aws:servicequotas:*:${local.account_id}:ec2/L-1216C47A"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "manage_rift_compute" {
-  name   = lookup(var.resource_name_overrides, "manage_rift_compute", "manage-rift-compute")
-  policy = data.aws_iam_policy_document.manage_rift_compute.json
+    ]))
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "rift_compute_manager_policies" {
