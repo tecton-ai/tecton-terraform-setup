@@ -49,7 +49,7 @@
       "Action": [
         "ec2:RunInstances"
       ],
-      "Resource": "${STMT4_RESOURCES_JSON_STRING}"
+      "Resource": ${STMT4_RESOURCES_JSON_STRING}
     },
     {
       "Effect": "Allow",
@@ -85,7 +85,7 @@
       "Action": [
         "ec2:CreateNetworkInterface"
       ],
-      "Resource": "${STMT7_RESOURCES_JSON_STRING}"
+      "Resource": ${STMT7_RESOURCES_JSON_STRING}
     },
     {
       "Effect": "Allow",
