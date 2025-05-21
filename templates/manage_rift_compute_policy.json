@@ -1,0 +1,126 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:StopInstances",
+        "ec2:TerminateInstances",
+        "ec2:CreateTags"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:${ACCOUNT_ID}:instance/*"
+      ],
+      "Condition": {
+        "Null": {
+          "ec2:ResourceTag/tecton_rift_workflow_id": "false"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:StartInstances",
+        "ec2:RunInstances"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:${ACCOUNT_ID}:instance/*"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/tecton_rift_workflow_id": "false"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateTags",
+        "ec2:DeleteTags"
+      ],
+      "Resource": ["*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Resource": ${ALLOW_RUN_INSTANCES_RESOURCES}
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:DeleteNetworkInterface"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:${ACCOUNT_ID}:network-interface/*"
+      ],
+      "Condition": {
+        "Null": {
+          "ec2:ResourceTag/tecton_rift_workflow_id": "false"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateNetworkInterface"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*:${ACCOUNT_ID}:network-interface/*"
+      ],
+      "Condition": {
+        "Null": {
+          "aws:RequestTag/tecton_rift_workflow_id": "false"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateNetworkInterface"
+      ],
+      "Resource": ${ALLOW_NETWORK_INTERFACE_RESOURCES}
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances"
+      ],
+      "Resource": [
+        "arn:aws:ec2:*::image/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:Owner": ["amazon", "472542229217"]
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["iam:PassRole"],
+      "Resource": ["${RIFT_COMPUTE_ROLE_ARN}"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters"
+      ],
+      "Resource": ["*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "servicequotas:GetServiceQuota"
+      ],
+      "Resource": [
+        "arn:aws:servicequotas:*:${ACCOUNT_ID}:ec2/L-1216C47A"
+      ]
+    }
+  ]
+} 
