@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: "v0.20.0"
+    hooks:
+      - id: terraform-docs-go
+        name: terraform-docs-modules
+        args: ["-c", ".terraform-docs.yml", "./modules/"]
+      - id: terraform-docs-go
+        name: terraform-docs-deployment
+        args: ["-c", "deployment/.terraform-docs.yml", "./deployment/"]
+      - id: terraform-docs-go
+        name: terraform-docs-emr
+        args: ["-c", ".terraform-docs.yml", "./emr/"]
+      - id: terraform-docs-go
+        name: terraform-docs-rift_compute
+        args: ["-c", "rift_compute/.terraform-docs.yml", "./rift_compute/"]
+      - id: terraform-docs-go
+        name: terraform-docs-privatelink
+        args: ["-c", ".terraform-docs.yml", "./privatelink/"]

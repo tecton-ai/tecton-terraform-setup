@@ -1,10 +1,13 @@
 variable "deployment_name" {
+  description = "Name of the Tecton deployment."
   type = string
 }
 variable "account_id" {
+  description = "Data plane (customer) AWS account ID."
   type = string
 }
 variable "region" {
+  description = "AWS region (of Tecton control plane _and_ data plane account)."
   type = string
 }
 
@@ -17,17 +20,22 @@ variable "s3_read_write_principals" {
 }
 
 variable "satellite_region" {
+  description = "**(Optional)** Separate region for 'satellite' deployment."
   type    = string
   default = null
 }
+
 variable "cross_account_external_id" {
   type = string
+  description = "External ID for cross-account role assumption."
 }
+
 variable "tecton_assuming_account_id" {
   type        = string
   description = "The account Tecton will use to assume any cross-account roles. Typically the account ID of your Tecton control plane"
   default     = "153453085158"
 }
+
 variable "databricks_spark_role_name" {
   type    = string
   default = null
@@ -37,8 +45,10 @@ variable "emr_spark_role_name" {
   description = "Override the default name Tecton uses for emr spark role"
   default     = null
 }
+
 variable "create_emr_roles" {
   type    = bool
+  description = "Whether to create EMR roles."
   default = false
 }
 variable "emr_read_ecr_repositories" {
@@ -53,7 +63,7 @@ variable "additional_s3_read_only_principals" {
 
 variable "additional_offline_storage_tags" {
   type        = map(string)
-  description = "Additional tags for offline storage (S3 bucket)"
+  description = "**(Optional)** Additional tags for offline storage (S3 bucket)"
   default     = {}
 }
 
@@ -75,7 +85,7 @@ variable "bucket_sse_key_enabled" {
 
 variable "kms_key_id" {
   type        = string
-  description = "If provided, ID of customer-managed key for encrypting data at rest"
+  description = "If provided, the ID of customer-managed key for encrypting data at rest"
   default     = null
 }
 
@@ -87,14 +97,14 @@ variable "kms_key_additional_principals" {
 
 variable "use_rift_cross_account_policy" {
   type        = bool
-  description = "(Deprecated in favor of var.use_rift_compute_on_control_plane) Whether or not to use rift version of IAM policies for cross-account access"
+  description = "Whether or not to use rift version of IAM policies for cross-account access"
   default     = null
   nullable    = true
 }
 
 variable "use_rift_compute_on_control_plane" {
   type        = bool
-  description = "Whether or not to enable Rift compute on control plane"
+  description = "Whether or not to enable Rift compute on control plane."
   default     = false
 }
 

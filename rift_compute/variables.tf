@@ -1,6 +1,6 @@
 variable "cluster_name" {
   type        = string
-  description = "Name of the Tecton cluster."
+  description = "Name of the Tecton deployment."
 }
 
 variable "rift_compute_manager_assuming_role_arns" {
