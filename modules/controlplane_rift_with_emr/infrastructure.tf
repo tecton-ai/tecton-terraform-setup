@@ -1,0 +1,87 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.60"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
+
+module "tecton" {
+  source                     = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//deployment"
+  deployment_name            = var.deployment_name
+  account_id                 = var.account_id
+  region                     = var.region
+  cross_account_external_id  = var.cross_account_external_id
+  tecton_assuming_account_id = var.tecton_control_plane_account_id
+
+  # Control plane root principal
+  s3_read_write_principals          = [format("arn:aws:iam::%s:root", var.tecton_control_plane_account_id)]
+  use_spark_compute                 = true
+  use_rift_cross_account_policy     = true
+  kms_key_id                        = var.kms_key_id
+  create_emr_roles = true
+}
+
+## EMR Resources
+module "security_groups" {
+  source          = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/security_groups"
+  deployment_name = var.deployment_name
+  region          = var.region
+  emr_vpc_id      = module.subnets.vpc_id
+}
+
+# Tecton default vpc/subnet configuration
+module "subnets" {
+  source          = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/vpc_subnets"
+  deployment_name = var.deployment_name
+  region          = var.region
+}
+
+# Notebook Cluster and Debugging
+module "notebook_cluster" {
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/notebook_cluster"
+  # See https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites
+  # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
+
+  count = var.notebook_cluster_count
+
+  region          = var.region
+  deployment_name = var.deployment_name
+  instance_type   = var.notebook_instance_type
+
+  subnet_id            = module.subnets.emr_subnet_id
+  instance_profile_arn = module.tecton.spark_role_name
+  emr_service_role_id  = module.tecton.emr_master_role_name
+
+  emr_security_group_id         = module.security_groups.emr_security_group_id
+  emr_service_security_group_id = module.security_groups.emr_service_security_group_id
+
+  # OPTIONAL
+  extra_bootstrap_actions = var.notebook_extra_bootstrap_actions
+
+  has_glue        = var.notebook_has_glue
+  glue_account_id = coalesce(var.notebook_glue_account_id, var.account_id)
+}
+
+# This module adds some IAM privileges to enable your Tecton technical support
+# reps to open and execute EMR notebooks in your account to help troubleshoot
+# or test code you are developing. It also will give Tecton access to your EMR
+# notebook cluster logs.
+#
+# Enable this module by setting count = 1
+module "emr_debugging" {
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/debugging"
+
+  count = var.emr_debugging_count
+
+  deployment_name         = var.deployment_name
+  cross_account_role_name = module.tecton.cross_account_role_name
+  account_id              = var.account_id
+  log_uri_bucket          = var.notebook_cluster_count > 0 ? module.notebook_cluster[0].logs_s3_bucket.bucket : null
+  log_uri_bucket_arn      = var.notebook_cluster_count > 0 ? module.notebook_cluster[0].logs_s3_bucket.arn : null
+}
