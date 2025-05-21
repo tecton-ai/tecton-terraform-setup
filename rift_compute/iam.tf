@@ -66,111 +66,31 @@ resource "aws_iam_instance_profile" "rift_compute" {
 
 resource "aws_iam_policy" "rift_dynamodb_access" {
   name = "tecton-rift-dynamodb-access"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:BatchGetItem",
-          "dynamodb:BatchWriteItem",
-          "dynamodb:CreateTable",
-          "dynamodb:DeleteItem",
-          "dynamodb:DescribeTable",
-          "dynamodb:GetItem",
-          "dynamodb:PutItem",
-          "dynamodb:UpdateItem",
-          "dynamodb:Query"
-        ]
-        Resource = [
-          "arn:aws:dynamodb:*:${local.account_id}:table/tecton-*",
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "sts:AssumeRole"
-        ]
-        # Used for assume into cross-account-intermediary role when Rift is in control plane account.
-        Resource = ["arn:aws:iam::${local.account_id}:role/${var.cluster_name}-cross-account-intermediate"]
-      }
-    ]
+  policy = templatefile("${path.module}/../templates/rift_dynamodb_access_policy.json", {
+    ACCOUNT_ID   = local.account_id,
+    CLUSTER_NAME = var.cluster_name
   })
 }
 
 resource "aws_iam_policy" "rift_legacy_secrets_manager_access" {
   count = var.enable_rift_legacy_secret_manager_access ? 1 : 0
   name = "tecton-rift-legacy-secrets-manager-access"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-            "secretsmanager:*"
-        ]
-        Resource = [
-          "arn:aws:secretsmanager:*:${local.account_id}:secret:tecton-*",
-        ]
-      }
-    ]
+  policy = templatefile("${path.module}/../templates/rift_legacy_secrets_manager_access_policy.json", {
+    ACCOUNT_ID = local.account_id
   })
 }
 
 resource "aws_iam_policy" "rift_ecr_readonly" {
   name = "tecton-rift-ecr-readonly"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:GetRepositoryPolicy",
-          "ecr:DescribeRepositories",
-          "ecr:ListImages",
-          "ecr:DescribeImages",
-          "ecr:BatchGetImage",
-          "ecr:GetLifecyclePolicy",
-          "ecr:GetLifecyclePolicyPreview",
-          "ecr:ListTagsForResource",
-          "ecr:DescribeImageScanFindings"
-        ]
-        Resource = [
-          aws_ecr_repository.rift_env.arn
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "ecr:GetAuthorizationToken"
-        ]
-        Resource = ["*"]
-      }
-    ]
+  policy = templatefile("${path.module}/../templates/rift_ecr_readonly_policy.json", {
+    RIFT_ENV_ECR_REPOSITORY_ARN = aws_ecr_repository.rift_env.arn
   })
 }
 
 resource "aws_iam_policy" "rift_compute_logs" {
   name = lookup(var.resource_name_overrides, "rift_compute_logs", "tecton-rift-compute-logs")
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:ListObject",
-          "s3:HeadObject",
-          "s3:PutObject"
-        ]
-        Resource = [
-          var.s3_log_destination,
-          format("%s/*", var.s3_log_destination)
-        ]
-      }
-    ]
+  policy = templatefile("${path.module}/../templates/rift_compute_logs_policy.json", {
+    S3_LOG_DESTINATION = var.s3_log_destination
   })
 }
 
@@ -196,104 +116,19 @@ resource "aws_iam_policy" "rift_bootstrap_scripts" {
 
 resource "aws_iam_policy" "offline_store_access" {
   name = lookup(var.resource_name_overrides, "offline_store_access", "tecton-offline-store-access")
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = concat([
-      {
-        Effect = "Allow"
-        Action = ["s3:ListBucket", "s3:HeadBucket"]
-        Resource = [
-          var.offline_store_bucket_arn
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = ["s3:*"]
-        Resource = compact([
-          format("%s/%s", var.offline_store_bucket_arn, var.offline_store_key_prefix),
-          format("%s/%s*", var.offline_store_bucket_arn, var.offline_store_key_prefix),
-          format("%s/%s", var.offline_store_bucket_arn, "tecton-model-artifacts"),
-          format("%s/%s*", var.offline_store_bucket_arn, "tecton-model-artifacts")
-        ])
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["s3:*"]
-        Resource = [var.offline_store_bucket_arn]
-        Condition = {
-          "StringLike" = {
-            "s3:prefix" : format("%s*", var.offline_store_key_prefix)
-          }
-        }
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:Get*",
-          "s3:List*",
-          "s3:Describe*",
-        ]
-        Resource = [
-          format("%s/%s", var.offline_store_bucket_arn, "internal/*"),
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject"
-        ]
-        Resource = ["*"]
-        # Allow access to public S3 buckets
-        Condition = {
-          "StringNotEquals" = {
-            "s3:ResourceAccount" : local.account_id
-          }
-        }
-      }],
-      local.use_kms_key ? [{
-        Effect = "Allow"
-        Action = [
-          "kms:Decrypt",
-          "kms:GenerateDataKey"
-        ]
-        Resource = [
-          var.kms_key_arn
-        ]
-      }] : [])
+  policy = templatefile("${path.module}/../templates/offline_store_access_policy.json", {
+    OFFLINE_STORE_BUCKET_ARN = var.offline_store_bucket_arn,
+    OFFLINE_STORE_KEY_PREFIX = var.offline_store_key_prefix,
+    ACCOUNT_ID               = local.account_id,
+    USE_KMS_KEY              = local.use_kms_key,
+    KMS_KEY_ARN              = var.kms_key_arn
   })
 }
 
 resource "aws_iam_policy" "rift_compute_internal" {
   name = "tecton-rift-compute-internal"
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "secretsmanager:*"
-        ]
-        Resource = ["*"]
-        Condition = {
-          "StringEquals" = {
-            "secretsmanager:ResourceAccount" : local.account_id
-          }
-        }
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "kms:*"
-        ]
-        Resource = ["*"]
-        Condition = {
-          "StringEquals" = {
-            "kms:ResourceAccount" : local.account_id
-          }
-        }
-      }
-    ]
+  policy = templatefile("${path.module}/../templates/rift_compute_internal_policy.json", {
+    ACCOUNT_ID = local.account_id
   })
 }
 
