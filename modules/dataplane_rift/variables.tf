@@ -39,6 +39,24 @@ variable "tecton_control_plane_role_name" {
   type        = string
 }
 
+variable "existing_vpc_id" {
+  description = "(Optional) The ID of the existing VPC to use for the Tecton deployment."
+  type        = string
+  default     = null
+}
+
+variable "existing_private_subnet_ids" {
+  description = "(Optional) The IDs of the existing private subnets to use for the Tecton deployment."
+  type        = list(string)
+  default     = null
+}
+
+variable "existing_rift_compute_security_group_id" {
+  description = "(Optional) The ID of the existing security group to use for Rift compute instances."
+  type        = string
+  default     = null
+}
+
 variable "tecton_vpce_service_name" {
   description = "(Optional) The VPC endpoint service name for Tecton. Only needed if using PrivateLink."
   type        = string

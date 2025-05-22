@@ -29,6 +29,24 @@ variable "kms_key_id" {
   default     = null
 }
 
+variable "existing_vpc_id" {
+  description = "(Optional) The ID of the existing VPC to use for the Tecton deployment."
+  type        = string
+  default     = null
+}
+
+variable "existing_private_subnet_ids" {
+  description = "(Optional) The IDs of the existing private subnets to use for the Tecton deployment."
+  type        = list(string)
+  default     = null
+}
+
+variable "existing_rift_compute_security_group_id" {
+  description = "(Optional) The ID of the existing security group to use for Rift compute instances."
+  type        = string
+  default     = null
+}
+
 variable "subnet_azs" {
   description = "A list of Availability Zones for the subnets."
   type        = list(string)
