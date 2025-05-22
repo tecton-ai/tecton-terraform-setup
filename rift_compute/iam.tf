@@ -26,13 +26,12 @@ resource "aws_iam_policy" "manage_rift_compute" {
     RIFT_COMPUTE_ROLE_ARN       = aws_iam_role.rift_compute.arn,
     ALLOW_RUN_INSTANCES_RESOURCES = jsonencode(flatten([
       "arn:aws:ec2:*:${local.account_id}:volume/*",
-      aws_security_group.rift_compute.arn,
+      local.existing_security_group ? data.aws_security_group.existing[0].arn : aws_security_group.rift_compute[0].arn,
       [for subnet in aws_subnet.private : subnet.arn],
     ])),
     ALLOW_NETWORK_INTERFACE_RESOURCES = jsonencode(flatten([
-      aws_security_group.rift_compute.arn,
-      [for subnet in aws_subnet.private : subnet.arn],
-    ]))
+      local.existing_security_group ? data.aws_security_group.existing[0].arn : aws_security_group.rift_compute[0].arn,
+    ])),
   })
 }
 

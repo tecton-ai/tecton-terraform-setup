@@ -28,6 +28,25 @@ variable "tecton_control_plane_role_name" {
   type        = string
 }
 
+variable "existing_vpc_id" {
+  description = "(Optional) The ID of the existing VPC to use for the Tecton deployment."
+  type        = string
+  default     = null
+}
+
+variable "existing_private_subnet_ids" {
+  description = "(Optional) The IDs of the existing private subnets to use for the Tecton deployment."
+  type        = list(string)
+  default     = null
+}
+
+variable "existing_rift_compute_security_group_id" {
+  description = "(Optional) The ID of the existing security group to use for Rift compute instances."
+  type        = string
+  default     = null
+}
+
+
 variable "log_bucket_name" {
   description = "The name of the S3 bucket where Rift logs will be stored."
   type        = string
@@ -55,3 +74,27 @@ variable "additional_allowed_egress_domains" {
   type        = list(string)
   default     = null
 } 
+
+variable "tecton_privatelink_ingress_rules" {
+  description = "(Optional) List of ingress rules for the Tecton PrivateLink security group."
+  type = list(object({
+    cidr        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+  }))
+  default = null
+}
+
+variable "tecton_privatelink_egress_rules" {
+  description = "(Optional) List of egress rules for the Tecton PrivateLink security group."
+  type = list(object({
+    cidr        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    description = string
+  }))
+  default = null
+}

@@ -39,6 +39,24 @@ variable "tecton_control_plane_role_name" {
   type        = string
 }
 
+variable "existing_vpc_id" {
+  description = "(Optional) The ID of the existing VPC to use for the Tecton deployment."
+  type        = string
+  default     = null
+}
+
+variable "existing_private_subnet_ids" {
+  description = "(Optional) The IDs of the existing private subnets to use for the Tecton deployment."
+  type        = list(string)
+  default     = null
+}
+
+variable "existing_rift_compute_security_group_id" {
+  description = "(Optional) The ID of the existing security group to use for Rift compute instances."
+  type        = string
+  default     = null
+}
+
 variable "tecton_vpce_service_name" {
   description = "(Optional) The VPC endpoint service name for Tecton. Only needed if using PrivateLink."
   type        = string
@@ -70,13 +88,13 @@ variable "tecton_privatelink_egress_rules" {
 }
 
 variable "use_network_firewall" {
-  description = "(Optional) Set to true to restrict egress from Rift compute using a network firewall."
+  description = "(Optional) Set to true to restrict egress from Rift compute using a network firewall. Only works if using VPC managed by this module (i.e. existing_vpc_id is not provided)."
   type        = bool
   default     = false
 }
 
 variable "additional_allowed_egress_domains" {
-  description = "(Optional) List of additional domains to allow for egress if use_network_firewall is true."
+  description = "(Optional) List of additional domains to allow for egress if use_network_firewall is true. Only works if using VPC managed by this module (i.e. existing_vpc_id is not provided)."
   type        = list(string)
   default     = null
 } 

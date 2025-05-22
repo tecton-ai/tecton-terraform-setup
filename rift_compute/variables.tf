@@ -30,15 +30,17 @@ variable "offline_store_key_prefix" {
   default     = "offline-store/"
 }
 
+
 variable "subnet_azs" {
+  description = "A list of Availability Zones for the subnets. Not used if existing_vpc_id is provided."
   type        = list(string)
-  description = "List of AZs to create subnets in."
+  default     = []
 }
 
 variable "tecton_vpce_service_name" {
+  description = "The VPC endpoint service name for Tecton PrivateLink. Set to null to disable. If enabled with existing_vpc_id, existing_private_subnet_ids must be provided."
   type        = string
   default     = null
-  description = "VPC Endpoint service name for deployments w/ PrivateLink enabled. Required if materialization jobs need to connect to Tecton webui/apis (i.e. for Tecton Secrets)"
 }
 
 variable "resource_name_overrides" {
@@ -74,7 +76,7 @@ variable "kms_key_arn" {
 variable "use_network_firewall" {
   type        = bool
   default     = false
-  description = "If true, will use AWS Network Firewall to restrict egress."
+  description = "If true, will use AWS Network Firewall to restrict egress. Only works if existing_vpc_id is not provided."
 }
 
 variable "additional_allowed_egress_domains" {
@@ -84,13 +86,14 @@ variable "additional_allowed_egress_domains" {
 }
 
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC (e.g. 10.0.0.0/16)"
+  description = "CIDR block for the VPC (e.g. 10.0.0.0/16). Not used if existing_vpc_id is provided."
   type        = string
   default     = "10.0.0.0/16"
 }
 
+
 variable "tecton_privatelink_ingress_rules" {
-  description = "List of custom ingress rules for the Tecton PrivateLink endpoint security group with CIDR, ports, and protocol. If empty, a default 'allow all' rule will be created."
+  description = "List of custom ingress rules for the Tecton PrivateLink endpoint security group. If empty and PrivateLink is enabled, a default 'allow all' rule will be created."
   type = list(object({
     cidr        = string
     from_port   = number
@@ -102,7 +105,7 @@ variable "tecton_privatelink_ingress_rules" {
 }
 
 variable "tecton_privatelink_egress_rules" {
-  description = "List of egress rules for the Tecton PrivateLink security group. If empty, all traffic is allowed."
+  description = "List of egress rules for the Tecton PrivateLink security group. If empty and PrivateLink is enabled, a default 'allow all' rule will be created."
   type = list(object({
     cidr        = string
     from_port   = number
@@ -111,4 +114,22 @@ variable "tecton_privatelink_egress_rules" {
     description = string
   }))
   default = []
+}
+
+variable "existing_vpc_id" {
+  description = "Optional. The ID of an existing VPC to use. If provided, the module will not create a new VPC or related core networking resources (subnets, IGW, NAT GWs, Route Tables)."
+  type        = string
+  default     = null
+}
+
+variable "existing_private_subnet_ids" {
+  description = "Optional. A list of existing private subnet IDs. Required if existing_vpc_id is provided. These subnets will be used for Rift compute instances and Tecton PrivateLink."
+  type        = list(string)
+  default     = []
+}
+
+variable "existing_rift_compute_security_group_id" {
+  description = "Optional. The ID of an existing security group to use for Rift compute instances. If provided, the module will not create a new security group."
+  type        = string
+  default     = null
 }

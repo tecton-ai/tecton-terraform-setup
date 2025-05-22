@@ -37,12 +37,18 @@ module "rift" {
   subnet_azs                              = var.subnet_azs
 
   # OPTIONAL
+  # Use Existing/pre-configured VPC
+  existing_vpc_id                         = var.existing_vpc_id
+  existing_private_subnet_ids             = var.existing_private_subnet_ids
+  existing_rift_compute_security_group_id = var.existing_rift_compute_security_group_id
+  # PrivateLink
   tecton_vpce_service_name                = var.tecton_vpce_service_name
   # Tecton PrivateLink Security Group Rules (apply to VPC endpoint to access Tecton ctrl plane)
   tecton_privatelink_ingress_rules = var.tecton_privatelink_ingress_rules
   # Tecton PrivateLink Security Group Egress Rules (apply to VPC endpoint to access Tecton ctrl plane)
   tecton_privatelink_egress_rules = var.tecton_privatelink_egress_rules
-  #
+
+  # Network Firewall
   # Egress from rift compute will be open to internet by default.
   # To restrict egress based on known list of domains (found in rift_compute/network_firewall.tf), set the following:
   use_network_firewall = var.use_network_firewall
