@@ -306,6 +306,26 @@ resource "aws_iam_policy" "rift_compute_logs" {
   })
 }
 
+resource "aws_iam_policy" "rift_bootstrap_scripts" {
+  name = lookup(var.resource_name_overrides, "rift_bootstrap_scripts", "tecton-rift-boostrap-scripts")
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:ListObject",
+          "s3:HeadObject"
+        ]
+        Resource = [
+          format("%s/%s", var.offline_store_bucket_arn, "rift-bootstrap-scripts/*"),
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy" "offline_store_access" {
   name = lookup(var.resource_name_overrides, "offline_store_access", "tecton-offline-store-access")
   policy = jsonencode({
@@ -422,6 +442,7 @@ locals {
   # Base set of policies to attach to the rift_compute role
   rift_compute_policies_base = {
     rift_compute_logs    = aws_iam_policy.rift_compute_logs,
+    rift_bootstrap_scripts = aws_iam_policy.rift_bootstrap_scripts,
     offline_store_access = aws_iam_policy.offline_store_access,
     dynamo_db_access     = aws_iam_policy.rift_dynamodb_access,
     ecr_readonly         = aws_iam_policy.rift_ecr_readonly
