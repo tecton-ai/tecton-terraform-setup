@@ -8,7 +8,7 @@ resource "aws_elasticache_subnet_group" "tecton_redis_cluster_subnet_group" {
 
 resource "aws_elasticache_replication_group" "tecton_redis_cluster" {
   replication_group_id          = "tecton-redis-cluster"
-  replication_group_description = "tecton-redis-replication-group"
+  description                   = "tecton-redis-replication-group"
   node_type                     = "cache.m5.xlarge"
   port                          = 6379
   automatic_failover_enabled    = true
@@ -19,10 +19,8 @@ resource "aws_elasticache_replication_group" "tecton_redis_cluster" {
   # Enable TLS
   transit_encryption_enabled = "true"
   # Four shards. One replica per shard.
-  cluster_mode {
-    replicas_per_node_group = 1
-    num_node_groups         = 4
-  }
+  replicas_per_node_group = 1
+  num_node_groups         = 4
   security_group_ids = [var.redis_security_group_id]
   subnet_group_name  = "tecton-redis-cluster-cache-subnet"
   depends_on         = [aws_elasticache_subnet_group.tecton_redis_cluster_subnet_group]
