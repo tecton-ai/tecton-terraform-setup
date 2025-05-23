@@ -96,21 +96,8 @@ resource "aws_iam_policy" "rift_compute_logs" {
 
 resource "aws_iam_policy" "rift_bootstrap_scripts" {
   name = lookup(var.resource_name_overrides, "rift_bootstrap_scripts", "tecton-rift-boostrap-scripts")
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:ListObject",
-          "s3:HeadObject"
-        ]
-        Resource = [
-          format("%s/%s", var.offline_store_bucket_arn, "rift-bootstrap-scripts/*"),
-        ]
-      }
-    ]
+  policy = templatefile("${path.module}/../templates/rift_bootstrap_scripts_policy.json", {
+    OFFLINE_STORE_BUCKET_ARN = var.offline_store_bucket_arn
   })
 }
 
