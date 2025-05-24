@@ -1,0 +1,63 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:HeadBucket"],
+      "Resource": ["${OFFLINE_STORE_BUCKET_ARN}"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:*"],
+      "Resource": [
+        "${OFFLINE_STORE_BUCKET_ARN}/${OFFLINE_STORE_KEY_PREFIX}",
+        "${OFFLINE_STORE_BUCKET_ARN}/${OFFLINE_STORE_KEY_PREFIX}*",
+        "${OFFLINE_STORE_BUCKET_ARN}/tecton-model-artifacts",
+        "${OFFLINE_STORE_BUCKET_ARN}/tecton-model-artifacts*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:*"],
+      "Resource": ["${OFFLINE_STORE_BUCKET_ARN}"],
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": "${OFFLINE_STORE_KEY_PREFIX}*"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:Get*",
+        "s3:List*",
+        "s3:Describe*"
+      ],
+      "Resource": ["${OFFLINE_STORE_BUCKET_ARN}/internal/*"]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetObject"
+      ],
+      "Resource": ["*"],
+      "Condition": {
+        "StringNotEquals": {
+          "s3:ResourceAccount": "${ACCOUNT_ID}"
+        }
+      }
+    }
+    %{ if USE_KMS_KEY ~}
+    ,
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": ["${KMS_KEY_ARN}"]
+    }
+    %{ endif ~}
+  ]
+} 
