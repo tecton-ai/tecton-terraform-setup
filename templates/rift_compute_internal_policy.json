@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:*"
+      ],
+      "Resource": ["*"],
+      "Condition": {
+        "StringEquals": {
+          "secretsmanager:ResourceAccount": "${ACCOUNT_ID}"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:*"
+      ],
+      "Resource": ["*"],
+      "Condition": {
+        "StringEquals": {
+          "kms:ResourceAccount": "${ACCOUNT_ID}"
+        }
+      }
+    }
+  ]
+} 
