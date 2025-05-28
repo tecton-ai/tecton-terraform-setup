@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.1.0...v1.2.0) (2025-05-28)
+
+
+### Features
+
+* Add dataplane_rift_with_emr module. ([#208](https://github.com/tecton-ai/tecton-terraform-setup/issues/208)) ([e6ea67d](https://github.com/tecton-ai/tecton-terraform-setup/commit/e6ea67dd9796159b18d169b131af41e63d465be9))
+
 ## [1.1.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.0.0...v1.1.0) (2025-05-23)
 
 
