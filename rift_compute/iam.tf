@@ -28,12 +28,11 @@ resource "aws_iam_policy" "manage_rift_compute" {
       "arn:aws:ec2:*:${local.account_id}:volume/*",
       local.existing_security_group ? data.aws_security_group.existing[0].arn : aws_security_group.rift_compute[0].arn,
       [for subnet in aws_subnet.private : subnet.arn],
-
     ])),
     ALLOW_NETWORK_INTERFACE_RESOURCES = jsonencode(flatten([
       local.existing_security_group ? data.aws_security_group.existing[0].arn : aws_security_group.rift_compute[0].arn,
-    ])
-  }
+    ])),
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "rift_compute_manager_policies" {

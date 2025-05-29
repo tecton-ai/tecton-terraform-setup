@@ -88,13 +88,13 @@ variable "tecton_privatelink_egress_rules" {
 }
 
 variable "use_network_firewall" {
-  description = "(Optional) Set to true to restrict egress from Rift compute using a network firewall."
+  description = "(Optional) Set to true to restrict egress from Rift compute using a network firewall. Only works if using VPC managed by this module (i.e. existing_vpc_id is not provided)."
   type        = bool
   default     = false
 }
 
 variable "additional_allowed_egress_domains" {
-  description = "(Optional) List of additional domains to allow for Rift compute egress if use_network_firewall is true."
+  description = "(Optional) List of additional domains to allow for egress if use_network_firewall is true. Only works if using VPC managed by this module (i.e. existing_vpc_id is not provided)."
   type        = list(string)
   default     = null
 } 
