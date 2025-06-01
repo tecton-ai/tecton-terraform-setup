@@ -28,8 +28,15 @@ Before using this module, ensure you have:
 To use this module, add a module block like the following to your Terraform configuration. Note that the `source` will point to this module's location within your Git repository.
 
 ```terraform
+provider "aws" {
+  region = "us-east-1" # Replace with your desired region
+}
+
 module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/databricks"
+  providers = {
+    aws = aws
+  }
 
   deployment_name                 = "tecton-databricks-prod"
   region                          = "us-east-1"

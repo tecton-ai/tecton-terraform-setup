@@ -8,12 +8,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 module "tecton" {
   source                     = "../../deployment"
+  providers = {
+    aws = aws
+  }
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
@@ -27,6 +26,9 @@ module "tecton" {
 
 module "security_groups" {
   source          = "../../emr/security_groups"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.subnets.vpc_id
@@ -34,12 +36,18 @@ module "security_groups" {
 
 module "subnets" {
   source          = "../../emr/vpc_subnets"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
   region          = var.region
 }
 
 module "redis" {
   source = "../../emr/redis"
+  providers = {
+    aws = aws
+  }
   count  = var.enable_redis ? 1 : 0
 
   redis_subnet_id         = module.subnets.emr_subnet_id
@@ -49,6 +57,9 @@ module "redis" {
 
 module "notebook_cluster" {
   source = "../../emr/notebook_cluster"
+  providers = {
+    aws = aws
+  }
   count  = var.enable_notebook_cluster ? 1 : 0
 
   region          = var.region
@@ -69,6 +80,9 @@ module "notebook_cluster" {
 
 module "emr_debugging" {
   source = "../../emr/debugging"
+  providers = {
+    aws = aws
+  }
   count  = var.enable_emr_debugging && var.enable_notebook_cluster ? 1 : 0
 
   deployment_name         = var.deployment_name

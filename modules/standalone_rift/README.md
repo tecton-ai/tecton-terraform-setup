@@ -23,8 +23,15 @@ This module provisions the necessary Rift compute resources (IAM Roles, VPC, ECR
 ### Sample Invocation
 
 ```terraform
+provider "aws" {
+  region = "us-west-2" # Replace with your desired region
+}
+
 module "rift" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/standalone_rift"
+  providers = {
+    aws = aws
+  }
 
   deployment_name                 = "deployment-name" # Replace with your deployment name (existing)
   region                          = "us-west-2" # Replace with your region

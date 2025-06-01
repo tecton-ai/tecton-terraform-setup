@@ -7,12 +7,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 module "tecton" {
   source                     = "../../deployment"
+  providers = {
+    aws = aws
+  }
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region

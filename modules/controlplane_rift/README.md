@@ -19,8 +19,15 @@ Before using this module, ensure you have:
 To use this module, add a module block like the following to your Terraform configuration:
 
 ```terraform
+provider "aws" {
+  region = "us-west-2" # Replace with your desired region
+}
+
 module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift"
+  providers = {
+    aws = aws
+  }
 
   deployment_name            = "my-tecton-deployment" # Replace with the deployment name agreed with Tecton
   region                     = "us-west-2" # Replace with the region your account/Tecton deployment will use

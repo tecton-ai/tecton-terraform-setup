@@ -23,8 +23,15 @@ Before using this module, ensure you have:
 ### Sample Invocation
 
 ```terraform
+provider "aws" {
+  region = "us-west-2" # Replace with your desired region
+}
+
 module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift"
+  providers = {
+    aws = aws
+  }
 
   deployment_name                 = "deployment-name" # Replace with the deployment name agreed with Tecton
   region                          = "us-west-2" # Replace with the region your account/Tecton deployment will use

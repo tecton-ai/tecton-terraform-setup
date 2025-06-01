@@ -21,8 +21,15 @@ Before using this module, ensure you have:
 
 
 ```terraform
+provider "aws" {
+  region = "us-west-2" # Replace with your desired region
+}
+
 module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift_with_emr"
+  providers = {
+    aws = aws
+  }
 
   deployment_name                 = "my-tecton-deployment" # Replace with the deployment name agreed with Tecton
   region                          = "us-west-2" # Replace with the region your account/Tecton deployment will use

@@ -7,12 +7,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 module "tecton" {
   source                     = "../../deployment"
+  providers = {
+    aws = aws
+  }
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
@@ -29,6 +28,9 @@ module "tecton" {
 
 module "rift" {
   source                                  = "../../rift_compute"
+  providers = {
+    aws = aws
+  }
   cluster_name                            = var.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", var.tecton_control_plane_account_id, var.tecton_control_plane_role_name)]
   control_plane_account_id                = var.tecton_control_plane_account_id
@@ -54,5 +56,4 @@ module "rift" {
   use_network_firewall = var.use_network_firewall
   # Domains can be extended as needed:
   additional_allowed_egress_domains = var.additional_allowed_egress_domains
-
 }

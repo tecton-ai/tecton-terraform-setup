@@ -7,12 +7,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 module "rift" {
   source                                  = "../../rift_compute"
+  providers = {
+    aws = aws
+  }
   cluster_name                            = var.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", var.tecton_control_plane_account_id, var.tecton_control_plane_role_name)]
   control_plane_account_id                = var.tecton_control_plane_account_id
