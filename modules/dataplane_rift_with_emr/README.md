@@ -26,7 +26,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift_with_emr"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift_with_emr?ref=<version>"
   providers = {
     aws = aws
   }

@@ -23,7 +23,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/emr"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/emr?ref=<version>"
   providers = {
     aws = aws
   }

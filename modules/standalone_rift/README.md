@@ -28,7 +28,7 @@ provider "aws" {
 }
 
 module "rift" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/standalone_rift"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/standalone_rift?ref=<version>"
   providers = {
     aws = aws
   }
