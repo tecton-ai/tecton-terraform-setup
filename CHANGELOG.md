@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.2.0...v1.3.0) (2025-06-02)
+
+
+### Features
+
+* Support importing existing VPC into rift_compute module ([#210](https://github.com/tecton-ai/tecton-terraform-setup/issues/210)) ([3187d32](https://github.com/tecton-ai/tecton-terraform-setup/commit/3187d322c57fa372253d29b09101597b9283e8a1))
+
 ## [1.2.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.1.0...v1.2.0) (2025-05-28)
 
 
