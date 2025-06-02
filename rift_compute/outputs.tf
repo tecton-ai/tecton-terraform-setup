@@ -37,5 +37,5 @@ output "nat_gateway_public_ips" {
 
 output "rift_compute_security_group_id" {
   description = "Security Group ID for Rift compute instances"
-  value = local.existing_security_group ? var.existing_rift_compute_security_group_id : aws_security_group.rift_compute[0].id
+  value = local.rift_security_group.id
 }

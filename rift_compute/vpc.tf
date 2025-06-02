@@ -6,6 +6,7 @@ locals {
   # Used for the Tecton PrivateLink subnet associations.
   # If existing VPC, use the provided list. Otherwise, use the created private subnets.
   privatelink_subnet_ids = local.is_existing_vpc ? var.existing_private_subnet_ids : values(aws_subnet.private)[*].id
+  rift_security_group = local.existing_security_group ? data.aws_security_group.existing[0] : aws_security_group.rift_compute[0]
 
   vpc_cidr       = var.vpc_cidr
   base_cidr_mask = tonumber(split("/", local.vpc_cidr)[1])
@@ -120,9 +121,6 @@ resource "aws_internet_gateway" "rift" {
 resource "aws_route_table" "public" {
   count  = local.is_existing_vpc ? 0 : 1
   vpc_id = local.vpc_id
-  tags = {
-    Name = "tecton-rift-public"
-  }
 }
 
 resource "aws_route" "internet_gateway" {
