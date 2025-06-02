@@ -59,6 +59,7 @@ output "tecton" {
 5.  Share any required output values with your Tecton representative.
 
 ### Details
+![dataplane_rift](./dataplane_rift.svg)
 
 <!-- BEGIN_TF_DOCS -->
 

@@ -50,6 +50,7 @@ output "tecton" {
 5.  Share the output values (like `cross_account_role_arn`) with your Tecton representative.
 
 ### Details
+![controlplane_rift](./controlplane_rift.svg)
 <!-- BEGIN_TF_DOCS -->
 
 
