@@ -5,7 +5,8 @@ locals {
 
   # Used for the Tecton PrivateLink subnet associations.
   # If existing VPC, use the provided list. Otherwise, use the created private subnets.
-  privatelink_subnet_ids = local.is_existing_vpc ? var.existing_private_subnet_ids : values(aws_subnet.private)[*].id
+  private_subnet_ids = local.is_existing_vpc ? var.existing_private_subnet_ids : values(aws_subnet.private)[*].id
+  private_subnet_arns = local.is_existing_vpc ? [for subnet_id in var.existing_private_subnet_ids : format("arn:aws:ec2:%s:%s:subnet/%s", data.aws_region.current.name, data.aws_caller_identity.current.account_id, subnet_id)] : values(aws_subnet.private)[*].arn
   rift_security_group = local.existing_security_group ? data.aws_security_group.existing[0] : aws_security_group.rift_compute[0]
 
   vpc_cidr       = var.vpc_cidr
@@ -198,10 +199,10 @@ resource "aws_vpc_endpoint" "tecton_privatelink" {
 }
 
 resource "aws_vpc_endpoint_subnet_association" "tecton_privatelink" {
-  count = var.tecton_vpce_service_name != null && length(local.privatelink_subnet_ids) > 0 ? length(local.privatelink_subnet_ids) : 0
+  count = var.tecton_vpce_service_name != null && length(local.private_subnet_ids) > 0 ? length(local.private_subnet_ids) : 0
 
   vpc_endpoint_id = aws_vpc_endpoint.tecton_privatelink[0].id
-  subnet_id       = local.privatelink_subnet_ids[count.index]
+  subnet_id       = local.private_subnet_ids[count.index]
 }
 
 

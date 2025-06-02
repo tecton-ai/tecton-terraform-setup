@@ -27,11 +27,11 @@ resource "aws_iam_policy" "manage_rift_compute" {
     ALLOW_RUN_INSTANCES_RESOURCES = jsonencode(flatten([
       "arn:aws:ec2:*:${local.account_id}:volume/*",
       local.rift_security_group.arn,
-      local.privatelink_subnet_ids,
+      local.private_subnet_arns,
     ])),
     ALLOW_NETWORK_INTERFACE_RESOURCES = jsonencode(flatten([
       local.rift_security_group.arn,
-      local.privatelink_subnet_ids,
+      local.private_subnet_arns,
     ])),
   })
 }
