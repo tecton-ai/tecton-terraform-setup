@@ -46,6 +46,10 @@ module "tecton" {
   # To enable EMR debugging for Tecton support (requires notebook_cluster_count = 1):
   # emr_debugging_count = 1
 }
+
+output "tecton" {
+  value = module.tecton
+}
 ```
 
 ### Steps to Deploy

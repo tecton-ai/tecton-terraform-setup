@@ -49,6 +49,10 @@ module "rift" {
   # use_network_firewall = true
   # additional_allowed_egress_domains = ["example.com", "*.example.org"]
 }
+
+output "tecton" {
+  value = module.rift
+}
 ```
 
 ### Steps to Deploy

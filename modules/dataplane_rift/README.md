@@ -44,6 +44,10 @@ module "tecton" {
   # Optional: For PrivateLink to Control Plane. Add _after_ deployment is complete and PrivateLink details are shared by Tecton
   # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
 }
+
+output "tecton" {
+  value = module.tecton
+}
 ```
 
 ### Steps to Deploy (when using this module)

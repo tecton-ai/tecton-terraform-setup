@@ -47,6 +47,10 @@ module "tecton" {
   tecton_control_plane_account_id = "987654321098"       # Tecton's Control Plane Account ID
   cross_account_external_id       = "your-tecton-external-id" # External ID from Tecton
 }
+
+output "tecton" {
+  value = module.tecton
+}
 ```
 
 ### Steps to Deploy (when using this module)
