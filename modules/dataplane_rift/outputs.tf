@@ -39,7 +39,7 @@ output "anyscale_docker_target_repo" {
   value = module.rift.anyscale_docker_target_repo
 }
 output "nat_gateway_public_ips" {
-  description = "List of public IPs associated with NAT gateways in Rift VPC. Empty if existing_vpc_id is provided as NATs are not managed by the module in that case."
+  description = "List of public IPs associated with NAT gateways in Rift VPC. Empty if existing_vpc is provided as NATs are not managed by the module in that case."
   value = module.rift.nat_gateway_public_ips
 }
 output "rift_compute_security_group_id" {

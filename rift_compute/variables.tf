@@ -32,13 +32,13 @@ variable "offline_store_key_prefix" {
 
 
 variable "subnet_azs" {
-  description = "A list of Availability Zones for the subnets. Not used if existing_vpc_id is provided."
+  description = "A list of Availability Zones for the subnets. Not used if existing_vpc is provided."
   type        = list(string)
   default     = []
 }
 
 variable "tecton_vpce_service_name" {
-  description = "The VPC endpoint service name for Tecton PrivateLink. Set to null to disable. If enabled with existing_vpc_id, existing_private_subnet_ids must be provided."
+  description = "The VPC endpoint service name for Tecton PrivateLink. Set to null to disable. If enabled with existing_vpc, existing_vpc.private_subnet_ids must be provided."
   type        = string
   default     = null
 }
@@ -76,7 +76,7 @@ variable "kms_key_arn" {
 variable "use_network_firewall" {
   type        = bool
   default     = false
-  description = "If true, will use AWS Network Firewall to restrict egress. Only works if existing_vpc_id is not provided."
+  description = "If true, will use AWS Network Firewall to restrict egress. Only works if existing_vpc is not provided."
 }
 
 variable "additional_allowed_egress_domains" {
@@ -86,7 +86,7 @@ variable "additional_allowed_egress_domains" {
 }
 
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC (e.g. 10.0.0.0/16). Not used if existing_vpc_id is provided."
+  description = "CIDR block for the VPC (e.g. 10.0.0.0/16). Not used if existing_vpc is provided."
   type        = string
   default     = "10.0.0.0/16"
 }
@@ -116,16 +116,21 @@ variable "tecton_privatelink_egress_rules" {
   default = []
 }
 
-variable "existing_vpc_id" {
-  description = "Optional. The ID of an existing VPC to use. If provided, the module will not create a new VPC or related core networking resources (subnets, IGW, NAT GWs, Route Tables)."
-  type        = string
-  default     = null
-}
+variable "existing_vpc" {
+  description = "Optional. Configuration for using an existing VPC. If provided, the module will not create a new VPC or related core networking resources (subnets, IGW, NAT GWs, Route Tables). Both vpc_id and private_subnet_ids must be provided together."
+  type = object({
+    vpc_id               = string
+    private_subnet_ids   = list(string)
+  })
+  default = null
 
-variable "existing_private_subnet_ids" {
-  description = "Optional. A list of existing private subnet IDs. Required if existing_vpc_id is provided. These subnets will be used for Rift compute instances and Tecton PrivateLink."
-  type        = list(string)
-  default     = []
+  validation {
+    condition = var.existing_vpc == null || (
+      var.existing_vpc.vpc_id != null && var.existing_vpc.vpc_id != "" &&
+      var.existing_vpc.private_subnet_ids != null && length(var.existing_vpc.private_subnet_ids) > 0
+    )
+    error_message = "When existing_vpc is provided, both vpc_id and private_subnet_ids must be non-empty."
+  }
 }
 
 variable "existing_rift_compute_security_group_id" {

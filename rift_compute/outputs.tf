@@ -17,7 +17,7 @@ output "compute_arn" {
 
 output "vm_workload_subnet_ids" {
   description = "List (comma-separated string) of subnet IDs for Rift compute instances"
-  value = join(",", local.is_existing_vpc ? var.existing_private_subnet_ids : values(aws_subnet.private)[*].id)
+  value = join(",", local.is_existing_vpc ? var.existing_vpc.private_subnet_ids : values(aws_subnet.private)[*].id)
 }
 
 output "anyscale_docker_target_repo" {
@@ -31,7 +31,7 @@ output "rift_ecr_repo_arn" {
 }
 
 output "nat_gateway_public_ips" {
-  description = "List of public IPs associated with NAT gateways in Rift VPC. Empty if existing_vpc_id is provided as NATs are not managed by the module in that case."
+  description = "List of public IPs associated with NAT gateways in Rift VPC. Empty if existing_vpc is provided as NATs are not managed by the module in that case."
   value       = local.is_existing_vpc ? [] : [for eip in aws_eip.rift : eip.public_ip]
 }
 
