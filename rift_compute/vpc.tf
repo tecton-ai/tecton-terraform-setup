@@ -159,12 +159,14 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_vpc_endpoint" "dynamodb" {
+  count = local.is_existing_vpc ? 0 : 1
   vpc_id          = local.vpc_id
   service_name    = format("com.amazonaws.%s.dynamodb", data.aws_region.current.name)
   route_table_ids = local.is_existing_vpc ? null : values(aws_route_table.private)[*].id
 }
 
 resource "aws_vpc_endpoint" "s3" {
+  count = local.is_existing_vpc ? 0 : 1
   vpc_id          = local.vpc_id
   service_name    = format("com.amazonaws.%s.s3", data.aws_region.current.name)
   route_table_ids = local.is_existing_vpc ? null : values(aws_route_table.private)[*].id
@@ -173,14 +175,14 @@ resource "aws_vpc_endpoint" "s3" {
 resource "aws_vpc_endpoint_route_table_association" "dynamodb" {
   for_each = local.is_existing_vpc || length(aws_route_table.private) == 0 ? {} : aws_route_table.private
   # only create if module manages route tables
-  vpc_endpoint_id = aws_vpc_endpoint.dynamodb.id
+  vpc_endpoint_id = aws_vpc_endpoint.dynamodb[0].id
   route_table_id  = each.value.id
 }
 
 resource "aws_vpc_endpoint_route_table_association" "s3" {
   for_each = local.is_existing_vpc || length(aws_route_table.private) == 0 ? {} : aws_route_table.private
   # only create if module manages route tables
-  vpc_endpoint_id = aws_vpc_endpoint.s3.id
+  vpc_endpoint_id = aws_vpc_endpoint.s3[0].id
   route_table_id  = each.value.id
 }
 
