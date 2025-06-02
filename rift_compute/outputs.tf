@@ -17,7 +17,7 @@ output "compute_arn" {
 
 output "vm_workload_subnet_ids" {
   description = "List (comma-separated string) of subnet IDs for Rift compute instances"
-  value = join(",", local.is_existing_vpc ? var.existing_vpc.private_subnet_ids : values(aws_subnet.private)[*].id)
+  value = join(",", local.is_existing_vpc && var.existing_vpc != null ? var.existing_vpc.private_subnet_ids : values(aws_subnet.private)[*].id)
 }
 
 output "anyscale_docker_target_repo" {
