@@ -126,8 +126,8 @@ variable "existing_vpc" {
 
   validation {
     condition = var.existing_vpc == null ? true : (
-      var.existing_vpc.vpc_id != null && var.existing_vpc.vpc_id != "" &&
-      var.existing_vpc.private_subnet_ids != null && length(var.existing_vpc.private_subnet_ids) > 0
+      try(var.existing_vpc.vpc_id, "") != "" &&
+      try(var.existing_vpc.private_subnet_ids, null) != null && length(try(var.existing_vpc.private_subnet_ids, [])) > 0
     )
     error_message = "When existing_vpc is provided, both vpc_id and private_subnet_ids must be non-empty."
   }

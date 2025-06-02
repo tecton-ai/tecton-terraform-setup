@@ -1,12 +1,12 @@
 locals {
   is_existing_vpc = var.existing_vpc != null
 
-  vpc_id = local.is_existing_vpc && var.existing_vpc != null ? var.existing_vpc.vpc_id : aws_vpc.rift[0].id
+  vpc_id = local.is_existing_vpc ? try(var.existing_vpc.vpc_id, null) : aws_vpc.rift[0].id
 
   # Used for the Tecton PrivateLink subnet associations.
   # If existing VPC, use the provided list. Otherwise, use the created private subnets.
-  private_subnet_ids = local.is_existing_vpc && var.existing_vpc != null ? var.existing_vpc.private_subnet_ids : values(aws_subnet.private)[*].id
-  private_subnet_arns = local.is_existing_vpc && var.existing_vpc != null ? [for subnet_id in var.existing_vpc.private_subnet_ids : format("arn:aws:ec2:%s:%s:subnet/%s", data.aws_region.current.name, data.aws_caller_identity.current.account_id, subnet_id)] : values(aws_subnet.private)[*].arn
+  private_subnet_ids = local.is_existing_vpc ? try(var.existing_vpc.private_subnet_ids, []) : values(aws_subnet.private)[*].id
+  private_subnet_arns = local.is_existing_vpc ? [for subnet_id in try(var.existing_vpc.private_subnet_ids, []) : format("arn:aws:ec2:%s:%s:subnet/%s", data.aws_region.current.name, data.aws_caller_identity.current.account_id, subnet_id)] : values(aws_subnet.private)[*].arn
   rift_security_group = local.existing_security_group ? data.aws_security_group.existing[0] : aws_security_group.rift_compute[0]
 
   vpc_cidr       = var.vpc_cidr
@@ -43,14 +43,14 @@ locals {
 
 data "aws_vpc" "existing" {
   count = local.is_existing_vpc ? 1 : 0
-  id    = var.existing_vpc != null ? var.existing_vpc.vpc_id : null
+  id    = try(var.existing_vpc.vpc_id, null)
 }
 
 # Data source to get details of existing private subnets, especially their AZs for consistency
 # if other resources need to map AZ to subnet ID (though less critical now without public subnets in BYO).
 data "aws_subnet" "existing_private" {
-  count    = local.is_existing_vpc && var.existing_vpc != null && length(var.existing_vpc.private_subnet_ids) > 0 ? length(var.existing_vpc.private_subnet_ids) : 0
-  id       = var.existing_vpc != null ? var.existing_vpc.private_subnet_ids[count.index] : null
+  count    = local.is_existing_vpc ? length(try(var.existing_vpc.private_subnet_ids, [])) : 0
+  id       = try(var.existing_vpc.private_subnet_ids[count.index], null)
 }
 
 
