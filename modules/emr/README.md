@@ -44,6 +44,10 @@ module "tecton" {
   # Optional: Enable Redis
   # enable_redis            = true
 }
+
+output "tecton" {
+  value = module.tecton
+}
 ```
 
 ### Steps to Deploy
