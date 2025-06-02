@@ -125,7 +125,7 @@ variable "existing_vpc" {
   default = null
 
   validation {
-    condition = var.existing_vpc == null || (
+    condition = var.existing_vpc == null ? true : (
       var.existing_vpc.vpc_id != null && var.existing_vpc.vpc_id != "" &&
       var.existing_vpc.private_subnet_ids != null && length(var.existing_vpc.private_subnet_ids) > 0
     )

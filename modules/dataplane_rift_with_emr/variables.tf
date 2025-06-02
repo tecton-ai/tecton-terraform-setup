@@ -36,14 +36,6 @@ variable "existing_vpc" {
     private_subnet_ids   = list(string)
   })
   default = null
-
-  validation {
-    condition = var.existing_vpc == null || (
-      var.existing_vpc.vpc_id != null && var.existing_vpc.vpc_id != "" &&
-      var.existing_vpc.private_subnet_ids != null && length(var.existing_vpc.private_subnet_ids) > 0
-    )
-    error_message = "When existing_vpc is provided, both vpc_id and private_subnet_ids must be non-empty."
-  }
 }
 
 variable "existing_rift_compute_security_group_id" {
