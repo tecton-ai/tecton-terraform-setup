@@ -7,12 +7,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 module "tecton" {
   source                     = "../../deployment"
+  providers = {
+    aws = aws
+  }
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
@@ -29,6 +28,9 @@ module "tecton" {
 
 module "rift" {
   source                                  = "../../rift_compute"
+  providers = {
+    aws = aws
+  }
   cluster_name                            = var.deployment_name
   rift_compute_manager_assuming_role_arns = [format("arn:aws:iam::%s:role/%s", var.tecton_control_plane_account_id, var.tecton_control_plane_role_name)]
   control_plane_account_id                = var.tecton_control_plane_account_id
@@ -37,6 +39,10 @@ module "rift" {
   subnet_azs                              = var.subnet_azs
 
   # OPTIONAL
+  # Use Existing/pre-configured VPC
+  existing_vpc                            = var.existing_vpc
+  existing_rift_compute_security_group_id = var.existing_rift_compute_security_group_id
+  # PrivateLink
   tecton_vpce_service_name                = var.tecton_vpce_service_name
   # Tecton PrivateLink Security Group Rules (apply to VPC endpoint to access Tecton ctrl plane)
   tecton_privatelink_ingress_rules = var.tecton_privatelink_ingress_rules
@@ -54,6 +60,9 @@ module "rift" {
 ## EMR Resources
 module "security_groups" {
   source          = "../../emr/security_groups"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.subnets.vpc_id
@@ -62,6 +71,9 @@ module "security_groups" {
 # Tecton default vpc/subnet configuration
 module "subnets" {
   source          = "../../emr/vpc_subnets"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
   region          = var.region
 }
@@ -69,6 +81,9 @@ module "subnets" {
 # Notebook Cluster and Debugging
 module "notebook_cluster" {
   source = "../../emr/notebook_cluster"
+  providers = {
+    aws = aws
+  }
   # See https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
@@ -100,6 +115,9 @@ module "notebook_cluster" {
 # Enable this module by setting count = 1
 module "emr_debugging" {
   source = "../../emr/debugging"
+  providers = {
+    aws = aws
+  }
 
   count = var.emr_debugging_count
 

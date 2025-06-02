@@ -17,17 +17,18 @@ locals {
     ".amazonaws.com",
   ]
 
+  use_network_firewall = var.use_network_firewall && !local.is_existing_vpc
 }
 
 resource "aws_networkfirewall_firewall" "rift_egress" {
-  count                    = var.use_network_firewall ? 1 : 0
+  count                    = local.use_network_firewall ? 1 : 0
   delete_protection        = false
   firewall_policy_arn      = aws_networkfirewall_firewall_policy.rift_egress[0].arn
   name                     = "tecton-rift-egress-firewall"
   subnet_change_protection = false
   tags                     = {}
   tags_all                 = {}
-  vpc_id                   = aws_vpc.rift.id
+  vpc_id                   = local.is_existing_vpc ? data.aws_vpc.existing[0].id : aws_vpc.rift[0].id
 
   dynamic "subnet_mapping" {
     for_each = aws_subnet.firewall_subnet
@@ -41,7 +42,7 @@ resource "aws_networkfirewall_firewall" "rift_egress" {
 
 
 resource "aws_networkfirewall_firewall_policy" "rift_egress" {
-  count = var.use_network_firewall ? 1 : 0
+  count = local.use_network_firewall ? 1 : 0
   name  = "tecton-rift-egress-firewall-policy"
   firewall_policy {
     stateful_default_actions = [
@@ -64,7 +65,7 @@ resource "aws_networkfirewall_firewall_policy" "rift_egress" {
 
 
 resource "aws_networkfirewall_rule_group" "rift_compute_egress_allowed_domains" {
-  count    = var.use_network_firewall ? 1 : 0
+  count    = local.use_network_firewall ? 1 : 0
   capacity = 500
   name     = "egress-allowed-domains-rift"
   type     = "STATEFUL"
@@ -95,8 +96,8 @@ module "firewall_subnet_cidrs" {
 }
 
 resource "aws_subnet" "firewall_subnet" {
-  for_each = var.use_network_firewall ? module.firewall_subnet_cidrs.network_cidr_blocks : {}
-  vpc_id            = aws_vpc.rift.id
+  for_each = local.use_network_firewall ? module.firewall_subnet_cidrs.network_cidr_blocks : {}
+  vpc_id            = local.is_existing_vpc ? data.aws_vpc.existing[0].id : aws_vpc.rift[0].id
   availability_zone = join("-", slice(split("-", each.key), 1, length(split("-", each.key))))
   cidr_block        = each.value
   tags = {
@@ -108,8 +109,8 @@ resource "aws_subnet" "firewall_subnet" {
 }
 
 resource "aws_route_table" "firewall_route_table" {
-  count  = var.use_network_firewall ? 1 : 0
-  vpc_id = aws_vpc.rift.id
+  count  = local.use_network_firewall ? 1 : 0
+  vpc_id = aws_vpc.rift[0].id
   tags = {
     Name = "tecton-rift-firewall-route-table"
   }
@@ -120,8 +121,8 @@ resource "aws_route_table" "firewall_route_table" {
 }
 
 resource "aws_route_table" "igw_route_table" {
-  count  = var.use_network_firewall ? 1 : 0
-  vpc_id = aws_vpc.rift.id
+  count  = local.use_network_firewall ? 1 : 0
+  vpc_id = aws_vpc.rift[0].id
   tags = {
     Name = "tecton-rift-firewall-igw-route-table"
   }
@@ -130,8 +131,8 @@ resource "aws_route_table" "igw_route_table" {
 }
 
 resource "aws_route_table_association" "igw_route_table_assoc" {
-  count          = var.use_network_firewall ? 1 : 0
-  gateway_id     = aws_internet_gateway.rift.id
+  count          = local.use_network_firewall ? 1 : 0
+  gateway_id     = aws_internet_gateway.rift[0].id
   route_table_id = aws_route_table.igw_route_table[0].id
 }
 
@@ -142,7 +143,7 @@ resource "aws_route_table_association" "firewall_subnet_route_table_association"
 }
 
 locals {
-  networkfirewall_endpoints = var.use_network_firewall ? {
+  networkfirewall_endpoints = local.use_network_firewall ? {
     for i in aws_networkfirewall_firewall.rift_egress[0].firewall_status[0].sync_states :
     i.availability_zone => i.attachment[0].endpoint_id
   } : {}
@@ -150,15 +151,15 @@ locals {
 
 # Route internet traffic to firewall from public subnet
 resource "aws_route" "public_subnet_route_to_firewall" {
-  count                  = var.use_network_firewall ? 1 : 0
-  route_table_id         = aws_route_table.public.id
+  count                  = local.use_network_firewall ? 1 : 0
+  route_table_id         = aws_route_table.public[0].id
   destination_cidr_block = "0.0.0.0/0"
   vpc_endpoint_id        = local.networkfirewall_endpoints[keys(local.networkfirewall_endpoints)[0]]
 }
 
 # Route internet traffic back to firewall from igw
 resource "aws_route" "igw_route_to_firewall_to_public_subnet" {
-  for_each               = var.use_network_firewall ? aws_subnet.public : {}
+  for_each               = local.use_network_firewall  ? aws_subnet.public : {}
   route_table_id         = aws_route_table.igw_route_table[0].id
   destination_cidr_block = each.value.cidr_block
   vpc_endpoint_id        = local.networkfirewall_endpoints[keys(local.networkfirewall_endpoints)[0]]
@@ -166,8 +167,8 @@ resource "aws_route" "igw_route_to_firewall_to_public_subnet" {
 
 # Route outgoing internet traffic to igw from firewall
 resource "aws_route" "firewall_route_to_igw" {
-  count                  = var.use_network_firewall ? 1 : 0
+  count                  = local.use_network_firewall  ? 1 : 0
   route_table_id         = aws_route_table.firewall_route_table[0].id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.rift.id
+  gateway_id             = aws_internet_gateway.rift[0].id
 }

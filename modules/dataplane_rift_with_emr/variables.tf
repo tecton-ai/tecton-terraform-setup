@@ -29,6 +29,21 @@ variable "kms_key_id" {
   default     = null
 }
 
+variable "existing_vpc" {
+  description = "(Optional) Configuration for using an existing VPC. If provided, both vpc_id and private_subnet_ids must be provided together."
+  type = object({
+    vpc_id               = string
+    private_subnet_ids   = list(string)
+  })
+  default = null
+}
+
+variable "existing_rift_compute_security_group_id" {
+  description = "(Optional) The ID of the existing security group to use for Rift compute instances."
+  type        = string
+  default     = null
+}
+
 variable "subnet_azs" {
   description = "A list of Availability Zones for the subnets."
   type        = list(string)
@@ -70,13 +85,13 @@ variable "tecton_privatelink_egress_rules" {
 }
 
 variable "use_network_firewall" {
-  description = "(Optional) Set to true to restrict egress from Rift compute using a network firewall."
+  description = "(Optional) Set to true to restrict egress from Rift compute using a network firewall. Only works if using VPC managed by this module (i.e. existing_vpc is not provided)."
   type        = bool
   default     = false
 }
 
 variable "additional_allowed_egress_domains" {
-  description = "(Optional) List of additional domains to allow for Rift compute egress if use_network_firewall is true."
+  description = "(Optional) List of additional domains to allow for egress if use_network_firewall is true. Only works if using VPC managed by this module (i.e. existing_vpc is not provided)."
   type        = list(string)
   default     = null
 } 

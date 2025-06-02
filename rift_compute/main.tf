@@ -1,5 +1,7 @@
 locals {
   account_id = data.aws_caller_identity.current.account_id
+
+  existing_security_group = var.existing_rift_compute_security_group_id != null
 }
 
 data "aws_caller_identity" "current" {}
@@ -44,12 +46,19 @@ resource "aws_ecr_repository_policy" "cross_account_ecr" {
 }
 
 resource "aws_security_group" "rift_compute" {
+  count = local.existing_security_group ? 0 : 1
   name   = lookup(var.resource_name_overrides, "rift_compute", "tecton-rift-compute")
-  vpc_id = aws_vpc.rift.id
+  vpc_id = local.is_existing_vpc ? data.aws_vpc.existing[0].id : aws_vpc.rift[0].id
+}
+
+data "aws_security_group" "existing" {
+  count = local.existing_security_group ? 1 : 0
+  id = var.existing_rift_compute_security_group_id
 }
 
 resource "aws_security_group_rule" "rift_compute_egress" {
-  security_group_id = aws_security_group.rift_compute.id
+  count = local.existing_security_group ? 0 : 1
+  security_group_id = aws_security_group.rift_compute[0].id
   type              = "egress"
   cidr_blocks       = ["0.0.0.0/0"]
   from_port         = "-1"

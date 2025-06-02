@@ -7,12 +7,11 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = var.region
-}
-
 module "tecton" {
   source                     = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//deployment"
+  providers = {
+    aws = aws
+  }
   deployment_name            = var.deployment_name
   account_id                 = var.account_id
   region                     = var.region
@@ -30,6 +29,9 @@ module "tecton" {
 ## EMR Resources
 module "security_groups" {
   source          = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/security_groups"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
   region          = var.region
   emr_vpc_id      = module.subnets.vpc_id
@@ -38,6 +40,9 @@ module "security_groups" {
 # Tecton default vpc/subnet configuration
 module "subnets" {
   source          = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/vpc_subnets"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
   region          = var.region
 }
@@ -45,6 +50,9 @@ module "subnets" {
 # Notebook Cluster and Debugging
 module "notebook_cluster" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/notebook_cluster"
+  providers = {
+    aws = aws
+  }
   # See https://docs.tecton.ai/docs/setting-up-tecton/connecting-to-a-data-platform/tecton-on-emr/connecting-emr-notebooks#prerequisites
   # You must manually set the value of TECTON_API_KEY in AWS Secrets Manager
 
@@ -76,6 +84,9 @@ module "notebook_cluster" {
 # Enable this module by setting count = 1
 module "emr_debugging" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/debugging"
+  providers = {
+    aws = aws
+  }
 
   count = var.emr_debugging_count
 

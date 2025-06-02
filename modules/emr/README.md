@@ -18,8 +18,15 @@ This module provisions:
 ### Sample Invocation
 
 ```terraform
+provider "aws" {
+  region = "us-east-1" # Replace with your desired region
+}
+
 module "tecton" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/emr"
+  providers = {
+    aws = aws
+  }
 
   deployment_name                 = "tecton-prod-emr"
   region                          = "us-east-1"

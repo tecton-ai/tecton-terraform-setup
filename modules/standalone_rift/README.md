@@ -23,8 +23,15 @@ This module provisions the necessary Rift compute resources (IAM Roles, VPC, ECR
 ### Sample Invocation
 
 ```terraform
+provider "aws" {
+  region = "us-west-2" # Replace with your desired region
+}
+
 module "rift" {
   source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/standalone_rift"
+  providers = {
+    aws = aws
+  }
 
   deployment_name                 = "deployment-name" # Replace with your deployment name (existing)
   region                          = "us-west-2" # Replace with your region
@@ -65,12 +72,16 @@ module "rift" {
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Rift resources will be deployed. | `string` | n/a | yes |
 | <a name="input_additional_allowed_egress_domains"></a> [additional\_allowed\_egress\_domains](#input\_additional\_allowed\_egress\_domains) | (Optional) List of additional domains to allow for egress if use\_network\_firewall is true. | `list(string)` | `null` | no |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | A unique name for this Rift deployment, used for naming resources. Must be less than 22 characters due to AWS limitations if used for S3 bucket naming. | `string` | n/a | yes |
+| <a name="input_existing_rift_compute_security_group_id"></a> [existing\_rift\_compute\_security\_group\_id](#input\_existing\_rift\_compute\_security\_group\_id) | (Optional) The ID of the existing security group to use for Rift compute instances. | `string` | `null` | no |
+| <a name="input_existing_vpc"></a> [existing\_vpc](#input\_existing\_vpc) | (Optional) Configuration for using an existing VPC. If provided, both vpc\_id and private\_subnet\_ids must be provided together. | <pre>object({<br/>    vpc_id               = string<br/>    private_subnet_ids   = list(string)<br/>  })</pre> | `null` | no |
 | <a name="input_log_bucket_name"></a> [log\_bucket\_name](#input\_log\_bucket\_name) | The name of the S3 bucket where Rift logs will be stored. | `string` | n/a | yes |
 | <a name="input_offline_store_bucket_name"></a> [offline\_store\_bucket\_name](#input\_offline\_store\_bucket\_name) | The name of the S3 bucket used as the offline store. | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region for the Rift deployment. | `string` | n/a | yes |
 | <a name="input_subnet_azs"></a> [subnet\_azs](#input\_subnet\_azs) | A list of Availability Zones for the Rift VPC subnets. | `list(string)` | n/a | yes |
 | <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |
 | <a name="input_tecton_control_plane_role_name"></a> [tecton\_control\_plane\_role\_name](#input\_tecton\_control\_plane\_role\_name) | The name of the Tecton control plane IAM role that Rift will allow to assume its manager role. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_tecton_privatelink_egress_rules"></a> [tecton\_privatelink\_egress\_rules](#input\_tecton\_privatelink\_egress\_rules) | (Optional) List of egress rules for the Tecton PrivateLink security group. | <pre>list(object({<br/>    cidr        = string<br/>    from_port   = number<br/>    to_port     = number<br/>    protocol    = string<br/>    description = string<br/>  }))</pre> | `null` | no |
+| <a name="input_tecton_privatelink_ingress_rules"></a> [tecton\_privatelink\_ingress\_rules](#input\_tecton\_privatelink\_ingress\_rules) | (Optional) List of ingress rules for the Tecton PrivateLink security group. | <pre>list(object({<br/>    cidr        = string<br/>    from_port   = number<br/>    to_port     = number<br/>    protocol    = string<br/>    description = string<br/>  }))</pre> | `null` | no |
 | <a name="input_tecton_vpce_service_name"></a> [tecton\_vpce\_service\_name](#input\_tecton\_vpce\_service\_name) | (Optional) The VPC endpoint service name for Tecton. Required if the Tecton control plane uses PrivateLink for ingress. | `string` | `null` | no |
 | <a name="input_use_network_firewall"></a> [use\_network\_firewall](#input\_use\_network\_firewall) | (Optional) Set to true to restrict egress from Rift compute using an AWS Network Firewall. | `bool` | `false` | no |  
 ## Outputs
