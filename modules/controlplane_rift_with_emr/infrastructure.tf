@@ -8,7 +8,7 @@ terraform {
 }
 
 module "tecton" {
-  source                     = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//deployment"
+  source                     = "../../deployment"
   providers = {
     aws = aws
   }
@@ -28,7 +28,7 @@ module "tecton" {
 
 ## EMR Resources
 module "security_groups" {
-  source          = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/security_groups"
+  source          = "../../emr/security_groups"
   providers = {
     aws = aws
   }
@@ -39,7 +39,7 @@ module "security_groups" {
 
 # Tecton default vpc/subnet configuration
 module "subnets" {
-  source          = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/vpc_subnets"
+  source          = "../../emr/vpc_subnets"
   providers = {
     aws = aws
   }
@@ -49,7 +49,7 @@ module "subnets" {
 
 # Notebook Cluster and Debugging
 module "notebook_cluster" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/notebook_cluster"
+  source = "../../emr/notebook_cluster"
   providers = {
     aws = aws
   }
@@ -83,7 +83,7 @@ module "notebook_cluster" {
 #
 # Enable this module by setting count = 1
 module "emr_debugging" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//emr/debugging"
+  source = "../../emr/debugging"
   providers = {
     aws = aws
   }

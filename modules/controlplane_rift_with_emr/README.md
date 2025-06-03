@@ -25,7 +25,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift_with_emr"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift_with_emr?ref=<version>"
   providers = {
     aws = aws
   }
@@ -42,6 +42,10 @@ module "tecton" {
 
   # To enable EMR debugging for Tecton support (requires notebook_cluster_count = 1):
   # emr_debugging_count = 1
+}
+
+output "tecton" {
+  value = module.tecton
 }
 ```
 

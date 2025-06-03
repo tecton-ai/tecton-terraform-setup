@@ -28,7 +28,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift?ref=<version>"
   providers = {
     aws = aws
   }
@@ -43,6 +43,10 @@ module "tecton" {
 
   # Optional: For PrivateLink to Control Plane. Add _after_ deployment is complete and PrivateLink details are shared by Tecton
   # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
+}
+
+output "tecton" {
+  value = module.tecton
 }
 ```
 

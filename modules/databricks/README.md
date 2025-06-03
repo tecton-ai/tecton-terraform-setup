@@ -33,7 +33,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/databricks"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/databricks?ref=<version>"
   providers = {
     aws = aws
   }
@@ -46,6 +46,10 @@ module "tecton" {
   databricks_workspace_url        = "mycompany.cloud.databricks.com"
   tecton_control_plane_account_id = "987654321098"       # Tecton's Control Plane Account ID
   cross_account_external_id       = "your-tecton-external-id" # External ID from Tecton
+}
+
+output "tecton" {
+  value = module.tecton
 }
 ```
 

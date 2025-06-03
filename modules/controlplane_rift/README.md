@@ -24,7 +24,7 @@ provider "aws" {
 }
 
 module "tecton" {
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift"
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/controlplane_rift?ref=<version>"
   providers = {
     aws = aws
   }
@@ -34,6 +34,10 @@ module "tecton" {
   account_id                 = "123456789012" # Replace with your AWS Account ID
   tecton_control_plane_account_id = "987654321098" # Replace with Tecton's Control Plane Account ID
   cross_account_external_id  = "your-tecton-external-id"   # Replace with the External ID from Tecton
+}
+
+output "tecton" {
+  value = module.tecton
 }
 ```
 

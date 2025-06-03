@@ -35,12 +35,16 @@ Each module directory linked above contains its own detailed `README.md` which i
 *   A sample invocation block.
 *   Step-by-step deployment instructions.
 
-To use any of these modules, you would typically reference its path using a Git source in your Terraform configuration. For example:
+To use any of these modules, you would typically reference its path using a Git source in your Terraform configuration.
+
+We recommend to pin to the specific/[latest](https://github.com/tecton-ai/tecton-terraform-setup/releases/latest) version at the time of deployment. Add `?ref=<version_number>` at the end of the `source` statement.
+
+For example:
 
 ```terraform
 module "tecton" {
   # This example uses the dataplane_rift module
-  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift" # Path updated
+  source = "git::https://github.com/tecton-ai/tecton-terraform-setup.git//modules/dataplane_rift?ref=<version>"
 
   # ... provide all required input variables for the selected module here ...
   # Example variables for 'dataplane_rift':
