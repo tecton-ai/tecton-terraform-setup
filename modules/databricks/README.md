@@ -63,6 +63,7 @@ output "tecton" {
 6.  Share the output values (like `cross_account_role_arn`, S3 bucket name from `module.tecton.s3_bucket.bucket`, `kms_key_arn`) with your Tecton representative. 
 
 ### Details
+![databricks.svg](./databricks.svg)
 <!-- BEGIN_TF_DOCS -->
 
 
