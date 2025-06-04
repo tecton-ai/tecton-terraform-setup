@@ -1,0 +1,75 @@
+direction: right
+tecton_virtual_private_tecton [label: "Tecton Control-Plane AWS ACcount", color: magenta, icon: globe] {
+    control_plane_vpc [label: "Control Plane VPC", color: purple, icon: aws-vpc] {
+        tecton_control_plane_app_metadata [label: "Tecton Control Plane Application & Metadata", color: gray, icon: monitor] {
+            web_ui [label: "Web UI", icon: monitor]
+            metadata_api [label: "Metadata API", icon: code]
+            metrics_api [label: "Metrics API", icon: prometheus]
+            feature_serving [label: "Feature Serving", icon: service]
+            orchestration [label: "Orchestration", icon: settings]
+            stream_ingest_api [icon: aws-ec2, label: "Stream Ingest API"]
+        }
+        nlb [label: "NLB", icon: aws-elastic-load-balancing]
+        ingest_nlb [label: "Ingest NLB", icon: aws-elastic-load-balancing]
+        vpc_endpoint_service [label: "VPC Endpoint Service (PrivateLink)", icon: aws-vpc-endpoint]
+        ingest_vpc_endpoint_service [label: "Ingest VPC Endpoint Service (PrivateLink)", icon: aws-vpc-endpoint]
+    }
+}
+
+customer_aws_account [label: "Customer AWS Account", color: orange, icon: aws-account] {
+    online_feature_store [label: "Online feature storage\nDynamoDB tables", icon: aws-dynamodb]
+    cross_account_role [label: "Cross Account Role", icon: aws-iam-role]
+    offline_feature_store [label: "Offline feature storage\nS3", icon: aws-s3]
+        customer_vpc [label: "VPC", color: lightblue, icon: aws-vpc] {
+        online_feature_consumption [label: "Online Feature consumption\nML App/Service", icon: monitor]
+        offline_feature_consumption [label: "Offline Feature consumption\nDevelopment tools (Notebook)", icon: book-open]
+        vpc_endpoint_1 [label: "VPC Endpoint", icon: aws-vpc-endpoint]
+    }
+
+  VPC [label: "VPC", color: lightblue, icon: aws-vpc] {
+    vpc_endpoint_2 [label: "VPC Endpoint", icon: aws-vpc-endpoint]
+    streaming_ingest_app [icon: kafka, label: "Streaming / Realtime Application"]
+  }
+      
+
+  databricks_vpc [icon: aws-vpc, color: blue, label: "Databricks VPC"] {
+    databricks_compute [icon: databricks, label: "Databricks Spark Compute"]
+  }
+
+  emr_spark_role [icon: aws-iam-role, label: "Spark Role"]
+
+
+}
+
+// connections
+databricks_compute > emr_spark_role
+emr_spark_role > offline_feature_store: Materialization
+emr_spark_role > online_feature_store: Materialization
+
+web_ui > nlb
+metadata_api > nlb
+metrics_api > nlb
+
+nlb > vpc_endpoint_service
+vpc_endpoint_service -> vpc_endpoint_1: PrivateLink Connection
+vpc_endpoint_1 <> online_feature_consumption: FeatureServing
+vpc_endpoint_1 > offline_feature_consumption: Tecton API
+
+feature_serving > nlb
+orchestration > cross_account_role: AssumeRole
+cross_account_role > offline_feature_store
+
+online_feature_consumption > online_feature_store
+
+feature_serving > cross_account_role: AssumeRole [color: Black]
+cross_account_role > online_feature_store
+offline_feature_store <> offline_feature_consumption
+cross_account_role > databricks_compute
+
+
+stream_ingest_api > ingest_nlb
+ingest_nlb > ingest_vpc_endpoint_service
+ingest_vpc_endpoint_service <> vpc_endpoint_2
+vpc_endpoint_2 < streaming_ingest_app
+stream_ingest_api > offline_feature_store
+stream_ingest_api > online_feature_store
