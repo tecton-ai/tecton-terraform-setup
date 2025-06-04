@@ -73,6 +73,8 @@ This module provisions:
 
 ### Details
 
+![dataplane_rift_with_emr](./dataplane_rift_emr.svg)
+
 #### Inputs
 <!-- BEGIN_TF_DOCS -->
 

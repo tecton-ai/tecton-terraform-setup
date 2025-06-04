@@ -70,6 +70,8 @@ Before using this module, ensure you have:
 
 ### Details
 
+![emr](./emr.svg)
+
 <!-- BEGIN_TF_DOCS -->
 
 ## Providers
