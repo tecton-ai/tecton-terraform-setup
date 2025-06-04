@@ -42,7 +42,7 @@ variable "tecton_control_plane_role_name" {
 variable "controlplane_access_only" {
   description = "Whether to only grant control-plane account access to the cross-account role"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "include_crossaccount_bucket_access" {
