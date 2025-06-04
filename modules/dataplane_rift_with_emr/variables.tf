@@ -54,6 +54,18 @@ variable "tecton_control_plane_role_name" {
   type        = string
 }
 
+variable "controlplane_access_only" {
+  description = "Whether to only grant control-plane account access to the cross-account role"
+  type        = bool
+  default     = false
+}
+
+variable "include_crossaccount_bucket_access" {
+  description = "Whether to grant direct cross-account bucket access"
+  type        = bool
+  default     = true
+}
+
 variable "tecton_vpce_service_name" {
   description = "(Optional) The VPC endpoint service name for Tecton. Only needed if using PrivateLink."
   type        = string

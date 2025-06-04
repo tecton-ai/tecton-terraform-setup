@@ -39,6 +39,18 @@ variable "tecton_control_plane_role_name" {
   type        = string
 }
 
+variable "controlplane_access_only" {
+  description = "Whether to only grant control-plane account access to the cross-account role"
+  type        = bool
+  default     = false
+}
+
+variable "include_crossaccount_bucket_access" {
+  description = "Whether to grant direct cross-account bucket access"
+  type        = bool
+  default     = true
+}
+
 variable "existing_vpc" {
   description = "(Optional) Configuration for using an existing VPC. If provided, both vpc_id and private_subnet_ids must be provided together."
   type = object({

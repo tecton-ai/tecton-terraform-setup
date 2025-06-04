@@ -33,13 +33,15 @@ module "tecton" {
     aws = aws
   }
 
-  deployment_name                 = "deployment-name" # Replace with the deployment name agreed with Tecton
-  region                          = "us-west-2" # Replace with the region your account/Tecton deployment will use
-  account_id                      = "123456789012" # Your AWS Account ID
-  subnet_azs                      = ["us-west-2a", "us-west-2b", "us-west-2c"]
-  tecton_control_plane_account_id = "987654321098" # Tecton's Control Plane Account ID
-  cross_account_external_id       = "your-external-id"    # External ID from Tecton
-  tecton_control_plane_role_name  = "TectonControlPlaneRole" # Role name from Tecton
+  deployment_name                    = "deployment-name" # Replace with the deployment name agreed with Tecton
+  region                             = "us-west-2" # Replace with the region your account/Tecton deployment will use
+  account_id                         = "123456789012" # Your AWS Account ID
+  subnet_azs                         = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  tecton_control_plane_account_id    = "987654321098" # Tecton's Control Plane Account ID
+  cross_account_external_id          = "your-external-id"    # External ID from Tecton
+  tecton_control_plane_role_name     = "TectonControlPlaneRole" # Role name from Tecton
+  controlplane_access_only           = true
+  include_crossaccount_bucket_access = false
 
   # Optional: For PrivateLink to Control Plane. Add _after_ deployment is complete and PrivateLink details are shared by Tecton
   # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
@@ -70,10 +72,12 @@ output "tecton" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton will be deployed. | `string` | n/a | yes |
 | <a name="input_additional_allowed_egress_domains"></a> [additional\_allowed\_egress\_domains](#input\_additional\_allowed\_egress\_domains) | (Optional) List of additional domains to allow for egress if use\_network\_firewall is true. Only works if using VPC managed by this module (i.e. existing\_vpc is not provided). | `list(string)` | `null` | no |
+| <a name="input_controlplane_access_only"></a> [controlplane\_access\_only](#input\_controlplane\_access\_only) | Whether to only grant control-plane account access to the cross-account role | `bool` | `false` | no |
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access. Obtain this from your Tecton representative. | `string` | n/a | yes |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name of the Tecton deployment. Must be less than 22 characters due to AWS limitations. | `string` | n/a | yes |
 | <a name="input_existing_rift_compute_security_group_id"></a> [existing\_rift\_compute\_security\_group\_id](#input\_existing\_rift\_compute\_security\_group\_id) | (Optional) The ID of the existing security group to use for Rift compute instances. | `string` | `null` | no |
 | <a name="input_existing_vpc"></a> [existing\_vpc](#input\_existing\_vpc) | (Optional) Configuration for using an existing VPC. If provided, both vpc\_id and private\_subnet\_ids must be provided together. | <pre>object({<br/>    vpc_id               = string<br/>    private_subnet_ids   = list(string)<br/>  })</pre> | `null` | no |
+| <a name="input_include_crossaccount_bucket_access"></a> [include\_crossaccount\_bucket\_access](#input\_include\_crossaccount\_bucket\_access) | Whether to grant direct cross-account bucket access | `bool` | `true` | no |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key for encrypting data at rest. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region for the Tecton deployment. | `string` | n/a | yes |
 | <a name="input_subnet_azs"></a> [subnet\_azs](#input\_subnet\_azs) | A list of Availability Zones for the subnets. | `list(string)` | n/a | yes |

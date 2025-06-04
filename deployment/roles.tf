@@ -4,6 +4,14 @@ locals {
   # Include var.use_rift_cross_account_policy for backward compatibility
   use_rift_compute_on_control_plane = var.use_rift_compute_on_control_plane || (var.use_rift_cross_account_policy == true)
   use_spark_compute                 = var.use_spark_compute
+  
+  # Simplified account identifiers logic
+  account_identifiers = var.controlplane_access_only ? [
+    "arn:aws:iam::${var.tecton_assuming_account_id}:root"
+  ] : distinct([
+    "arn:aws:iam::153453085158:root",
+    "arn:aws:iam::${var.tecton_assuming_account_id}:root"
+  ])
 }
 
 data "aws_iam_role" "spark_role" {
@@ -24,11 +32,8 @@ data "aws_iam_policy_document" "cross_account_role_assume_role_metadata" {
   statement {
     effect = "Allow"
     principals {
-      type = "AWS"
-      identifiers = distinct([
-        "arn:aws:iam::153453085158:root",
-        "arn:aws:iam::${var.tecton_assuming_account_id}:root"
-      ])
+      type        = "AWS"
+      identifiers = local.account_identifiers
     }
     actions = ["sts:SetSourceIdentity", "sts:TagSession"]
   }
@@ -39,11 +44,8 @@ data "aws_iam_policy_document" "cross_account_role_assume_role" {
   statement {
     effect = "Allow"
     principals {
-      type = "AWS"
-      identifiers = distinct([
-        "arn:aws:iam::153453085158:root",
-        "arn:aws:iam::${var.tecton_assuming_account_id}:root"
-      ])
+      type        = "AWS"
+      identifiers = local.account_identifiers
     }
     actions = ["sts:AssumeRole"]
     condition {
