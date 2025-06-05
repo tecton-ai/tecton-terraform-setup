@@ -81,7 +81,7 @@ variable "tecton_privatelink_ingress_rules" {
     protocol    = string
     description = string
   }))
-  default = null
+  default = []
 }
 
 variable "tecton_privatelink_egress_rules" {
@@ -93,7 +93,7 @@ variable "tecton_privatelink_egress_rules" {
     protocol    = string
     description = string
   }))
-  default = null
+  default = []
 }
 
 variable "use_network_firewall" {
