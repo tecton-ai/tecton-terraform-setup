@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.3.0...v1.4.0) (2025-06-05)
+
+
+### Features
+
+* Add options for disabling direct cross-account bucket policy and limiting cross-account assumerole ([#216](https://github.com/tecton-ai/tecton-terraform-setup/issues/216)) ([72104dc](https://github.com/tecton-ai/tecton-terraform-setup/commit/72104dc9af10f016a429372c44103ead1d8069ee))
+
+
+### Bug Fixes
+
+* Set defaults to empty list for additional PL SG rules inputs. ([#217](https://github.com/tecton-ai/tecton-terraform-setup/issues/217)) ([0180afb](https://github.com/tecton-ai/tecton-terraform-setup/commit/0180afbf285b240bae3b84862b5656672312e94f))
+
 ## [1.3.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.2.0...v1.3.0) (2025-06-02)
 
 
