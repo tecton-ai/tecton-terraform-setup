@@ -34,7 +34,7 @@ resource "aws_s3_bucket_public_access_block" "tecton" {
 
 
 locals {
-  enable_s3_bucket_policy = (length(var.additional_s3_read_only_principals) > 0 || length(var.s3_read_write_principals) > 0)
+  enable_s3_bucket_policy = (length(var.additional_s3_read_only_principals) > 0 || length(var.s3_read_write_principals) > 0) && var.include_crossaccount_bucket_access
 }
 
 data "aws_iam_policy_document" "s3_bucket_policy" {

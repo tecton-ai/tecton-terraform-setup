@@ -119,3 +119,15 @@ variable "cross_account_role_allow_sts_metadata" {
   description = "Enable sts:SetSourceIdentity and sts:TagSession permissions on the cross-role account."
   default     = false
 }
+
+variable "controlplane_access_only" {
+  type        = bool
+  description = "Whether to only grant control-plane account access to the cross-account role"
+  default     = false
+}
+
+variable "include_crossaccount_bucket_access" {
+  type        = bool
+  description = "Whether to grant direct cross-account bucket access"
+  default     = true
+}
