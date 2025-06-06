@@ -145,4 +145,10 @@ variable "notebook_glue_account_id" {
   description = "(Optional) The AWS account ID for Glue Data Catalog access. Defaults to the main account_id if not specified."
   type        = string
   default     = null # Will be dynamically set to var.account_id if null
-} 
+}
+
+variable "additional_s3_read_access_bucket_arns" {
+  description = "(Optional) List of additional S3 bucket ARNs that the rift compute role should have read access to. The role will be granted GetObject, ListBucket, HeadObject, and HeadBucket permissions for these buckets."
+  type        = list(string)
+  default     = []
+}
