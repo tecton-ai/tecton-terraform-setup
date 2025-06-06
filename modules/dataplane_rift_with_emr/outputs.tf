@@ -54,6 +54,10 @@ output "spark_instance_profile_arn" {
   value = module.tecton.emr_spark_instance_profile_arn
 }
 
+output "emr_master_role_arn" {
+  value = module.tecton.emr_master_role_arn
+}
+
 # EMR VPC and subnet outputs
 output "vpc_id" {
   value = module.subnets.vpc_id
@@ -74,4 +78,10 @@ output "emr_security_group_id" {
 
 output "emr_service_security_group_id" {
   value = module.security_groups.emr_service_security_group_id
-} 
+}
+
+# Outputs location
+output "outputs_s3_uri" {
+  description = "S3 URI of the outputs.json file"
+  value = module.s3_outputs.outputs_s3_uri
+}

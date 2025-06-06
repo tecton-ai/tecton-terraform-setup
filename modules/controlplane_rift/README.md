@@ -72,6 +72,7 @@ output "tecton" {
 | <a name="output_cross_account_role_arn"></a> [cross\_account\_role\_arn](#output\_cross\_account\_role\_arn) | n/a |
 | <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | n/a |
 | <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | n/a |
+| <a name="output_outputs_s3_uri"></a> [outputs\_s3\_uri](#output\_outputs\_s3\_uri) | S3 URI of the outputs.json file |
 | <a name="output_region"></a> [region](#output\_region) | n/a |
 <!-- END_TF_DOCS -->
 

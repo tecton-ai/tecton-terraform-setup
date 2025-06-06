@@ -99,6 +99,7 @@ output "tecton" {
 | <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | Name of the Tecton deployment |
 | <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | ARN of the KMS key for encrypting data at rest |
 | <a name="output_nat_gateway_public_ips"></a> [nat\_gateway\_public\_ips](#output\_nat\_gateway\_public\_ips) | List of public IPs associated with NAT gateways in Rift VPC. Empty if existing\_vpc is provided as NATs are not managed by the module in that case. |
+| <a name="output_outputs_s3_uri"></a> [outputs\_s3\_uri](#output\_outputs\_s3\_uri) | S3 URI of the outputs.json file |
 | <a name="output_region"></a> [region](#output\_region) | Region of the Tecton deployment |
 | <a name="output_rift_compute_security_group_id"></a> [rift\_compute\_security\_group\_id](#output\_rift\_compute\_security\_group\_id) | Security Group ID for Rift compute instances |
 | <a name="output_vm_workload_subnet_ids"></a> [vm\_workload\_subnet\_ids](#output\_vm\_workload\_subnet\_ids) | List (comma-separated string) of subnet IDs for Rift compute instances |
