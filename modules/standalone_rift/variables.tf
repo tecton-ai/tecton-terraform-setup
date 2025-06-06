@@ -94,3 +94,9 @@ variable "tecton_privatelink_egress_rules" {
   }))
   default = []
 }
+
+variable "additional_s3_read_access_bucket_arns" {
+  description = "(Optional) List of additional S3 bucket ARNs that the rift compute role should have read access to. The role will be granted GetObject, ListBucket, HeadObject, and HeadBucket permissions for these buckets."
+  type        = list(string)
+  default     = []
+}
