@@ -39,6 +39,7 @@ module "rift" {
   s3_log_destination                      = format("arn:aws:s3:::%s/rift-logs", module.tecton.s3_bucket.bucket)
   offline_store_bucket_arn                = format("arn:aws:s3:::%s", module.tecton.s3_bucket.bucket)
   subnet_azs                              = var.subnet_azs
+  additional_s3_read_access_buckets       = var.additional_s3_read_access_buckets
 
   # OPTIONAL
   # Use Existing/pre-configured VPC
