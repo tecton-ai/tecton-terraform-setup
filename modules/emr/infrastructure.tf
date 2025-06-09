@@ -147,3 +147,30 @@ resource "aws_s3_bucket_policy" "read-only-access" {
     ]
   })
 }
+
+# S3 module to store outputs
+module "s3_outputs" {
+  source          = "../s3_outputs"
+  deployment_name = var.deployment_name
+
+  control_plane_account_id = var.tecton_control_plane_account_id
+
+  outputs_data = {
+    deployment_name                 = var.deployment_name
+    region                          = var.region
+    cross_account_role_arn          = module.tecton.cross_account_role_arn
+    cross_account_external_id       = var.cross_account_external_id
+    spark_role_arn                  = module.tecton.spark_role_arn
+    spark_instance_profile_arn      = module.tecton.emr_spark_instance_profile_arn
+    emr_master_role_arn             = module.tecton.emr_master_role_arn
+    notebook_cluster_id             = var.enable_notebook_cluster ? module.notebook_cluster[0].cluster_id : ""
+    kms_key_arn                     = module.tecton.kms_key_arn
+  }
+
+  # Ensure S3 outputs are created after all other resources
+  depends_on_resources = [
+    module.tecton,
+    module.security_groups,
+    module.subnets
+  ]
+}
