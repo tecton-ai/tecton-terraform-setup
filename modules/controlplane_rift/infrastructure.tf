@@ -24,3 +24,24 @@ module "tecton" {
   use_rift_cross_account_policy     = true
   kms_key_id                        = var.kms_key_id
 }
+
+# S3 module to store outputs
+module "s3_outputs" {
+  source          = "../s3_outputs"
+  deployment_name = var.deployment_name
+
+  control_plane_account_id = var.tecton_control_plane_account_id
+
+  outputs_data = {
+    deployment_name           = var.deployment_name
+    region                   = var.region
+    cross_account_role_arn   = module.tecton.cross_account_role_arn
+    cross_account_external_id = var.cross_account_external_id
+    kms_key_arn              = module.tecton.kms_key_arn
+  }
+
+  # Ensure S3 outputs are created after all other resources
+  depends_on_resources = [
+    module.tecton
+  ]
+}
