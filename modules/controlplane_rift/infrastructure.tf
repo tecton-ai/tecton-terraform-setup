@@ -34,10 +34,10 @@ module "tecton_outputs" {
 
   outputs_data = {
     deployment_name           = var.deployment_name
-    region                   = var.region
-    cross_account_role_arn   = module.tecton.cross_account_role_arn
+    region                    = var.region
+    cross_account_role_arn    = module.tecton.cross_account_role_arn
     cross_account_external_id = var.cross_account_external_id
-    kms_key_arn              = module.tecton.kms_key_arn
+    kms_key_arn               = module.tecton.kms_key_arn
   }
 
   # Ensure S3 outputs are created after all other resources
