@@ -28,5 +28,5 @@ output "kms_key_arn" {
 # Outputs location
 output "outputs_s3_uri" {
   description = "S3 URI of the outputs.json file"
-  value = module.s3_outputs.outputs_s3_uri
+  value = module.tecton_outputs.outputs_s3_uri
 }

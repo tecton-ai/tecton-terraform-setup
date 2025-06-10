@@ -60,8 +60,8 @@ module "rift" {
 }
 
 # S3 module to store outputs
-module "s3_outputs" {
-  source          = "../s3_outputs"
+module "tecton_outputs" {
+  source          = "../tecton_outputs"
   deployment_name = var.deployment_name
 
   control_plane_account_id = var.tecton_control_plane_account_id

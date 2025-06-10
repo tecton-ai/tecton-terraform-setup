@@ -1,4 +1,4 @@
-# S3 Outputs Module
+# Tecton Outputs Module
 
 This shared sub-module creates an S3 bucket for each Tecton module and stores all module outputs as JSON files in that bucket.
 
