@@ -83,5 +83,5 @@ output "emr_service_security_group_id" {
 # Outputs location
 output "outputs_s3_uri" {
   description = "S3 URI of the outputs.json file"
-  value = module.s3_outputs.outputs_s3_uri
+  value = module.tecton_outputs.outputs_s3_uri
 }
