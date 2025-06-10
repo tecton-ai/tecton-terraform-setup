@@ -138,3 +138,9 @@ variable "existing_rift_compute_security_group_id" {
   type        = string
   default     = null
 }
+
+variable "additional_s3_read_access_buckets" {
+  type        = list(string)
+  description = "List of additional S3 bucket names in the dataplane account that the rift compute role should have read access to. The role will be granted GetObject, ListBucket, HeadObject, and HeadBucket permissions for these buckets."
+  default     = []
+}

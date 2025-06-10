@@ -119,6 +119,15 @@ resource "aws_iam_policy" "rift_compute_internal" {
   })
 }
 
+resource "aws_iam_policy" "additional_s3_read_access" {
+  count = length(var.additional_s3_read_access_buckets) > 0 ? 1 : 0
+  name  = lookup(var.resource_name_overrides, "additional_s3_read_access", "tecton-additional-s3-read-access")
+  policy = templatefile("${path.module}/../templates/additional_s3_read_access_policy.json", {
+    ADDITIONAL_S3_BUCKET_ARNS = jsonencode([for bucket_name in var.additional_s3_read_access_buckets : "arn:aws:s3:::${bucket_name}"]),
+    ADDITIONAL_S3_OBJECT_ARNS = jsonencode([for bucket_name in var.additional_s3_read_access_buckets : "arn:aws:s3:::${bucket_name}/*"])
+  })
+}
+
 resource "aws_iam_policy" "additional_rift_compute_policy" {
   count = length(var.additional_rift_compute_policy_statements) > 0 ? 1 : 0
   name  = lookup(var.resource_name_overrides, "additional_rift_compute_policy", "tecton-additional-rift-compute-policy")
@@ -137,11 +146,14 @@ locals {
     dynamo_db_access     = aws_iam_policy.rift_dynamodb_access,
     ecr_readonly         = aws_iam_policy.rift_ecr_readonly
   }
-  # Include legacy Secrets Manager access policy when enabled
+  # Include conditional policies when enabled/specified
   rift_compute_policies = merge(
     local.rift_compute_policies_base,
     var.enable_rift_legacy_secret_manager_access ? {
       rift_legacy_secrets_manager_access = aws_iam_policy.rift_legacy_secrets_manager_access[0]
+    } : {},
+    length(var.additional_s3_read_access_buckets) > 0 ? {
+      additional_s3_read_access = aws_iam_policy.additional_s3_read_access[0]
     } : {}
   )
 }

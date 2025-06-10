@@ -94,3 +94,9 @@ variable "tecton_privatelink_egress_rules" {
   }))
   default = []
 }
+
+variable "additional_s3_read_access_buckets" {
+  type        = list(string)
+  description = "(Optional) List of additional S3 bucket names in the dataplane account that the rift compute role should have read access to."
+  default     = []
+}
