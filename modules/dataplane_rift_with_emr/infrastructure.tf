@@ -160,12 +160,4 @@ module "tecton_outputs" {
     emr_security_group_id               = module.security_groups.emr_security_group_id
     emr_service_security_group_id       = module.security_groups.emr_service_security_group_id
   }
-
-  # Ensure S3 outputs are created after all other resources
-  depends_on_resources = [
-    module.tecton,
-    module.rift,
-    module.security_groups,
-    module.subnets
-  ]
 }

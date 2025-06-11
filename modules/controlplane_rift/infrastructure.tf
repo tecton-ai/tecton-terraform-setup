@@ -40,9 +40,4 @@ module "tecton_outputs" {
     cross_account_external_id = var.cross_account_external_id
     kms_key_arn               = module.tecton.kms_key_arn
   }
-
-  # Ensure S3 outputs are created after all other resources
-  depends_on_resources = [
-    module.tecton
-  ]
 }

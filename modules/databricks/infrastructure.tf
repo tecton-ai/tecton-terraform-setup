@@ -42,9 +42,4 @@ module "tecton_outputs" {
     databricks_workspace_url           = var.databricks_workspace_url
     kms_key_arn                        = module.tecton.kms_key_arn
   }
-
-  # Ensure S3 outputs are created after all other resources
-  depends_on_resources = [
-    module.tecton
-  ]
 }
