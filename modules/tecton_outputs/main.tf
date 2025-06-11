@@ -73,8 +73,5 @@ resource "aws_s3_object" "outputs_json" {
   content      = jsonencode(var.outputs_data)
   content_type = "application/json"
 
-  # Ensure outputs are written after resources are created
-  depends_on = [var.depends_on_resources]
-
   tags = var.tags
 }

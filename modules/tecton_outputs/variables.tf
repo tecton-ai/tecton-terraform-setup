@@ -8,12 +8,6 @@ variable "control_plane_account_id" {
   type        = string
 }
 
-variable "depends_on_resources" {
-  description = "List of resources to depend on before creating outputs"
-  type        = list(any)
-  default     = []
-}
-
 variable "tags" {
   description = "A map of tags to assign to resources"
   type        = map(string)
