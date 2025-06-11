@@ -80,6 +80,10 @@ output "emr_service_security_group_id" {
   value = module.security_groups.emr_service_security_group_id
 }
 
+output "dataplane_account_id" {
+  value = var.account_id
+}
+
 # Outputs location
 output "outputs_s3_uri" {
   description = "S3 URI of the outputs.json file"

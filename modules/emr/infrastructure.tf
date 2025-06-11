@@ -158,6 +158,7 @@ module "tecton_outputs" {
   outputs_data = {
     deployment_name                 = var.deployment_name
     region                          = var.region
+    dataplane_account_id            = var.account_id
     cross_account_role_arn          = module.tecton.cross_account_role_arn
     cross_account_external_id       = var.cross_account_external_id
     spark_role_arn                  = module.tecton.spark_role_arn
@@ -165,6 +166,11 @@ module "tecton_outputs" {
     emr_master_role_arn             = module.tecton.emr_master_role_arn
     notebook_cluster_id             = var.enable_notebook_cluster ? module.notebook_cluster[0].cluster_id : ""
     kms_key_arn                     = module.tecton.kms_key_arn
+    vpc_id                          = module.subnets.vpc_id
+    emr_subnet_id                   = module.subnets.emr_subnet_id
+    emr_subnet_route_table_ids      = module.subnets.emr_subnet_route_table_ids
+    emr_security_group_id           = module.security_groups.emr_security_group_id
+    emr_service_security_group_id   = module.security_groups.emr_service_security_group_id
   }
 
   # Ensure S3 outputs are created after all other resources

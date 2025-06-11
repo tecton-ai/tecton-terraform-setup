@@ -140,6 +140,7 @@ module "tecton_outputs" {
   outputs_data = {
     deployment_name                     = var.deployment_name
     region                              = var.region
+    dataplane_account_id                = var.account_id
     cross_account_role_arn              = module.tecton.cross_account_role_arn
     cross_account_external_id           = var.cross_account_external_id
     kms_key_arn                         = module.tecton.kms_key_arn
