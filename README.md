@@ -26,6 +26,9 @@ Below is a list of the available modules, each with a specific focus:
 *   **[Tecton with Rift Compute in Control Plane and EMR Compute in Data Plane](./modules/controlplane_rift_with_emr/README.md)**
     *   Deploys a Tecton environment where Rift compute is managed in the Tecton control plane, and also includes EMR integration for Spark-based workloads in your AWS data plane account.
 
+*   **[Tecton with Rift Compute in Data Plane and EMR Compute in Data Plane](./modules/dataplane_rift_with_emr/README.md)**
+    *   Deploys a Tecton environment with both Rift Compute and EMR for Spark-based workloads in your AWS data plane account.
+
 ### General Usage
 
 Each module directory linked above contains its own detailed `README.md` which includes:
