@@ -5,9 +5,9 @@ This shared sub-module creates an S3 bucket for each Tecton module and stores al
 ## Features
 
 - Creates a dedicated S3 bucket for each module
-- Stores outputs as `outputs.json` (latest) and timestamped files for versioning
+- Stores outputs as `outputs.json`
 - Enables bucket versioning and encryption
-- Blocks public access for security
+- Blocks public access for security, while allowing access from control plane account
 
 ## Usage
 
@@ -25,13 +25,6 @@ module "s3_outputs" {
     region         = var.region
     # ... add all other outputs from your outputs.tf
   }
-
-  # Ensure S3 outputs are created after all other resources
-  depends_on_resources = [
-    # List all modules that should be created first
-    module.tecton,
-    module.rift
-  ]
 }
 ```
 
