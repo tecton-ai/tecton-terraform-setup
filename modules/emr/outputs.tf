@@ -31,6 +31,32 @@ output "kms_key_arn" {
   value = module.tecton.kms_key_arn
 }
 
+# EMR VPC and subnet outputs
+output "vpc_id" {
+  value = module.subnets.vpc_id
+}
+
+output "emr_subnet_id" {
+  value = module.subnets.emr_subnet_id
+}
+
+output "emr_subnet_route_table_ids" {
+  value = module.subnets.emr_subnet_route_table_ids
+}
+
+# EMR security group outputs
+output "emr_security_group_id" {
+  value = module.security_groups.emr_security_group_id
+}
+
+output "emr_service_security_group_id" {
+  value = module.security_groups.emr_service_security_group_id
+}
+
+output "dataplane_account_id" {
+  value = var.account_id
+}
+
 # Outputs location
 output "outputs_s3_uri" {
   description = "S3 URI of the outputs.json file"

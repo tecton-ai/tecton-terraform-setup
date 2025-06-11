@@ -97,6 +97,7 @@ output "tecton" {
 | <a name="output_compute_manager_arn"></a> [compute\_manager\_arn](#output\_compute\_manager\_arn) | ARN of the IAM role for Rift compute manager |
 | <a name="output_cross_account_external_id"></a> [cross\_account\_external\_id](#output\_cross\_account\_external\_id) | The external ID for cross-account access. Obtain this from your Tecton representative. |
 | <a name="output_cross_account_role_arn"></a> [cross\_account\_role\_arn](#output\_cross\_account\_role\_arn) | ARN of the cross-account role for Tecton |
+| <a name="output_dataplane_account_id"></a> [dataplane\_account\_id](#output\_dataplane\_account\_id) | n/a |
 | <a name="output_deployment_name"></a> [deployment\_name](#output\_deployment\_name) | Name of the Tecton deployment |
 | <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | ARN of the KMS key for encrypting data at rest |
 | <a name="output_nat_gateway_public_ips"></a> [nat\_gateway\_public\_ips](#output\_nat\_gateway\_public\_ips) | List of public IPs associated with NAT gateways in Rift VPC. Empty if existing\_vpc is provided as NATs are not managed by the module in that case. |

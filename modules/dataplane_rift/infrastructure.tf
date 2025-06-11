@@ -70,6 +70,7 @@ module "tecton_outputs" {
   outputs_data = {
     deployment_name                = var.deployment_name
     region                         = var.region
+    dataplane_account_id           = var.account_id
     cross_account_role_arn         = module.tecton.cross_account_role_arn
     cross_account_external_id      = var.cross_account_external_id
     kms_key_arn                    = module.tecton.kms_key_arn
@@ -81,10 +82,4 @@ module "tecton_outputs" {
     nat_gateway_public_ips         = module.rift.nat_gateway_public_ips
     rift_compute_security_group_id = module.rift.rift_compute_security_group_id
   }
-
-  # Ensure S3 outputs are created after all other resources
-  depends_on_resources = [
-    module.tecton,
-    module.rift
-  ]
 }
