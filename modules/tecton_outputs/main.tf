@@ -1,12 +1,12 @@
 # Add locals to determine location type
 locals {
-  is_new_bucket              = var.location_config.type == "new_bucket"
-  is_offline_store_path      = var.location_config.type == "offline_store_bucket_path"
-  is_tecton_hosted_presigned = var.location_config.type == "tecton_hosted_presigned"
+  is_new_bucket              = var.outputs_location_config.type == "new_bucket"
+  is_offline_store_path      = var.outputs_location_config.type == "offline_store_bucket_path"
+  is_tecton_hosted_presigned = var.outputs_location_config.type == "tecton_hosted_presigned"
 
   # Bucket and key determination
-  target_bucket = local.is_new_bucket ? aws_s3_bucket.outputs[0].bucket : var.location_config.offline_store_bucket_name
-  target_key    = local.is_offline_store_path ? "${trim(var.location_config.offline_store_bucket_path_prefix, "/")}/outputs.json" : "outputs.json"
+  target_bucket = local.is_new_bucket ? aws_s3_bucket.outputs[0].bucket : var.outputs_location_config.offline_store_bucket_name
+  target_key    = local.is_offline_store_path ? "${trim(var.outputs_location_config.offline_store_bucket_path_prefix, "/")}/outputs.json" : "outputs.json"
 }
 
 # Only create bucket if using new_bucket strategy
@@ -108,7 +108,7 @@ cat <<'JSONDATA' > "$TMP_FILE"
 ${jsonencode(var.outputs_data)}
 JSONDATA
 # Upload using presigned URL
-curl -sSf -X PUT -T "$TMP_FILE" -L "${var.location_config.tecton_presigned_write_url}"
+curl -sSf -X PUT -T "$TMP_FILE" -L "${var.outputs_location_config.tecton_presigned_write_url}"
 # Clean up
 rm -rf "$TMP_DIR"
 EOT
