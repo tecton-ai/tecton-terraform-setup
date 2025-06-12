@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.4.0...v1.5.0) (2025-06-10)
+
+
+### Features
+
+* Add option to extend allowed buckets (for read) for Rift Compute role ([#219](https://github.com/tecton-ai/tecton-terraform-setup/issues/219)) ([dd675e4](https://github.com/tecton-ai/tecton-terraform-setup/commit/dd675e496ce5ef5b0692a7d0f97be38073c05522))
+
 ## [1.4.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.3.0...v1.4.0) (2025-06-05)
 
 
