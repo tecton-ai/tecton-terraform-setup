@@ -102,13 +102,15 @@ resource "null_resource" "presigned_upload" {
   provisioner "local-exec" {
     command = <<EOT
 set -euo pipefail
-# Write outputs.json to a temp file
-TMP_FILE=$(mktemp)
+TMP_DIR=$(mktemp -d)
+TMP_FILE="$TMP_DIR/outputs.json"
 cat <<'JSONDATA' > "$TMP_FILE"
 ${jsonencode(var.outputs_data)}
 JSONDATA
 # Upload using presigned URL
 curl -sSf -X PUT -T "$TMP_FILE" -H "Content-Type: application/json" "${var.location_config.tecton_presigned_write_url}"
+# Clean up
+rm -rf "$TMP_DIR"
 EOT
     interpreter = ["/bin/bash", "-c"]
   }
