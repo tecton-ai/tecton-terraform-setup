@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.5.0...v1.6.0) (2025-06-12)
+
+
+### Features
+
+* Add tecton_outputs module to write shared values. ([#221](https://github.com/tecton-ai/tecton-terraform-setup/issues/221)) ([f4a3a47](https://github.com/tecton-ai/tecton-terraform-setup/commit/f4a3a47fdaf05859121f50e72e9f9d2f7abce7c7))
+
 ## [1.5.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.4.0...v1.5.0) (2025-06-10)
 
 
