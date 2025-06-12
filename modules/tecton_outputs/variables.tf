@@ -51,7 +51,7 @@ variable "outputs_data" {
   })
 }
 
-variable "location_config" {
+variable "outputs_location_config" {
   description = "Configuration for where to store the outputs."
   type = object({
     type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
@@ -65,27 +65,28 @@ variable "location_config" {
   })
   
   default = {
-    type = "new_bucket"
+    type = "tecton_presigned_write_url"
+    tecton_presigned_write_url = ""
   }
   
   validation {
-    condition     = contains(["new_bucket", "offline_store_bucket_path", "tecton_hosted_presigned"], var.location_config.type)
-    error_message = "location_config.type must be one of 'new_bucket', 'offline_store_bucket_path', or 'tecton_hosted_presigned'."
+    condition     = contains(["new_bucket", "offline_store_bucket_path", "tecton_hosted_presigned"], var.outputs_location_config.type)
+    error_message = "outputs_location_config.type must be one of 'new_bucket', 'offline_store_bucket_path', or 'tecton_hosted_presigned'."
   }
   
   validation {
-    condition = var.location_config.type != "offline_store_bucket_path" || (
-      var.location_config.offline_store_bucket_name != null && 
-      var.location_config.offline_store_bucket_name != ""
+    condition = var.outputs_location_config.type != "offline_store_bucket_path" || (
+      var.outputs_location_config.offline_store_bucket_name != null && 
+      var.outputs_location_config.offline_store_bucket_name != ""
     )
-    error_message = "location_config.offline_store_bucket_name must be provided when type = 'offline_store_bucket_path'."
+    error_message = "outputs_location_config.offline_store_bucket_name must be provided when type = 'offline_store_bucket_path'."
   }
   
   validation {
-    condition = var.location_config.type != "tecton_hosted_presigned" || (
-      var.location_config.tecton_presigned_write_url != null && 
-      var.location_config.tecton_presigned_write_url != ""
+    condition = var.outputs_location_config.type != "tecton_hosted_presigned" || (
+      var.outputs_location_config.tecton_presigned_write_url != null && 
+      var.outputs_location_config.tecton_presigned_write_url != ""
     )
-    error_message = "location_config.tecton_presigned_write_url must be provided when type = 'tecton_hosted_presigned'."
+    error_message = "outputs_location_config.tecton_presigned_write_url must be provided. Please request this value from your Tecton representative."
   }
 }

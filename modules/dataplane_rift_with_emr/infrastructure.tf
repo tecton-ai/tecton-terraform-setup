@@ -139,8 +139,8 @@ module "tecton_outputs" {
   control_plane_account_id = var.tecton_control_plane_account_id
   
   # Automatically populate offline_store_bucket_name when using offline_store_bucket_path
-  location_config = merge(var.location_config, 
-    var.location_config.type == "offline_store_bucket_path" ? {
+  outputs_location_config = merge(var.outputs_location_config, 
+    var.outputs_location_config.type == "offline_store_bucket_path" ? {
       offline_store_bucket_name = module.tecton.s3_bucket.bucket
     } : {}
   )

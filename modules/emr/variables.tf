@@ -104,7 +104,7 @@ variable "cross_account_principal_arn_for_s3_policy" {
   default     = null
 }
 
-variable "location_config" {
+variable "outputs_location_config" {
   description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
   type = object({
     type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
