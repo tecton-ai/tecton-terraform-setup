@@ -102,4 +102,22 @@ variable "cross_account_principal_arn_for_s3_policy" {
   description = "(Optional) The ARN of the principal in another account that should get read-only access to the Tecton S3 bucket. Used if setting up cross-account EMR notebooks manually or extending this module."
   type        = string
   default     = null
+}
+
+variable "location_config" {
+  description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
+  type = object({
+    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
+    
+    # For offline_store_bucket_path
+    offline_store_bucket_name    = optional(string)
+    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")
+    
+    # For tecton_hosted_presigned
+    tecton_presigned_write_url = optional(string)
+  })
+  
+  default = {
+    type = "new_bucket"
+  }
 } 

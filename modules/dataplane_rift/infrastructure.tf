@@ -66,6 +66,7 @@ module "tecton_outputs" {
   deployment_name = var.deployment_name
 
   control_plane_account_id = var.tecton_control_plane_account_id
+  location_config          = var.location_config
 
   outputs_data = {
     deployment_name                = var.deployment_name
