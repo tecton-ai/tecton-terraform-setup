@@ -43,3 +43,21 @@ variable "kms_key_id" {
   type        = string
   default     = null
 }
+
+variable "location_config" {
+  description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
+  type = object({
+    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
+    
+    # For offline_store_bucket_path (bucket name is automatically set to the deployment's offline store bucket)
+    offline_store_bucket_name    = optional(string)
+    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")
+    
+    # For tecton_hosted_presigned
+    tecton_presigned_write_url = optional(string)
+  })
+  
+  default = {
+    type = "new_bucket"
+  }
+}

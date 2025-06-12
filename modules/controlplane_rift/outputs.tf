@@ -14,3 +14,13 @@ output "cross_account_external_id" {
 output "kms_key_arn" {
   value = module.tecton.kms_key_arn
 }
+
+output "dataplane_account_id" {
+  value = var.account_id
+}
+
+# Outputs location
+output "outputs_s3_uri" {
+  description = "S3 URI of the outputs.json file"
+  value = module.tecton_outputs.outputs_s3_uri
+}

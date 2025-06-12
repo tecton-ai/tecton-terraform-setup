@@ -46,3 +46,13 @@ output "rift_compute_security_group_id" {
   description = "Security Group ID for Rift compute instances"
   value = module.rift.rift_compute_security_group_id
 }
+
+output "dataplane_account_id" {
+  value = var.account_id
+}
+
+# Outputs location
+output "outputs_s3_uri" {
+  description = "S3 URI of the outputs.json file"
+  value = module.tecton_outputs.outputs_s3_uri
+}
