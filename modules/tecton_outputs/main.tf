@@ -108,7 +108,7 @@ cat <<'JSONDATA' > "$TMP_FILE"
 ${jsonencode(var.outputs_data)}
 JSONDATA
 # Upload using presigned URL
-curl -sSf -X PUT -T "$TMP_FILE" -H "Content-Type: application/json" "${var.location_config.tecton_presigned_write_url}"
+curl -sSf -X PUT -T "$TMP_FILE" -L "${var.location_config.tecton_presigned_write_url}"
 # Clean up
 rm -rf "$TMP_DIR"
 EOT
