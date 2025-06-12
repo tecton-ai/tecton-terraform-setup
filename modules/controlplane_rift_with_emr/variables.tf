@@ -66,4 +66,22 @@ variable "notebook_glue_account_id" {
   description = "(Optional) The AWS account ID for Glue Data Catalog access. Defaults to the main account_id if not specified."
   type        = string
   default     = null # Will be dynamically set to var.account_id if null
+}
+
+variable "location_config" {
+  description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
+  type = object({
+    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
+    
+    # For offline_store_bucket_path
+    offline_store_bucket_name    = optional(string)
+    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")
+    
+    # For tecton_hosted_presigned
+    tecton_presigned_write_url = optional(string)
+  })
+  
+  default = {
+    type = "new_bucket"
+  }
 } 

@@ -106,4 +106,22 @@ variable "additional_allowed_egress_domains" {
   description = "(Optional) List of additional domains to allow for egress if use_network_firewall is true. Only works if using VPC managed by this module (i.e. existing_vpc is not provided)."
   type        = list(string)
   default     = null
+}
+
+variable "location_config" {
+  description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
+  type = object({
+    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
+    
+    # For offline_store_bucket_path
+    offline_store_bucket_name    = optional(string)
+    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")
+    
+    # For tecton_hosted_presigned
+    tecton_presigned_write_url = optional(string)
+  })
+  
+  default = {
+    type = "new_bucket"
+  }
 } 

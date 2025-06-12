@@ -50,3 +50,42 @@ variable "outputs_data" {
     databricks_workspace_url            = optional(string)
   })
 }
+
+variable "location_config" {
+  description = "Configuration for where to store the outputs."
+  type = object({
+    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
+    
+    # For offline_store_bucket_path
+    offline_store_bucket_name    = optional(string)
+    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")
+    
+    # For tecton_hosted_presigned
+    tecton_presigned_write_url = optional(string)
+  })
+  
+  default = {
+    type = "new_bucket"
+  }
+  
+  validation {
+    condition     = contains(["new_bucket", "offline_store_bucket_path", "tecton_hosted_presigned"], var.location_config.type)
+    error_message = "location_config.type must be one of 'new_bucket', 'offline_store_bucket_path', or 'tecton_hosted_presigned'."
+  }
+  
+  validation {
+    condition = var.location_config.type != "offline_store_bucket_path" || (
+      var.location_config.offline_store_bucket_name != null && 
+      var.location_config.offline_store_bucket_name != ""
+    )
+    error_message = "location_config.offline_store_bucket_name must be provided when type = 'offline_store_bucket_path'."
+  }
+  
+  validation {
+    condition = var.location_config.type != "tecton_hosted_presigned" || (
+      var.location_config.tecton_presigned_write_url != null && 
+      var.location_config.tecton_presigned_write_url != ""
+    )
+    error_message = "location_config.tecton_presigned_write_url must be provided when type = 'tecton_hosted_presigned'."
+  }
+}
