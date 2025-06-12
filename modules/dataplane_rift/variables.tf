@@ -119,7 +119,7 @@ variable "location_config" {
   type = object({
     type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
     
-    # For offline_store_bucket_path
+    # For offline_store_bucket_path (bucket name is automatically set to the deployment's offline store bucket)
     offline_store_bucket_name    = optional(string)
     offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")
     
