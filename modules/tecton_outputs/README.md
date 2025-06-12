@@ -82,7 +82,6 @@ module "tecton_outputs" {
   # location_config = {
   #   type                       = "tecton_hosted_presigned"
   #   tecton_presigned_write_url = var.presigned_put_url
-  #   tecton_presigned_read_url  = var.presigned_get_url
   # }
 
   outputs_data = { /* ... */ }
