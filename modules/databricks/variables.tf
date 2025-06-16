@@ -44,7 +44,7 @@ variable "kms_key_id" {
   default     = null
 }
 
-variable "location_config" {
+variable "outputs_location_config" {
   description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
   type = object({
     type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"
@@ -58,6 +58,6 @@ variable "location_config" {
   })
   
   default = {
-    type = "new_bucket"
+    type = "tecton_hosted_presigned"
   }
 }

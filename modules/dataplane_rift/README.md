@@ -9,6 +9,7 @@ For Tecton configurations with Rift compute running in Tecton's control plane, y
 This module provisions:
 1.  Core Tecton data plane resources.
 2.  Rift compute engine resources (IAM Roles, VPC, ECR repository, etc.).
+3.  Writes outputs (IAM role ARNs, resource IDs) to shared location (S3) for Tecton to pull.
 
 #### Prerequisites
 
@@ -40,7 +41,12 @@ module "tecton" {
   tecton_control_plane_account_id    = "987654321098" # Tecton's Control Plane Account ID
   cross_account_external_id          = "your-external-id"    # External ID from Tecton
   tecton_control_plane_role_name     = "TectonControlPlaneRole" # Role name from Tecton
-  include_crossaccount_bucket_access = false
+
+  # Get outputs destination URL from Tecton
+  outputs_location_config = {
+    type = "tecton_presigned_write_url"
+    tecton_presigned_write_url  = ""
+  }
 
   # Optional: For PrivateLink to Control Plane. Add _after_ deployment is complete and PrivateLink details are shared by Tecton
   # tecton_vpce_service_name = "com.amazonaws.vpce.us-west-2.vpce-svc-xxxxxxxxxxxxxxxxx"
@@ -57,7 +63,7 @@ output "tecton" {
 2.  Initialize Terraform: `terraform init`
 3.  Review the plan: `terraform plan`
 4.  Apply the configuration: `terraform apply`
-5.  Share any required output values with your Tecton representative.
+5.  Notify your Tecton representative and wait for Tecton to complete/finalize deployment.
 
 ### Details
 ![dataplane_rift](./dataplane_rift.svg)
@@ -79,7 +85,7 @@ output "tecton" {
 | <a name="input_existing_vpc"></a> [existing\_vpc](#input\_existing\_vpc) | (Optional) Configuration for using an existing VPC. If provided, both vpc\_id and private\_subnet\_ids must be provided together. | <pre>object({<br/>    vpc_id               = string<br/>    private_subnet_ids   = list(string)<br/>  })</pre> | `null` | no |
 | <a name="input_include_crossaccount_bucket_access"></a> [include\_crossaccount\_bucket\_access](#input\_include\_crossaccount\_bucket\_access) | Whether to grant direct cross-account bucket access | `bool` | `true` | no |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key for encrypting data at rest. | `string` | `null` | no |
-| <a name="input_location_config"></a> [location\_config](#input\_location\_config) | Configuration for where to store the outputs. Defaults to creating a dedicated bucket. | <pre>object({<br/>    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"<br/>    <br/>    # For offline_store_bucket_path (bucket name is automatically set to the deployment's offline store bucket)<br/>    offline_store_bucket_name    = optional(string)<br/>    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")<br/>    <br/>    # For tecton_hosted_presigned<br/>    tecton_presigned_write_url = optional(string)<br/>  })</pre> | <pre>{<br/>  "type": "new_bucket"<br/>}</pre> | no |
+| <a name="input_outputs_location_config"></a> [outputs\_location\_config](#input\_outputs\_location\_config) | Configuration for where to store the outputs. Defaults to creating a dedicated bucket. | <pre>object({<br/>    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"<br/>    <br/>    # For offline_store_bucket_path (bucket name is automatically set to the deployment's offline store bucket)<br/>    offline_store_bucket_name    = optional(string)<br/>    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")<br/>    <br/>    # For tecton_hosted_presigned<br/>    tecton_presigned_write_url = optional(string)<br/>  })</pre> | <pre>{<br/>  "type": "tecton_hosted_presigned"<br/>}</pre> | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region for the Tecton deployment. | `string` | n/a | yes |
 | <a name="input_subnet_azs"></a> [subnet\_azs](#input\_subnet\_azs) | A list of Availability Zones for the subnets. | `list(string)` | n/a | yes |
 | <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |

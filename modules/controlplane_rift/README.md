@@ -34,6 +34,12 @@ module "tecton" {
   account_id                 = "123456789012" # Replace with your AWS Account ID
   tecton_control_plane_account_id = "987654321098" # Replace with Tecton's Control Plane Account ID
   cross_account_external_id  = "your-tecton-external-id"   # Replace with the External ID from Tecton
+
+  # Get outputs destination URL from Tecton
+  outputs_location_config = {
+    type = "tecton_presigned_write_url"
+    tecton_presigned_write_url  = ""
+  }
 }
 
 output "tecton" {
@@ -47,7 +53,13 @@ output "tecton" {
 2.  Initialize Terraform: `terraform init`
 3.  Review the plan: `terraform plan`
 4.  Apply the configuration: `terraform apply`
-5.  Share the output values (like `cross_account_role_arn`) with your Tecton representative.
+5.  Notify your Tecton representative and wait for Tecton to complete/finalize deployment.
+
+
+This module provisions:
+1.  Base Tecton deployment resources (IAM roles for cross-account access, S3 bucket, KMS key).
+2.  Writes outputs (IAM role ARNs, resource IDs) to shared location (S3) for Tecton to pull.
+
 
 ### Details
 ![controlplane_rift](./controlplane_rift.svg)
@@ -62,7 +74,7 @@ output "tecton" {
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access. Obtain this from your Tecton representative. | `string` | n/a | yes |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name of the Tecton deployment. Must be less than 22 characters due to AWS limitations. | `string` | n/a | yes |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key (ID) for encrypting data at rest. | `string` | `null` | no |
-| <a name="input_location_config"></a> [location\_config](#input\_location\_config) | Configuration for where to store the outputs. Defaults to creating a dedicated bucket. | <pre>object({<br/>    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"<br/>    <br/>    # For offline_store_bucket_path (bucket name is automatically set to the deployment's offline store bucket)<br/>    offline_store_bucket_name    = optional(string)<br/>    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")<br/>    <br/>    # For tecton_hosted_presigned<br/>    tecton_presigned_write_url = optional(string)<br/>  })</pre> | <pre>{<br/>  "type": "new_bucket"<br/>}</pre> | no |
+| <a name="input_outputs_location_config"></a> [outputs\_location\_config](#input\_outputs\_location\_config) | Configuration for where to store the outputs. Defaults to creating a dedicated bucket. | <pre>object({<br/>    type = string # "new_bucket", "offline_store_bucket_path", or "tecton_hosted_presigned"<br/>    <br/>    # For offline_store_bucket_path (bucket name is automatically set to the deployment's offline store bucket)<br/>    offline_store_bucket_name    = optional(string)<br/>    offline_store_bucket_path_prefix = optional(string, "internal/tecton-outputs/")<br/>    <br/>    # For tecton_hosted_presigned<br/>    tecton_presigned_write_url = optional(string)<br/>  })</pre> | <pre>{<br/>  "type": "tecton_hosted_presigned"<br/>}</pre> | no |
 | <a name="input_region"></a> [region](#input\_region) | The AWS region for the Tecton deployment. | `string` | n/a | yes |
 | <a name="input_tecton_control_plane_account_id"></a> [tecton\_control\_plane\_account\_id](#input\_tecton\_control\_plane\_account\_id) | The AWS account ID of the Tecton control plane. Obtain this from your Tecton representative. | `string` | n/a | yes |  
 ## Outputs
