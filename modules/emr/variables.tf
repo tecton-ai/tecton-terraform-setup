@@ -118,6 +118,6 @@ variable "outputs_location_config" {
   })
   
   default = {
-    type = "new_bucket"
+    type = "tecton_hosted_presigned"
   }
 } 
