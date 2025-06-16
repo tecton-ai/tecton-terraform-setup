@@ -28,7 +28,7 @@ variable "outputs_data" {
     compute_manager_arn                 = optional(string)
     compute_instance_profile_arn        = optional(string) 
     compute_arn                         = optional(string)
-    vm_workload_subnet_ids              = optional(list(string))
+    vm_workload_subnet_ids              = optional(string)
     anyscale_docker_target_repo         = optional(string)
     nat_gateway_public_ips              = optional(list(string))
     rift_compute_security_group_id      = optional(string)
