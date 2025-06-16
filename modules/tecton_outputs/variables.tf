@@ -65,7 +65,7 @@ variable "outputs_location_config" {
   })
   
   default = {
-    type = "tecton_presigned_write_url"
+    type = "tecton_hosted_presigned"
     tecton_presigned_write_url = ""
   }
   
