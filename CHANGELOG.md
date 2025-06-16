@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.6.0...v1.7.0) (2025-06-16)
+
+
+### Features
+
+* Set default tecton_outputs location to presigned url. ([#224](https://github.com/tecton-ai/tecton-terraform-setup/issues/224)) ([496cadc](https://github.com/tecton-ai/tecton-terraform-setup/commit/496cadcb320572f40f1e527922096d79af6a9a6d))
+
 ## [1.6.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.5.0...v1.6.0) (2025-06-12)
 
 
