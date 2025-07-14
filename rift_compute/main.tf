@@ -43,7 +43,6 @@ data "aws_iam_policy_document" "cross_account_ecr" {
   }
 }
 
-# Apply this to dataplane cross account role as well... somehow!
 resource "aws_ecr_repository_policy" "cross_account_ecr" {
   count      = var.control_plane_account_id == null ? 0 : 1
   repository = aws_ecr_repository.rift_env.name
