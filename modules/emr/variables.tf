@@ -80,8 +80,6 @@ variable "enable_cross_account_emr_notebook_cluster" {
   default     = false
 }
 
-# Add ecr variables
-
 variable "emr_notebook_cross_account_region" {
   description = "(Optional) The AWS region of the cross-account EMR notebook cluster."
   type        = string
