@@ -29,7 +29,7 @@ data "aws_iam_policy_document" "cross_account_ecr" {
       identifiers = [
         var.control_plane_account_id,
         # cross_account_role is unconditionally defined, so we don't need a guard condition
-        aws_iam_role.cross_account_role.arn
+        data.aws_iam_role.cross_account_role.arn
       ]
     }
 
