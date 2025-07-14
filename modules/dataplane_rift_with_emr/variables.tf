@@ -114,6 +114,8 @@ variable "notebook_cluster_count" {
   default     = 0
 }
 
+# Add ecr variables
+
 variable "emr_debugging_count" {
   description = "Set to 1 to allow Tecton to debug EMR clusters. Set to 0 to disable. Requires Tecton deployment."
   type        = number
