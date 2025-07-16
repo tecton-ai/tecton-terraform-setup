@@ -33,6 +33,7 @@ variable "offline_store_key_prefix" {
 variable "cross_account_role_arn" {
   type        = string
   description = "Name of cross-account role Tecton control-plane will assume in your account."
+  default     = null
 }
 
 variable "subnet_azs" {
