@@ -30,6 +30,10 @@ variable "offline_store_key_prefix" {
   default     = "offline-store/"
 }
 
+variable "cross_account_role_arn" {
+  type        = string
+  description = "Name of cross-account role Tecton control-plane will assume in your account."
+}
 
 variable "subnet_azs" {
   description = "A list of Availability Zones for the subnets. Not used if existing_vpc is provided."
