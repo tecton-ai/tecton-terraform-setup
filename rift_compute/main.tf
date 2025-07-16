@@ -26,7 +26,10 @@ data "aws_iam_policy_document" "cross_account_ecr" {
 
     principals {
       type        = "AWS"
-      identifiers = [var.control_plane_account_id, var.cross_account_role_arn]
+      identifiers = concat(
+        [var.control_plane_account_id],
+        var.cross_account_role_arn != null ? [var.cross_account_role_arn] : []
+      )
     }
 
     actions = [
