@@ -85,11 +85,6 @@ data "aws_iam_policy_document" "cross_account_role_ecr" {
       "ecr:UploadLayerPart",
     ]
     resources = ["*"]
-    condition {
-      test     = "StringEquals"
-      variable = "sts:ExternalId"
-      values   = ["${var.cross_account_external_id}"]
-    }
   }
 }
 
