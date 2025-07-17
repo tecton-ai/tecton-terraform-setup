@@ -26,6 +26,20 @@ resource "aws_iam_role" "cross_account_role" {
   max_session_duration = 43200
   tags                 = local.tags
   assume_role_policy   = data.aws_iam_policy_document.cross_account_role_assume_role.json
+  # Necessary for Deployment Scorecard checks on cross-account-role actions
+  inline_policy {
+    name = "SimulatePrincipalPolicyAccess"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = "sts:SimulatePrincipalPolicy"
+          Resource = "*"
+        }
+      ]
+    })
+  }
 }
 
 data "aws_iam_policy_document" "cross_account_role_assume_role_metadata" {
