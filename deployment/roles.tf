@@ -84,6 +84,7 @@ data "aws_iam_policy_document" "cross_account_role_ecr" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
     ]
+    resources = ["*"]
     condition {
       test     = "StringEquals"
       variable = "sts:ExternalId"
