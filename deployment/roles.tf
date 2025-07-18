@@ -70,6 +70,24 @@ data "aws_iam_policy_document" "cross_account_role_assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "cross_account_role_ecr" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = local.account_identifiers
+    }
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart",
+    ]
+    resources = ["*"]
+  }
+}
+
 resource "aws_iam_policy" "cross_account_policy_spark" {
   count = local.use_spark_compute ? 1 : 0
 
@@ -96,6 +114,12 @@ resource "aws_iam_policy" "cross_account_policy_rift" {
   tags = local.tags
 }
 
+resource "aws_iam_policy" "cross_account_policy_ecr" {
+  name = "tecton-${var.deployment_name}-cross-account-policy-ecr"
+  policy = data.aws_iam_policy_document.cross_account_role_ecr.json
+  tags = local.tags
+}
+
 resource "aws_iam_role_policy_attachment" "spark_cross_account_policy_attachment" {
   count = local.use_spark_compute ? 1 : 0
 
@@ -103,6 +127,10 @@ resource "aws_iam_role_policy_attachment" "spark_cross_account_policy_attachment
   role       = aws_iam_role.cross_account_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "ecr_cross_account_policy_attachment" {
+  policy_arn = aws_iam_policy.cross_account_policy_ecr[0].arn
+  role       = aws_iam_role.cross_account_role.name
+}
 
 resource "aws_iam_role_policy_attachment" "rift_cross_account_policy_attachment" {
   count = local.use_rift_compute_on_control_plane ? 1 : 0
