@@ -129,7 +129,7 @@ resource "aws_iam_role_policy_attachment" "spark_cross_account_policy_attachment
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_cross_account_policy_attachment" {
-  policy_arn = aws_iam_policy.cross_account_policy_ecr[0].arn
+  policy_arn = aws_iam_policy.cross_account_policy_ecr.arn
   role       = aws_iam_role.cross_account_role.name
 }
 
