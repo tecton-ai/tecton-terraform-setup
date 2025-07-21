@@ -73,10 +73,6 @@ data "aws_iam_policy_document" "cross_account_role_assume_role" {
 data "aws_iam_policy_document" "cross_account_role_ecr" {
   statement {
     effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = local.account_identifiers
-    }
     actions = [
       "ecr:BatchCheckLayerAvailability",
       "ecr:CompleteLayerUpload",
