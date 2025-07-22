@@ -93,7 +93,7 @@ resource "aws_s3_object" "outputs_json" {
 
 # Upload via presigned URL if requested (null_resource executing curl)
 resource "null_resource" "presigned_upload" {
-  count = local.is_tecton_hosted_presigned ? 1 : 0
+  count = (local.is_tecton_hosted_presigned && var.outputs_location_config.trigger_upload) ? 1 : 0
 
   triggers = {
     outputs_hash = sha1(jsonencode(var.outputs_data))
