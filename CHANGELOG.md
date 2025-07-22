@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.7.0...v1.7.1) (2025-07-22)
+
+
+### Bug Fixes
+
+* default value in readme snippet for 'type' of outputs_location_config, add flag to control upload ([#234](https://github.com/tecton-ai/tecton-terraform-setup/issues/234)) ([aeed88a](https://github.com/tecton-ai/tecton-terraform-setup/commit/aeed88a6d56a33e521e1cccb6da3a2f889f699e3))
+
 ## [1.7.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.6.0...v1.7.0) (2025-06-16)
 
 
