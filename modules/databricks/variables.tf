@@ -55,6 +55,7 @@ variable "outputs_location_config" {
     
     # For tecton_hosted_presigned
     tecton_presigned_write_url = optional(string)
+    trigger_upload             = optional(bool, false)
   })
   
   default = {
