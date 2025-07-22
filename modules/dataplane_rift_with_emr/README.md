@@ -42,7 +42,7 @@ module "tecton" {
 
   # Get outputs destination URL from Tecton
   outputs_location_config = {
-    type = "tecton_presigned_write_url"
+    type = "tecton_hosted_presigned"
     tecton_presigned_write_url  = ""
   }
 
