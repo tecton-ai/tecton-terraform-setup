@@ -34,6 +34,7 @@ data "aws_iam_policy_document" "cross_account_ecr" {
 
     actions = [
       "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
       "ecr:CompleteLayerUpload",
       "ecr:GetAuthorizationToken",
       "ecr:InitiateLayerUpload",
