@@ -38,7 +38,6 @@ uv run scripts/validate-tecton.py \
   --cluster-name 'my-tecton-deployment' \
   --ca-role 'my-tecton-deployment-ca-role' \
   --spark-role 'my-tecton-deployment-spark-role' \
-  --external-id 'abd123' \
   --terraform-outputs outputs.json
 ```
 
@@ -52,7 +51,6 @@ uv run scripts/validate-tecton.py \
   --ca-role 'my-tecton-deployment-ca-role' \
   --spark-role 'my-tecton-deployment-spark-role' \
   --emr-master-role 'my-tecton-deployment-emr-master-role' \
-  --external-id 'abd123' \
   --terraform-outputs outputs.json
 ```
 
