@@ -17,6 +17,7 @@ class ComputeEngine(str, Enum):
     DATABRICKS = "databricks"
     EMR = "emr"
     RIFT = "rift"
+    CONTROLPLANE_RIFT="controlplane_rift"
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -48,6 +49,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Path to a *terraform output -json* file to use for validation.",
     )
 
+    parser.add_argument("--offline-store-bucket-name", help="Name of the offline store bucket.", required=False)
     # Optional engine-specific options
     parser.add_argument("--spark-role")
     parser.add_argument("--emr-master-role")

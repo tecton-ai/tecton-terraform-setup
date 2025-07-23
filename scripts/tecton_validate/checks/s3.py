@@ -10,7 +10,7 @@ __all__ = ["CHECKS"]
 def _check_offline_store_bucket(
     args: argparse.Namespace, session: boto3.Session, console: Console
 ) -> ValidationResult:
-    bucket_name = f"tecton-{args.cluster_name}"
+    bucket_name = args.offline_store_bucket_name or f"tecton-{args.cluster_name}"
     s3 = session.client("s3")
     try:
         s3.head_bucket(Bucket=bucket_name)

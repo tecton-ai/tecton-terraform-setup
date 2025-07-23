@@ -194,14 +194,14 @@ def _check_security_group_egress(
                 "Rift compute security group egress",
                 False,
                 f"Security group {sg_id} not found",
-                "Check that the security group ID is correct and exists in the current region",
+                f"Provided security group ID {sg_id} is not found in the current region. Check that the security group ID is correct and exists in the current region.",
             )
         else:
             return ValidationResult(
                 "Rift compute security group egress",
                 False,
                 f"Error checking security group: {e}",
-                "Check AWS permissions for EC2 describe operations",
+                "Unauthorized to describe security groups in order to validate; check that current identity has ec2:DescribeSecurityGroups permission.",
             )
 
 
