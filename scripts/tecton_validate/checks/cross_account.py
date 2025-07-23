@@ -48,7 +48,7 @@ def _validate_cross_account(
             if args.compute_engine in {"emr", "databricks"}
             else "rift_ca_policy.json"
         )
-        ca_role_name = args.ca_role or f"tecton-{args.cluster_name}-cross-account-role"
+        ca_role_name = f"tecton-{args.cluster_name}-cross-account-role"
         ca = iam.Role(ca_role_name)
         ca_policies = _get_policies(ca)
         success &= test_policy(

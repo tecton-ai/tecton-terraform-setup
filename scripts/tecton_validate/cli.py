@@ -41,9 +41,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--cluster-name", required=True, help="Name of the Tecton cluster."
     )
     parser.add_argument(
-        "--ca-role", help="Cross-account role to assume for validation."
-    )
-    parser.add_argument(
         "--terraform-outputs",
         metavar="PATH",
         help="Path to a *terraform output -json* file to use for validation.",
