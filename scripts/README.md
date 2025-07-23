@@ -36,7 +36,6 @@ uv run scripts/validate-tecton.py \
   --account-id '1234567890' \
   --region us-west-2 \
   --cluster-name 'my-tecton-deployment' \
-  --ca-role 'my-tecton-deployment-ca-role' \
   --spark-role 'my-tecton-deployment-spark-role' \
   --terraform-outputs outputs.json
 ```
@@ -48,7 +47,6 @@ uv run scripts/validate-tecton.py \
   --account-id '1234567890' \
   --region us-west-2 \
   --cluster-name 'my-tecton-deployment' \
-  --ca-role 'my-tecton-deployment-ca-role' \
   --spark-role 'my-tecton-deployment-spark-role' \
   --emr-master-role 'my-tecton-deployment-emr-master-role' \
   --terraform-outputs outputs.json
