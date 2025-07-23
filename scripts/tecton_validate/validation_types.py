@@ -15,11 +15,6 @@ __all__ = [
 ]
 
 
-# ---------------------------------------------------------------------------
-# Protocols & Data classes
-# ---------------------------------------------------------------------------
-
-
 class _CheckCallable(Protocol):
     """Runtime callable for a single validation check."""
 
@@ -46,11 +41,6 @@ class ValidationCheck:
     run: _CheckCallable
     remediation: str = ""
     only_for: List[str] = field(default_factory=list)
-
-
-# ---------------------------------------------------------------------------
-# shared execution helper
-# ---------------------------------------------------------------------------
 
 
 def run_checks(

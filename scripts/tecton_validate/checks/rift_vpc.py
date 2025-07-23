@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+"""Validation checks for VPC resources for Rift compute.
+"""
+
 import argparse
 from typing import List
 import boto3

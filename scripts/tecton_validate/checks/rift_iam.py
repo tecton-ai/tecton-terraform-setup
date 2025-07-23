@@ -1,4 +1,10 @@
 from __future__ import annotations
+
+"""Validation checks specific to Rift compute.
+
+This module validates that the IAM roles and policies for Rift compute are correctly configured.
+"""
+
 import os
 import argparse
 from typing import List

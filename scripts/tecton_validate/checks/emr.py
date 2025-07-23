@@ -20,11 +20,6 @@ from tecton_validate.validation_types import ValidationCheck, ValidationResult
 __all__ = ["CHECKS"]
 
 
-# ---------------------------------------------------------------------------
-# Validation logic
-# ---------------------------------------------------------------------------
-
-
 def _check_emr_subnet_access_tag(
     args: argparse.Namespace,
     session: boto3.Session,
@@ -33,8 +28,7 @@ def _check_emr_subnet_access_tag(
     """Ensure EMR *private* subnets expose the required *tecton-accessible* tag.
 
     For every subnet with a ``Name`` tag matching ``<deployment_name>-emr-subnet`` we
-    assert the presence of a tag with key ``tecton-accessible:<deployment_name>`` and
-    a truth-y value (``true``, ``yes``, or ``1``).
+    assert the presence of a tag with key ``tecton-accessible:<deployment_name>``
     """
 
     deployment_name: str = args.cluster_name  # cluster name doubles as deployment_name
