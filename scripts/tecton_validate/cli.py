@@ -53,8 +53,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
     # Optional engine-specific options
     parser.add_argument("--spark-role")
     parser.add_argument("--emr-master-role")
-    parser.add_argument("--external-id")
-    parser.add_argument("--is-cross-account-databricks", action="store_true")
     return parser
 
 
