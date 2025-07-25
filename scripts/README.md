@@ -7,7 +7,7 @@ The `validate-tecton.py` script checks/validates your Tecton AWS setup based on 
 ### Prerequisites
 
 - Python 3.9+
-- [uv](https://docs.astral.sh/uv/) (recommended) or Python environment with the following dependencies installed: `boto3`, `rich`, `jinja2`, `requests`
+- [uv](https://docs.astral.sh/uv/) (recommended) or Python environment with the following dependencies installed: `boto3`, `rich`, `jinja2`, `requests` ([requirements.txt](./requirements.txt))
 - AWS credentials configured (via CLI, environment variables, or IAM role) with [permissions required for simulating policy](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_testing-policies.html#permissions-required_policy-simulator), along with permissions to view S3 and VPC resources. Ideally, the same role you used to run the terraform modules.
 
 ### Usage
@@ -23,9 +23,6 @@ The easiest way to run the validation script is with `uv`, which automatically h
 ```shell
 uv run scripts/validate-tecton.py \
   --compute-engine rift \
-  --account-id '1234567890' \
-  --region us-west-2 \
-  --cluster-name 'my-tecton-deployment' \
   --terraform-outputs outputs.json
 ```
 
@@ -33,10 +30,6 @@ uv run scripts/validate-tecton.py \
 ```shell
 uv run scripts/validate-tecton.py \
   --compute-engine databricks \
-  --account-id '1234567890' \
-  --region us-west-2 \
-  --cluster-name 'my-tecton-deployment' \
-  --spark-role 'my-tecton-deployment-spark-role' \
   --terraform-outputs outputs.json
 ```
 
@@ -44,11 +37,6 @@ uv run scripts/validate-tecton.py \
 ```shell
 uv run scripts/validate-tecton.py \
   --compute-engine emr \
-  --account-id '1234567890' \
-  --region us-west-2 \
-  --cluster-name 'my-tecton-deployment' \
-  --spark-role 'my-tecton-deployment-spark-role' \
-  --emr-master-role 'my-tecton-deployment-emr-master-role' \
   --terraform-outputs outputs.json
 ```
 
@@ -56,16 +44,15 @@ uv run scripts/validate-tecton.py \
 
 If you prefer not to use uv, you can install dependencies manually and run with Python:
 
+You can find the [requirements.txt](./requirements.txt) file in this repo.
+
 ```shell
-# Install dependencies
-pip install boto3 rich jinja2 requests
+# (In virtual env) Install dependencies
+pip install -r requirements.txt
 
 # Run validation
 python3 scripts/validate-tecton.py \
   --compute-engine rift \
-  --account-id '1234567890' \
-  --region us-west-2 \
-  --cluster-name 'my-tecton-deployment' \
   --terraform-outputs outputs.json
 ```
 
