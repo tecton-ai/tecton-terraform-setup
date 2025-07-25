@@ -23,7 +23,8 @@ module "tecton" {
   use_spark_compute                 = true
   use_rift_cross_account_policy     = true
   kms_key_id                        = var.kms_key_id
-  create_emr_roles = true
+  create_emr_roles                  = true
+  bucket_name_override              = var.bucket_name_override
 }
 
 ## EMR Resources

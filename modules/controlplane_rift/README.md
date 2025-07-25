@@ -72,6 +72,7 @@ This module provisions:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | ID of the AWS account where Tecton will be deployed. | `string` | n/a | yes |
+| <a name="input_bucket_name_override"></a> [bucket\_name\_override](#input\_bucket\_name\_override) | Name of the offline store bucket. | `string` | `null` | no |
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access. Obtain this from your Tecton representative. | `string` | n/a | yes |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name of the Tecton deployment. Must be less than 22 characters due to AWS limitations. | `string` | n/a | yes |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key (ID) for encrypting data at rest. | `string` | `null` | no |

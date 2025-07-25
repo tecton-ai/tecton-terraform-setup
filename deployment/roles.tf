@@ -95,6 +95,7 @@ resource "aws_iam_policy" "cross_account_policy_spark" {
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
     SPARK_ROLE      = local.spark_role_name
+    BUCKET_NAME     = local.bucket_name
   })
   tags = local.tags
 }
@@ -108,6 +109,7 @@ resource "aws_iam_policy" "cross_account_policy_rift" {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
+    BUCKET_NAME     = local.bucket_name
   })
   tags = local.tags
 }
@@ -146,6 +148,7 @@ resource "aws_iam_policy" "common_spark_policy" {
     ACCOUNT_ID      = var.account_id
     DEPLOYMENT_NAME = var.deployment_name
     REGION          = var.region
+    BUCKET_NAME     = local.bucket_name
   })
   tags = local.tags
 }

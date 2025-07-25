@@ -92,6 +92,7 @@ Before using this module, ensure you have:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton and EMR resources will be deployed. | `string` | n/a | yes |
+| <a name="input_bucket_name_override"></a> [bucket\_name\_override](#input\_bucket\_name\_override) | Name of the offline store bucket. | `string` | `null` | no |
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access by Tecton. Obtain this from your Tecton representative. | `string` | n/a | yes |
 | <a name="input_cross_account_principal_arn_for_s3_policy"></a> [cross\_account\_principal\_arn\_for\_s3\_policy](#input\_cross\_account\_principal\_arn\_for\_s3\_policy) | (Optional) The ARN of the principal in another account that should get read-only access to the Tecton S3 bucket. Used if setting up cross-account EMR notebooks manually or extending this module. | `string` | `null` | no |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name for your Tecton deployment. Must be less than 22 characters due to AWS S3 bucket naming limitations. | `string` | n/a | yes |

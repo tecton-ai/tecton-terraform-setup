@@ -23,6 +23,7 @@ module "tecton" {
   use_spark_compute                 = false
   use_rift_cross_account_policy     = true
   kms_key_id                        = var.kms_key_id
+  bucket_name_override              = var.bucket_name_override
 }
 
 # S3 module to store outputs
