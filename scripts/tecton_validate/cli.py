@@ -7,6 +7,7 @@ from typing import List, Optional
 import boto3
 from rich.console import Console
 
+from tecton_validate.terraform import load_terraform_outputs
 from tecton_validate.validation_types import ValidationCheck, run_checks
 from tecton_validate import CHECKS  # aggregated by __init__
 
@@ -35,21 +36,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         required=True,
         help="Target compute engine deployment type.",
     )
-    parser.add_argument("--account-id", required=True, help="12-digit AWS account ID.")
-    parser.add_argument("--region", required=True, help="AWS region, e.g. us-west-2.")
-    parser.add_argument(
-        "--cluster-name", required=True, help="Name of the Tecton cluster."
-    )
+
     parser.add_argument(
         "--terraform-outputs",
         metavar="PATH",
         help="Path to a *terraform output -json* file to use for validation.",
     )
-
-    parser.add_argument("--offline-store-bucket-name", help="Name of the offline store bucket.", required=False)
-    # Optional engine-specific options
-    parser.add_argument("--spark-role")
-    parser.add_argument("--emr-master-role")
     return parser
 
 
@@ -75,12 +67,19 @@ def main(argv: Optional[List[str]] = None) -> None:  # pragma: no cover
     args = parser.parse_args(argv)
 
     console = Console()
-    session = boto3.Session(region_name=args.region)
+    outputs = (
+        load_terraform_outputs(args.terraform_outputs, console)
+        if args.terraform_outputs
+        else {}
+    )
+    region = outputs.get("region", "")
+    dataplane_account_id = outputs.get("dataplane_account_id", "")
+    session = boto3.Session(region_name=region)
 
     identity = session.client("sts").get_caller_identity()
     console.print(
-        f"Validating in account [green]{args.account_id}[/green] "
-        f"([blue]{identity['Arn']}[/blue]) in region [green]{args.region}[/green]\n"
+        f"Validating in account [green]{dataplane_account_id}[/green] "
+        f"([blue]{identity['Arn']}[/blue]) in region [green]{region}[/green]\n"
     )
 
     success = run_checks(_filter_checks(args.compute_engine), args, session, console)

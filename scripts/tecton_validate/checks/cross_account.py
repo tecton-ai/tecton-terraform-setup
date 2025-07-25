@@ -8,6 +8,7 @@ from rich.console import Console
 
 from tecton_validate.validation_types import ValidationCheck, ValidationResult
 from tecton_validate.policy_test import test_policy
+from tecton_validate.terraform import load_terraform_outputs
 
 __all__ = ["CHECKS"]
 
@@ -23,10 +24,20 @@ def _validate_cross_account(
     )
     success = True
 
+    outputs = (
+        load_terraform_outputs(args.terraform_outputs, console)
+        if args.terraform_outputs
+        else {}
+    )
+    deployment_name = outputs.get("deployment_name", "")
+    dataplane_account_id = outputs.get("dataplane_account_id", "")
+    spark_role = outputs.get("spark_role", "")
+    region = outputs.get("region", "")
+
     try:
         # Spark role optional
-        if args.spark_role:
-            spark = iam.Role(args.spark_role)
+        if outputs.get("spark_role", None):
+            spark = iam.Role(outputs.get("spark_role", ""))
             policies = _get_policies(spark)
             if not policies:
                 raise RuntimeError("Spark role exists but has no policies attached")
@@ -36,11 +47,9 @@ def _validate_cross_account(
                 iam_client,
                 console,
                 policy_name="spark_policy.json",
-                REGION=args.region,
-                DEPLOYMENT_NAME=args.cluster_name,
-                ACCOUNT_ID=args.account_id,
-                SPARK_ROLE=args.spark_role,
-                EMR_MANAGER_ROLE=args.emr_master_role or "",
+                REGION=region,
+                DEPLOYMENT_NAME=deployment_name,
+                ACCOUNT_ID=dataplane_account_id,
             )
 
         ca_tpl = (
@@ -48,7 +57,7 @@ def _validate_cross_account(
             if args.compute_engine in {"emr", "databricks"}
             else "rift_ca_policy.json"
         )
-        ca_role_name = f"tecton-{args.cluster_name}-cross-account-role"
+        ca_role_name = f"tecton-{deployment_name}-cross-account-role"
         ca = iam.Role(ca_role_name)
         ca_policies = _get_policies(ca)
         success &= test_policy(
@@ -57,11 +66,10 @@ def _validate_cross_account(
             iam_client,
             console,
             policy_name=ca_tpl,
-            REGION=args.region,
-            DEPLOYMENT_NAME=args.cluster_name,
-            ACCOUNT_ID=args.account_id,
-            SPARK_ROLE=args.spark_role,
-            EMR_MANAGER_ROLE=args.emr_master_role or "",
+            REGION=region,
+            DEPLOYMENT_NAME=deployment_name,
+            ACCOUNT_ID=dataplane_account_id,
+            SPARK_ROLE=spark_role,
         )
 
         if args.compute_engine == "emr" and args.emr_master_role:
@@ -73,11 +81,10 @@ def _validate_cross_account(
                 iam_client,
                 console,
                 policy_name="emr_test.json",
-                REGION=args.region,
-                DEPLOYMENT_NAME=args.cluster_name,
-                ACCOUNT_ID=args.account_id,
-                SPARK_ROLE=args.spark_role,
-                EMR_MANAGER_ROLE=args.emr_master_role,
+                REGION=region,
+                DEPLOYMENT_NAME=deployment_name,
+                ACCOUNT_ID=dataplane_account_id,
+                SPARK_ROLE=spark_role,
             )
 
         return ValidationResult(

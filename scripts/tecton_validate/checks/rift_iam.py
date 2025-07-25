@@ -95,18 +95,22 @@ def _check_rift_policies(
     )
     sg_id = outputs.get("rift_compute_security_group_id", "sg-12345678")
     subnet_ids = outputs.get("vm_workload_subnet_ids", [])
+    deployment_name = outputs.get("deployment_name", "")
+    dataplane_account_id = outputs.get("dataplane_account_id", "")
+    region = outputs.get("region", "")
+
     if isinstance(subnet_ids, str):
         subnet_ids = [s.strip() for s in subnet_ids.split(",") if s.strip()]
 
     allow_run = [
-        f"arn:aws:ec2:*:{args.account_id}:volume/*",
-        f"arn:aws:ec2:*:{args.account_id}:security-group/{sg_id}",
+        f"arn:aws:ec2:*:{dataplane_account_id}:volume/*",
+        f"arn:aws:ec2:*:{dataplane_account_id}:security-group/{sg_id}",
     ] + [
-        f"arn:aws:ec2:*:{args.account_id}:subnet/{s}"
+        f"arn:aws:ec2:*:{dataplane_account_id}:subnet/{s}"
         for s in subnet_ids or ["subnet-12345678"]
     ]
-    allow_iface = [f"arn:aws:ec2:*:{args.account_id}:security-group/{sg_id}"] + [
-        f"arn:aws:ec2:*:{args.account_id}:subnet/{s}"
+    allow_iface = [f"arn:aws:ec2:*:{dataplane_account_id}:security-group/{sg_id}"] + [
+        f"arn:aws:ec2:*:{dataplane_account_id}:subnet/{s}"
         for s in subnet_ids or ["subnet-12345678"]
     ]
 
@@ -132,15 +136,15 @@ def _check_rift_policies(
                     iam_client,
                     console,
                     policy_name=tpl,
-                    ACCOUNT_ID=args.account_id,
-                    CLUSTER_NAME=args.cluster_name,
-                    OFFLINE_STORE_BUCKET_ARN=f"arn:aws:s3:::tecton-{args.cluster_name}",
+                    ACCOUNT_ID=dataplane_account_id,
+                    CLUSTER_NAME=deployment_name,
+                    OFFLINE_STORE_BUCKET_ARN=f"arn:aws:s3:::tecton-{deployment_name}",
                     OFFLINE_STORE_KEY_PREFIX="offline-store/",
-                    S3_LOG_DESTINATION=f"arn:aws:s3:::tecton-{args.cluster_name}/rift-logs",
+                    S3_LOG_DESTINATION=f"arn:aws:s3:::tecton-{deployment_name}/rift-logs",
                     USE_KMS_KEY="false",
                     KMS_KEY_ARN="",
-                    RIFT_ENV_ECR_REPOSITORY_ARN=f"arn:aws:ecr:{args.region}:{args.account_id}:repository/tecton-rift-env",
-                    RIFT_COMPUTE_ROLE_ARN=f"arn:aws:iam::{args.account_id}:role/tecton-rift-compute",
+                    RIFT_ENV_ECR_REPOSITORY_ARN=f"arn:aws:ecr:{region}:{dataplane_account_id}:repository/tecton-rift-env",
+                    RIFT_COMPUTE_ROLE_ARN=f"arn:aws:iam::{dataplane_account_id}:role/tecton-rift-compute",
                     ALLOW_RUN_INSTANCES_RESOURCES=allow_run,
                     ALLOW_NETWORK_INTERFACE_RESOURCES=allow_iface,
                 )

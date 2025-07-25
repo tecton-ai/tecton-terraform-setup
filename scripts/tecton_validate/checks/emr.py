@@ -15,6 +15,7 @@ import boto3
 from botocore.exceptions import ClientError  # type: ignore
 from rich.console import Console
 
+from tecton_validate.terraform import load_terraform_outputs
 from tecton_validate.validation_types import ValidationCheck, ValidationResult
 
 __all__ = ["CHECKS"]
@@ -30,11 +31,16 @@ def _check_emr_subnet_access_tag(
     For every subnet with a ``Name`` tag matching ``<deployment_name>-emr-subnet`` we
     assert the presence of a tag with key ``tecton-accessible:<deployment_name>``
     """
-
-    deployment_name: str = args.cluster_name  # cluster name doubles as deployment_name
-    tag_key = f"tecton-accessible:{deployment_name}"
-
     ec2 = session.client("ec2")
+
+    outputs = (
+        load_terraform_outputs(args.terraform_outputs, console)
+        if args.terraform_outputs
+        else {}
+    )
+    deployment_name = outputs.get("deployment_name", "")
+
+    tag_key = f"tecton-accessible:{deployment_name}"
 
     try:
         resp = ec2.describe_subnets(

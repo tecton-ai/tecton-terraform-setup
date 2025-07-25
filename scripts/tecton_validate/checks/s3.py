@@ -4,13 +4,21 @@ import boto3
 import argparse
 from rich.console import Console
 
+from tecton_validate.terraform import load_terraform_outputs
+
 __all__ = ["CHECKS"]
 
 
 def _check_offline_store_bucket(
     args: argparse.Namespace, session: boto3.Session, console: Console
 ) -> ValidationResult:
-    bucket_name = args.offline_store_bucket_name or f"tecton-{args.cluster_name}"
+    outputs = (
+        load_terraform_outputs(args.terraform_outputs, console)
+        if args.terraform_outputs
+        else {}
+    )
+    deployment_name = outputs.get("deployment_name", "")
+    bucket_name = outputs.get("bucket_name", f"tecton-{deployment_name}")
     s3 = session.client("s3")
     try:
         s3.head_bucket(Bucket=bucket_name)
