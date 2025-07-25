@@ -38,7 +38,6 @@ module "tecton" {
   tecton_control_plane_account_id    = "987654321098"     # Replace with Tecton's Control Plane Account ID
   cross_account_external_id          = "your-external-id" # Replace with the External ID from Tecton
   tecton_control_plane_role_name     = "TectonControlPlaneRole" # Role name from Tecton
-  include_crossaccount_bucket_access = false
 
   # Get outputs destination URL from Tecton
   outputs_location_config = {
