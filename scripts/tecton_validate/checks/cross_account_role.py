@@ -70,6 +70,7 @@ def _validate_cross_account(
             DEPLOYMENT_NAME=deployment_name,
             ACCOUNT_ID=dataplane_account_id,
             SPARK_ROLE=spark_role,
+            BUCKET_NAME=f"tecton-{deployment_name}"
         )
 
         if args.compute_engine == "emr" and args.emr_master_role:

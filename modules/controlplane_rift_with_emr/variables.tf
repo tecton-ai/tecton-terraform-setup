@@ -68,6 +68,12 @@ variable "notebook_glue_account_id" {
   default     = null # Will be dynamically set to var.account_id if null
 }
 
+variable "bucket_name_override" {
+  description = "Name of the offline store bucket."
+  type        = string
+  default     = null
+}
+
 variable "outputs_location_config" {
   description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
   type = object({

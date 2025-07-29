@@ -12,6 +12,7 @@
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | Data plane (customer) AWS account ID. | `string` | n/a | yes |
 | <a name="input_additional_offline_storage_tags"></a> [additional\_offline\_storage\_tags](#input\_additional\_offline\_storage\_tags) | **(Optional)** Additional tags for offline storage (S3 bucket) | `map(string)` | `{}` | no |
 | <a name="input_additional_s3_read_only_principals"></a> [additional\_s3\_read\_only\_principals](#input\_additional\_s3\_read\_only\_principals) | n/a | `list(string)` | `[]` | no |
+| <a name="input_bucket_name_override"></a> [bucket\_name\_override](#input\_bucket\_name\_override) | Name of the offline store bucket. | `string` | `null` | no |
 | <a name="input_bucket_sse_algorithm"></a> [bucket\_sse\_algorithm](#input\_bucket\_sse\_algorithm) | Server-side encryption algorithm to use. Valid values are AES256 and aws:kms.<br/> Note: (1) All resources should also be granted permission to decrypt with the KMS key if using KMS.<br/>       (2) If athena retrieval is used, the kms\_key option must also be set on the athena session. | `string` | `"AES256"` | no |
 | <a name="input_bucket_sse_key_enabled"></a> [bucket\_sse\_key\_enabled](#input\_bucket\_sse\_key\_enabled) | Whether or not to use Amazon S3 Bucket Keys for SSE-KMS. | `bool` | `null` | no |
 | <a name="input_controlplane_access_only"></a> [controlplane\_access\_only](#input\_controlplane\_access\_only) | Whether to only grant control-plane account access to the cross-account role | `bool` | `false` | no |

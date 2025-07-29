@@ -131,3 +131,9 @@ variable "include_crossaccount_bucket_access" {
   description = "Whether to grant direct cross-account bucket access"
   default     = true
 }
+
+variable "bucket_name_override" {
+  type        = string
+  description = "Name of the offline store bucket."
+  default     = null
+}

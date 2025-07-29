@@ -1,5 +1,9 @@
+locals {
+  bucket_name = var.bucket_name_override != null ? var.bucket_name_override : "tecton-${var.deployment_name}"
+}
+
 resource "aws_s3_bucket" "tecton" {
-  bucket = "tecton-${var.deployment_name}"
+  bucket = local.bucket_name
   tags   = merge(local.tags, var.additional_offline_storage_tags)
   lifecycle {
     ignore_changes = [lifecycle_rule]
@@ -66,7 +70,7 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
         identifiers = var.s3_read_write_principals
         type        = "AWS"
       }
-      resources = ["arn:aws:s3:::tecton-${var.deployment_name}"]
+      resources = ["arn:aws:s3:::${local.bucket_name}"]
     }
   }
 
@@ -84,7 +88,7 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
         identifiers = var.s3_read_write_principals
         type        = "AWS"
       }
-      resources = ["arn:aws:s3:::tecton-${var.deployment_name}/*"]
+      resources = ["arn:aws:s3:::${local.bucket_name}/*"]
     }
   }
 }

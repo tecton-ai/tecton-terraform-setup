@@ -86,6 +86,7 @@ This module provisions:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton will be deployed. | `string` | n/a | yes |
+| <a name="input_bucket_name_override"></a> [bucket\_name\_override](#input\_bucket\_name\_override) | Name of the offline store bucket. | `string` | `null` | no |
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access. Obtain this from your Tecton representative. | `string` | n/a | yes |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name of the Tecton deployment. Must be less than 22 characters due to AWS limitations. | `string` | n/a | yes |
 | <a name="input_emr_debugging_count"></a> [emr\_debugging\_count](#input\_emr\_debugging\_count) | Set to 1 to allow Tecton to debug EMR clusters. Set to 0 to disable. Requires Tecton deployment. | `number` | `0` | no |

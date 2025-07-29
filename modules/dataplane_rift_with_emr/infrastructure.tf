@@ -26,6 +26,7 @@ module "tecton" {
   create_emr_roles                   = true
   controlplane_access_only           = var.controlplane_access_only
   include_crossaccount_bucket_access = var.include_crossaccount_bucket_access
+  bucket_name_override               = var.bucket_name_override
 }
 
 module "rift" {

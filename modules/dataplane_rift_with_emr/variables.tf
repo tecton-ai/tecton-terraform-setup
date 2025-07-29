@@ -153,6 +153,12 @@ variable "additional_s3_read_access_buckets" {
   default     = []
 }
 
+variable "bucket_name_override" {
+  description = "Name of the offline store bucket."
+  type        = string
+  default     = null
+}
+
 variable "outputs_location_config" {
   description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
   type = object({
