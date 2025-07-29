@@ -87,15 +87,16 @@ data "aws_iam_policy_document" "cross_account_role_ecr" {
 }
 
 resource "aws_iam_policy" "cross_account_policy_spark" {
-  count = local.use_spark_compute ? 1 : 0
+  count = (local.use_spark_compute || var.databricks_override_account_id != null) ? 1 : 0
 
   name = "tecton-${var.deployment_name}-cross-account-policy"
   policy = templatefile("${path.module}/../templates/ca_policy.json", {
-    ACCOUNT_ID      = var.account_id
-    DEPLOYMENT_NAME = var.deployment_name
-    REGION          = var.region
-    SPARK_ROLE      = local.spark_role_name
-    BUCKET_NAME     = local.bucket_name
+    ACCOUNT_ID       = var.account_id
+    DEPLOYMENT_NAME  = var.deployment_name
+    REGION           = var.region
+    SPARK_ROLE       = local.spark_role_name
+    BUCKET_NAME      = local.bucket_name
+    SPARK_ACCOUNT_ID = var.databricks_override_account_id != null ? var.databricks_override_account_id : var.account_id
   })
   tags = local.tags
 }
@@ -121,7 +122,7 @@ resource "aws_iam_policy" "cross_account_policy_ecr" {
 }
 
 resource "aws_iam_role_policy_attachment" "spark_cross_account_policy_attachment" {
-  count = local.use_spark_compute ? 1 : 0
+  count = (local.use_spark_compute || var.databricks_override_account_id != null) ? 1 : 0
 
   policy_arn = aws_iam_policy.cross_account_policy_spark[0].arn
   role       = aws_iam_role.cross_account_role.name
