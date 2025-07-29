@@ -87,6 +87,7 @@ This module provisions:
 | <a name="input_account_id"></a> [account\_id](#input\_account\_id) | The AWS account ID where Tecton and Databricks are deployed. | `string` | n/a | yes |
 | <a name="input_bucket_name_override"></a> [bucket\_name\_override](#input\_bucket\_name\_override) | Name of the offline store bucket. | `string` | `null` | no |
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | The external ID for cross-account access by Tecton. Obtain this from your Tecton representative. | `string` | n/a | yes |
+| <a name="input_databricks_override_account_id"></a> [databricks\_override\_account\_id](#input\_databricks\_override\_account\_id) | Override the default account ID for Databricks. If not provided, Tecton will assume the account ID of the data plane. | `string` | `null` | no |
 | <a name="input_databricks_workspace_url"></a> [databricks\_workspace\_url](#input\_databricks\_workspace\_url) | The URL of your Databricks workspace (e.g., mycompany.cloud.databricks.com). | `string` | n/a | yes |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | The name for your Tecton deployment. Must be less than 22 characters due to AWS S3 bucket naming limitations. | `string` | n/a | yes |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | (Optional) The customer-managed key for encrypting data at rest. | `string` | `null` | no |

@@ -19,6 +19,7 @@
 | <a name="input_create_emr_roles"></a> [create\_emr\_roles](#input\_create\_emr\_roles) | Whether to create EMR roles. | `bool` | `false` | no |
 | <a name="input_cross_account_external_id"></a> [cross\_account\_external\_id](#input\_cross\_account\_external\_id) | External ID for cross-account role assumption. | `string` | n/a | yes |
 | <a name="input_cross_account_role_allow_sts_metadata"></a> [cross\_account\_role\_allow\_sts\_metadata](#input\_cross\_account\_role\_allow\_sts\_metadata) | Enable sts:SetSourceIdentity and sts:TagSession permissions on the cross-role account. | `bool` | `false` | no |
+| <a name="input_databricks_override_account_id"></a> [databricks\_override\_account\_id](#input\_databricks\_override\_account\_id) | Override the default account ID for Databricks. If not provided, Tecton will assume the account ID of the data plane. | `string` | `null` | no |
 | <a name="input_databricks_spark_role_name"></a> [databricks\_spark\_role\_name](#input\_databricks\_spark\_role\_name) | n/a | `string` | `null` | no |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | Name of the Tecton deployment. | `string` | n/a | yes |
 | <a name="input_emr_read_ecr_repositories"></a> [emr\_read\_ecr\_repositories](#input\_emr\_read\_ecr\_repositories) | List of ECR repositories that EMR roles are granted read access to. | `list(string)` | `[]` | no |

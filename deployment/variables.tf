@@ -40,6 +40,13 @@ variable "databricks_spark_role_name" {
   type    = string
   default = null
 }
+
+variable "databricks_override_account_id" {
+  type        = string
+  description = "Override the default account ID for Databricks. If not provided, Tecton will assume the account ID of the data plane."
+  default     = null
+}
+
 variable "emr_spark_role_name" {
   type        = string
   description = "Override the default name Tecton uses for emr spark role"

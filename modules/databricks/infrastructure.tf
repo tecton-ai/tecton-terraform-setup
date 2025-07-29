@@ -22,6 +22,10 @@ module "tecton" {
   databricks_spark_role_name = var.spark_role_name
   s3_read_write_principals   = [format("arn:aws:iam::%s:root", var.tecton_control_plane_account_id)]
   bucket_name_override       = var.bucket_name_override
+
+  # Options to use if databricks runs in different AWS account than where this module will be deployed
+  databricks_override_account_id = var.databricks_override_account_id
+  use_spark_compute = var.databricks_override_account_id == null ? true : false
 }
 
 # S3 module to store outputs

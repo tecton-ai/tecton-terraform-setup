@@ -50,6 +50,12 @@ variable "bucket_name_override" {
   default     = null
 }
 
+variable "databricks_override_account_id" {
+  description = "Override the default account ID for Databricks. If not provided, Tecton will assume the account ID of the data plane."
+  type        = string
+  default     = null
+}
+
 variable "outputs_location_config" {
   description = "Configuration for where to store the outputs. Defaults to creating a dedicated bucket."
   type = object({
