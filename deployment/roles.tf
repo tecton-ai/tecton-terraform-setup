@@ -34,7 +34,7 @@ resource "aws_iam_role" "cross_account_role" {
       Statement = [
         {
           Effect = "Allow"
-          Action = "sts:SimulatePrincipalPolicy"
+          Action = "iam:SimulatePrincipalPolicy"
           Resource = "*"
         }
       ]
