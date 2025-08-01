@@ -2,3 +2,5 @@
 *.iml
 **/.terraform
 
+scripts/.venv/
+*.pyc

@@ -62,3 +62,7 @@ module "tecton" {
 ```
 
 Please refer to the specific `README.md` within each module's directory for detailed instructions and the full list of variables for that module.
+
+
+### Validation Script
+There is a validation script ([details here](./scripts/README.md)) that can be run after applying one of the above modules, to check that the expected resources are in lace.

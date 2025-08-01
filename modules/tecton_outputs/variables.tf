@@ -23,6 +23,7 @@ variable "outputs_data" {
     cross_account_role_arn   = string
     cross_account_external_id = string
     kms_key_arn              = optional(string)
+    dataplane_account_id     = optional(string)
 
     # Rift compute fields - present in dataplane_rift and dataplane_rift_with_emr
     compute_manager_arn                 = optional(string)
