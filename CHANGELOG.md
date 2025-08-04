@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.7.1...v1.8.0) (2025-08-04)
+
+
+### Features
+
+* Validation script rewrite with more checks. ([#237](https://github.com/tecton-ai/tecton-terraform-setup/issues/237)) ([f3f23f5](https://github.com/tecton-ai/tecton-terraform-setup/commit/f3f23f560f28c4720583c5895f1d62aa7b39f057))
+
 ## [1.7.1](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.7.0...v1.7.1) (2025-07-22)
 
 
