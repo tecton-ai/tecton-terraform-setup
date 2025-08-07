@@ -264,7 +264,7 @@ resource "aws_iam_role_policy_attachment" "satellite_devops" {
 
 # Fargate satellite [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_fargate_satellite_node" {
-  for_each = toset(var.satellite_regions)
+  for_each = var.fargate_enabled ? toset(var.satellite_regions) : toset([])
 
   name = "tecton-${var.deployment_name}-${each.value}-eks-fargate-node"
   policy = templatefile("${path.module}/../templates/fargate_eks_role.json",
