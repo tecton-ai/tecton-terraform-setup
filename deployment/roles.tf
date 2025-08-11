@@ -27,19 +27,20 @@ resource "aws_iam_role" "cross_account_role" {
   tags                 = local.tags
   assume_role_policy   = data.aws_iam_policy_document.cross_account_role_assume_role.json
   # Necessary for Deployment Scorecard checks on cross-account-role actions
-  inline_policy {
-    name = "SimulatePrincipalPolicyAccess"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Effect = "Allow"
-          Action = "iam:SimulatePrincipalPolicy"
-          Resource = "*"
-        }
-      ]
-    })
+}
+
+data "aws_iam_policy_document" "simulate_principal_policy_access" {
+  statement {
+    effect    = "Allow"
+    actions   = ["iam:SimulatePrincipalPolicy"]
+    resources = ["*"]
   }
+}
+
+resource "aws_iam_role_policy" "simulate_principal_policy_access" {
+  name   = "tecton-simulate-principal-policy-access"
+  role   = aws_iam_role.cross_account_role.name
+  policy = data.aws_iam_policy_document.simulate_principal_policy_access.json
 }
 
 data "aws_iam_policy_document" "cross_account_role_assume_role_metadata" {
