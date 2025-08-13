@@ -149,6 +149,12 @@ variable "offline_store_cmk_arns" {
   default     = []
 }
 
+variable "enable_custom_environments" {
+  default     = false
+  type        = bool
+  description = "Whether to enable creation of custom environments. This will create an ecr repo to store environments, and allow eks nodes to store images in that that repo. Default: false."
+}
+
 
 module "eks_subnets" {
   providers = {
@@ -238,6 +244,7 @@ module "roles" {
   offline_store_bucket_arn           = var.offline_store_bucket_arn
   offline_store_key_prefix           = var.offline_store_key_prefix
   offline_store_cmk_arns             = var.offline_store_cmk_arns
+  enable_custom_environments         = var.enable_custom_environments
 }
 
 module "notebook_cluster" {
