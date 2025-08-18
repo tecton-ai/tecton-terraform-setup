@@ -23,6 +23,11 @@ output "emr_master_role_name" {
   value = var.create_emr_roles ? aws_iam_role.emr_master_role[0].name : null
 }
 
+output "emr_master_role_arn" {
+  description = "*(Only included if create_emr_roles is true)* ARN of the EMR master role."
+  value = var.create_emr_roles ? aws_iam_role.emr_master_role[0].arn : null
+}
+
 output "emr_spark_instance_profile_arn" {
   description = "*(Only included if create_emr_roles is true)* ARN of the EMR Spark instance profile."
   value = var.create_emr_roles ? aws_iam_instance_profile.emr_spark_instance_profile[0].arn : null
