@@ -38,6 +38,7 @@
 |------|-------------|
 | <a name="output_cross_account_role_arn"></a> [cross\_account\_role\_arn](#output\_cross\_account\_role\_arn) | ARN of the cross-account role Tecton control-plane will assume in your account. |
 | <a name="output_cross_account_role_name"></a> [cross\_account\_role\_name](#output\_cross\_account\_role\_name) | Name of cross-account role Tecton control-plane will assume in your account. |
+| <a name="output_emr_master_role_arn"></a> [emr\_master\_role\_arn](#output\_emr\_master\_role\_arn) | *(Only included if create\_emr\_roles is true)* ARN of the EMR master role. |
 | <a name="output_emr_master_role_name"></a> [emr\_master\_role\_name](#output\_emr\_master\_role\_name) | *(Only included if create\_emr\_roles is true)* Name of the EMR master role. |
 | <a name="output_emr_spark_instance_profile_arn"></a> [emr\_spark\_instance\_profile\_arn](#output\_emr\_spark\_instance\_profile\_arn) | *(Only included if create\_emr\_roles is true)* ARN of the EMR Spark instance profile. |
 | <a name="output_kms_key_arn"></a> [kms\_key\_arn](#output\_kms\_key\_arn) | ARN of the KMS key used to encrypt the Tecton S3 bucket. |
