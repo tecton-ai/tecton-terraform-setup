@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.8.0...v1.8.1) (2025-08-18)
+
+
+### Bug Fixes
+
+* Add ARN output for emr-master-role. ([#248](https://github.com/tecton-ai/tecton-terraform-setup/issues/248)) ([90843bb](https://github.com/tecton-ai/tecton-terraform-setup/commit/90843bb86af594e6a862ef5543512ccc9e530303))
+
 ## [1.8.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.7.1...v1.8.0) (2025-08-04)
 
 
