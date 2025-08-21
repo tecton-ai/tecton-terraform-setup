@@ -86,6 +86,13 @@ variable "data_validation_on_fargate_enabled" {
   type        = bool
 }
 
+variable "enable_custom_environments" {
+  default     = false
+  type        = bool
+  description = "Whether to enable creation of custom environments. This will create an ecr repo to store environments, and allow eks nodes to store images in that that repo. Default: false."
+}
+
+
 provider "aws" {
   region = var.region
   assume_role {
@@ -123,6 +130,7 @@ module "roles" {
   fargate_enabled                    = var.fargate_enabled
   data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
   vpc_id                             = module.subnets.vpc_id
+  enable_custom_environments         = var.enable_custom_environments
 }
 
 module "subnets" {

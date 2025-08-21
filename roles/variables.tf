@@ -105,6 +105,12 @@ variable "enable_rift" {
   description = "Whether to enable Rift integration. When true, rift_compute_manager_arn, rift_ecr_repository_arn and offline_store_bucket_arn should be provided. Default: false."
 }
 
+variable "enable_custom_environments" {
+  default     = false
+  type        = bool
+  description = "Whether to enable creation of custom environments. This will create an ecr repo to store environments, and allow eks nodes to store images in that that repo. Default: false."
+}
+
 variable "rift_compute_manager_arn" {
   type        = string
   description = "ARN of the Rift compute manager role that the EKS worker role needs to assume"

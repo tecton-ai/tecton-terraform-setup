@@ -193,6 +193,47 @@ resource "aws_iam_role_policy_attachment" "secrets_management_policy_attachment"
   policy_arn = aws_iam_policy.secrets_management_policy.arn
 }
 
+# Custom Environments[Common : Databricks and EMR]
+# Tag environments
+resource "aws_ecr_repository" "tecton_custom_environments" {
+  count = var.enable_custom_environments ? 1 : 0
+  name = "${var.deployment_name}-custom-environments"
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+  tags = {
+    "tecton-owned" : "true"
+  }
+}
+
+data "aws_iam_policy_document" "environment_management_policy_document" {
+  count = var.enable_custom_environments ? 1 : 0
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = [aws_ecr_repository.tecton_custom_environments[0].arn]
+  }
+}
+
+resource "aws_iam_policy" "custom_environments_ecr_repository_policy" {
+  count = var.enable_custom_environments ? 1 : 0
+  name   = "tecton-${var.deployment_name}-environment-management"
+  description = "IAM policy for custom environment management"
+  policy = data.aws_iam_policy_document.environment_management_policy_document[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "custom_environments_ecr_repository_policy_attachment" {
+  count = var.enable_custom_environments ? 1 : 0
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = aws_iam_policy.custom_environments_ecr_repository_policy[0].arn
+}
+
+
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role" "devops_role" {
   name               = "tecton-${var.deployment_name}-devops-role"
