@@ -9,7 +9,7 @@
       "Resource": ["*"],
       "Condition": {
         "StringEquals": {
-          "secretsmanager:ResourceAccount": "${ACCOUNT_ID}"
+          "aws:ResourceAccount": "${ACCOUNT_ID}"
         }
       }
     },
@@ -21,7 +21,7 @@
       "Resource": ["*"],
       "Condition": {
         "StringEquals": {
-          "kms:ResourceAccount": "${ACCOUNT_ID}"
+          "aws:ResourceAccount": "${ACCOUNT_ID}"
         }
       }
     }
