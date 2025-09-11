@@ -132,3 +132,15 @@ variable "outputs_location_config" {
     type = "tecton_hosted_presigned"
   }
 }
+
+variable "deployment_role_permissions_boundary_arn" {
+  type        = string
+  description = "ARN of the policy that is used to set the permissions boundary for the deployment role"
+  default     = null
+}
+
+variable "rift_role_permissions_boundary_arn" {
+  type        = string
+  description = "ARN of the policy that is used to set the permissions boundary for the rift compute roles"
+  default     = null
+}
