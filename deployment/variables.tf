@@ -131,3 +131,9 @@ variable "include_crossaccount_bucket_access" {
   description = "Whether to grant direct cross-account bucket access"
   default     = true
 }
+
+variable "deployment_role_permissions_boundary_arn" {
+  type        = string
+  description = "ARN of the policy that is used to set the permissions boundary for the deployment role"
+  default     = null
+}

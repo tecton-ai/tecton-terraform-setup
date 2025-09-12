@@ -17,6 +17,7 @@ resource "aws_iam_role" "rift_compute_manager" {
       }
     ]
   })
+  permissions_boundary = var.rift_role_permissions_boundary_arn
 }
 
 resource "aws_iam_policy" "manage_rift_compute" {
@@ -57,6 +58,7 @@ resource "aws_iam_role" "rift_compute" {
       }
     ]
   })
+  permissions_boundary = var.rift_role_permissions_boundary_arn
 }
 
 resource "aws_iam_instance_profile" "rift_compute" {

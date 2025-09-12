@@ -25,6 +25,7 @@ module "tecton" {
   kms_key_id                         = var.kms_key_id
   controlplane_access_only           = var.controlplane_access_only
   include_crossaccount_bucket_access = var.include_crossaccount_bucket_access
+  deployment_role_permissions_boundary_arn = var.deployment_role_permissions_boundary_arn
 }
 
 
@@ -58,6 +59,8 @@ module "rift" {
   use_network_firewall = var.use_network_firewall
   # Domains can be extended as needed:
   additional_allowed_egress_domains = var.additional_allowed_egress_domains
+
+  rift_role_permissions_boundary_arn = var.rift_role_permissions_boundary_arn
 }
 
 # S3 module to store outputs

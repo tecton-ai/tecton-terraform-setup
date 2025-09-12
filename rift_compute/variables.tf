@@ -149,3 +149,9 @@ variable "additional_s3_read_access_buckets" {
   description = "List of additional S3 bucket names in the dataplane account that the rift compute role should have read access to. The role will be granted GetObject, ListBucket, HeadObject, and HeadBucket permissions for these buckets."
   default     = []
 }
+
+variable "rift_role_permissions_boundary_arn" {
+  type        = string
+  description = "ARN of the policy that is used to set the permissions boundary for the rift compute roles"
+  default     = null
+}

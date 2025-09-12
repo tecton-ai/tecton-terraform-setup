@@ -40,6 +40,7 @@ resource "aws_iam_role" "cross_account_role" {
       ]
     })
   }
+  permissions_boundary = var.deployment_role_permissions_boundary_arn
 }
 
 data "aws_iam_policy_document" "cross_account_role_assume_role_metadata" {
