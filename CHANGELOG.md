@@ -1,5 +1,15 @@
 # Changelog
 
+#  [1.9.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.8.1...v1.9.0) (2025-09-15)
+
+### Features
+
+* Add new variable: deployment_role_permissions_boundary_arnARN
+    + ARN of the policy that is used to set the permissions boundary for the deployment role
+* Add new variable: rift_role_permissions_boundary_arn
+
+ARN of the policy that is used to set the permissions boundary for the rift compute roles
+
 ## [1.8.1](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.8.0...v1.8.1) (2025-08-18)
 
 
