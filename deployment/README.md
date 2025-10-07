@@ -20,6 +20,7 @@
 | <a name="input_cross_account_role_allow_sts_metadata"></a> [cross\_account\_role\_allow\_sts\_metadata](#input\_cross\_account\_role\_allow\_sts\_metadata) | Enable sts:SetSourceIdentity and sts:TagSession permissions on the cross-role account. | `bool` | `false` | no |
 | <a name="input_databricks_spark_role_name"></a> [databricks\_spark\_role\_name](#input\_databricks\_spark\_role\_name) | n/a | `string` | `null` | no |
 | <a name="input_deployment_name"></a> [deployment\_name](#input\_deployment\_name) | Name of the Tecton deployment. | `string` | n/a | yes |
+| <a name="input_deployment_role_permissions_boundary_arn"></a> [deployment\_role\_permissions\_boundary\_arn](#input\_deployment\_role\_permissions\_boundary\_arn) | ARN of the policy that is used to set the permissions boundary for the deployment role | `string` | `null` | no |
 | <a name="input_emr_read_ecr_repositories"></a> [emr\_read\_ecr\_repositories](#input\_emr\_read\_ecr\_repositories) | List of ECR repositories that EMR roles are granted read access to. | `list(string)` | `[]` | no |
 | <a name="input_emr_spark_role_name"></a> [emr\_spark\_role\_name](#input\_emr\_spark\_role\_name) | Override the default name Tecton uses for emr spark role | `string` | `null` | no |
 | <a name="input_include_crossaccount_bucket_access"></a> [include\_crossaccount\_bucket\_access](#input\_include\_crossaccount\_bucket\_access) | Whether to grant direct cross-account bucket access | `bool` | `true` | no |
