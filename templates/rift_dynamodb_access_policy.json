@@ -25,5 +25,16 @@
       ],
       "Resource": ["arn:aws:iam::${ACCOUNT_ID}:role/${CLUSTER_NAME}-cross-account-intermediate"]
     }
+    %{ if USE_KMS_KEY ~}
+    ,
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": ["${KMS_KEY_ARN}"]
+    }
+    %{ endif ~}
   ]
-} 
+}

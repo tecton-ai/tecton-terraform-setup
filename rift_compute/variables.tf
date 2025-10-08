@@ -78,6 +78,18 @@ variable "kms_key_arn" {
   default     = null
 }
 
+variable "online_store_kms_key_arn" {
+  type        = string
+  description = "ARN of KMS key used to encrypt online feature store. If given, will override the kms_key_arn."
+  default     = null
+}
+
+variable "offline_store_kms_key_arn" {
+  type        = string
+  description = "ARN of KMS key used to encrypt offline feature store. If given, will override the kms_key_arn."
+  default     = null
+}
+
 variable "use_network_firewall" {
   type        = bool
   default     = false
@@ -124,8 +136,8 @@ variable "tecton_privatelink_egress_rules" {
 variable "existing_vpc" {
   description = "Optional. Configuration for using an existing VPC. If provided, the module will not create a new VPC or related core networking resources (subnets, IGW, NAT GWs, Route Tables). Both vpc_id and private_subnet_ids must be provided together."
   type = object({
-    vpc_id               = string
-    private_subnet_ids   = list(string)
+    vpc_id             = string
+    private_subnet_ids = list(string)
   })
   default = null
 

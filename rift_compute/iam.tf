@@ -1,5 +1,5 @@
 locals {
-  use_kms_key = var.kms_key_arn != null
+  use_kms_key = var.kms_key_arn != null || var.offline_store_kms_key_arn != null || var.online_store_kms_key_arn != null
 }
 
 # rift-compute-manager role, used by orchestrator for creating/managing EC2 instances running rift materialization jobs.
@@ -21,10 +21,10 @@ resource "aws_iam_role" "rift_compute_manager" {
 }
 
 resource "aws_iam_policy" "manage_rift_compute" {
-  name   = lookup(var.resource_name_overrides, "manage_rift_compute", "manage-rift-compute")
+  name = lookup(var.resource_name_overrides, "manage_rift_compute", "manage-rift-compute")
   policy = templatefile("${path.module}/../templates/manage_rift_compute_policy.json", {
-    ACCOUNT_ID                  = local.account_id,
-    RIFT_COMPUTE_ROLE_ARN       = aws_iam_role.rift_compute.arn,
+    ACCOUNT_ID            = local.account_id,
+    RIFT_COMPUTE_ROLE_ARN = aws_iam_role.rift_compute.arn,
     ALLOW_RUN_INSTANCES_RESOURCES = jsonencode(flatten([
       "arn:aws:ec2:*:${local.account_id}:volume/*",
       local.rift_security_group.arn,
@@ -70,13 +70,15 @@ resource "aws_iam_policy" "rift_dynamodb_access" {
   name = "tecton-rift-dynamodb-access"
   policy = templatefile("${path.module}/../templates/rift_dynamodb_access_policy.json", {
     ACCOUNT_ID   = local.account_id,
-    CLUSTER_NAME = var.cluster_name
+    CLUSTER_NAME = var.cluster_name,
+    USE_KMS_KEY  = local.use_kms_key,
+    KMS_KEY_ARN  = var.online_store_kms_key_arn != null ? var.online_store_kms_key_arn : var.kms_key_arn
   })
 }
 
 resource "aws_iam_policy" "rift_legacy_secrets_manager_access" {
   count = var.enable_rift_legacy_secret_manager_access ? 1 : 0
-  name = "tecton-rift-legacy-secrets-manager-access"
+  name  = "tecton-rift-legacy-secrets-manager-access"
   policy = templatefile("${path.module}/../templates/rift_legacy_secrets_manager_access_policy.json", {
     ACCOUNT_ID = local.account_id
   })
@@ -110,7 +112,7 @@ resource "aws_iam_policy" "offline_store_access" {
     OFFLINE_STORE_KEY_PREFIX = var.offline_store_key_prefix,
     ACCOUNT_ID               = local.account_id,
     USE_KMS_KEY              = local.use_kms_key,
-    KMS_KEY_ARN              = var.kms_key_arn
+    KMS_KEY_ARN              = var.offline_store_kms_key_arn != null ? var.offline_store_kms_key_arn : var.kms_key_arn,
   })
 }
 
@@ -142,11 +144,11 @@ resource "aws_iam_policy" "additional_rift_compute_policy" {
 locals {
   # Base set of policies to attach to the rift_compute role
   rift_compute_policies_base = {
-    rift_compute_logs    = aws_iam_policy.rift_compute_logs,
+    rift_compute_logs      = aws_iam_policy.rift_compute_logs,
     rift_bootstrap_scripts = aws_iam_policy.rift_bootstrap_scripts,
-    offline_store_access = aws_iam_policy.offline_store_access,
-    dynamo_db_access     = aws_iam_policy.rift_dynamodb_access,
-    ecr_readonly         = aws_iam_policy.rift_ecr_readonly
+    offline_store_access   = aws_iam_policy.offline_store_access,
+    dynamo_db_access       = aws_iam_policy.rift_dynamodb_access,
+    ecr_readonly           = aws_iam_policy.rift_ecr_readonly
   }
   # Include conditional policies when enabled/specified
   rift_compute_policies = merge(
