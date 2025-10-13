@@ -38,7 +38,8 @@
                 "iam:ListRolePolicies"
             ],
             "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*"
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*"
             ]
         },
         {
@@ -68,7 +69,9 @@
             ],
             "Resource": [
                 "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*"
+                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/${DEPLOYMENT_NAME}*"
             ]
         },
         {

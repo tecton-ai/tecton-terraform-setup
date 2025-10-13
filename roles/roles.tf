@@ -10,7 +10,8 @@ locals {
   satellite_feature_server_roles = formatlist("arn:aws:iam::%s:role/tecton-%s-%s-fargate-fs", var.account_id, var.deployment_name, var.satellite_regions)
   feature_server_roles = concat(
     [format("arn:aws:iam::%s:role/tecton-%s-fargate-fs", var.account_id, var.deployment_name)],
-    local.satellite_feature_server_roles
+    local.satellite_feature_server_roles,
+    [format("arn:aws:iam::%s:role/%s-fargate-fs", var.account_id, var.deployment_name)],
   )
   feature_server_policies = concat(
     [aws_iam_policy.eks_fargate_node_policy[0].arn],
@@ -24,7 +25,7 @@ locals {
   ] : []
   s3_buckets = concat(
     formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
-    ["arn:aws:s3:::tecton-${var.deployment_name}"]
+    ["arn:aws:s3:::tecton-${var.deployment_name}", "arn:aws:s3:::tecton-*"]
   )
   s3_objects              = formatlist("%s/*", local.s3_buckets)
   data_validation_enabled = var.fargate_enabled && var.data_validation_on_fargate_enabled
