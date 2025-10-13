@@ -86,3 +86,9 @@ variable "outputs_location_config" {
     type = "tecton_hosted_presigned"
   }
 } 
+
+variable "tecton_outputs_bucket_suffix" {
+  description = "Optional suffix to add to the tecton_outputs bucket name"
+  type        = string
+  default     = ""
+}

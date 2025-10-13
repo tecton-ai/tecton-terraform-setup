@@ -12,7 +12,7 @@ locals {
 # Only create bucket if using new_bucket strategy
 resource "aws_s3_bucket" "outputs" {
   count  = local.is_new_bucket ? 1 : 0
-  bucket = "${var.deployment_name}-tecton-outputs"
+  bucket = "${var.deployment_name}-tecton-outputs${var.bucket_suffix}"
 
   tags = merge(var.tags, {
     Name    = "${var.deployment_name}-tecton-outputs"
