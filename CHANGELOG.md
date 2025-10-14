@@ -10,6 +10,14 @@
 
 ARN of the policy that is used to set the permissions boundary for the rift compute roles
 
+## [1.10.0](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.9.0...v1.10.0) (2025-10-14)
+
+
+### Features
+
+* Add support for offline and online store KMS keys ([#252](https://github.com/tecton-ai/tecton-terraform-setup/issues/252)) ([5a3664d](https://github.com/tecton-ai/tecton-terraform-setup/commit/5a3664dbde5e4db0b2c779098e7b913ecd6a1e70))
+* support calling controlplane_rift_with_emr with a secondary region ([#255](https://github.com/tecton-ai/tecton-terraform-setup/issues/255)) ([890dac5](https://github.com/tecton-ai/tecton-terraform-setup/commit/890dac57dd68717b8f1698ed75528dfcdb82be87))
+
 ## [1.8.1](https://github.com/tecton-ai/tecton-terraform-setup/compare/v1.8.0...v1.8.1) (2025-08-18)
 
 
