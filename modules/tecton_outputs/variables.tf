@@ -93,3 +93,9 @@ variable "outputs_location_config" {
     error_message = "outputs_location_config.tecton_presigned_write_url must be provided. Please request this value from your Tecton representative."
   }
 }
+
+variable "bucket_suffix" {
+  description = "Optional suffix to add to the bucket name"
+  type        = string
+  default     = ""
+}

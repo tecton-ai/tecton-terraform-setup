@@ -100,7 +100,11 @@ module "emr_debugging" {
 # S3 module to store outputs
 module "tecton_outputs" {
   source          = "../tecton_outputs"
+  providers = {
+    aws = aws
+  }
   deployment_name = var.deployment_name
+  bucket_suffix = var.tecton_outputs_bucket_suffix
 
   control_plane_account_id = var.tecton_control_plane_account_id
   
