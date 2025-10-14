@@ -168,6 +168,14 @@
             ],
             "Effect": "Allow",
             "Resource": "arn:aws:ec2:*:${ACCOUNT_ID}:security-group/*"
+        },
+        {
+            "Sid": "ReadVpcClassicLink",
+            "Action": [
+                "ec2:DescribeVpcClassicLink"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
         }
     ]
 }

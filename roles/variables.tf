@@ -141,3 +141,8 @@ variable "offline_store_cmk_arns" {
   default     = []
 }
 
+variable "additional_s3_buckets" {
+  type        = list(string)
+  description = "List of additional s3 buckets to provide access to"
+  default     = []
+}
