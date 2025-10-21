@@ -173,7 +173,8 @@
             "Sid": "ReadVpcClassicLink",
             "Action": [
                 "ec2:DescribeVpcClassicLink",
-                "ec2:DescribeVpcClassicLinkDnsSupport"
+                "ec2:DescribeVpcClassicLinkDnsSupport",
+                "ec2:DescribeVpcAttribute"
             ],
             "Effect": "Allow",
             "Resource": "*"
