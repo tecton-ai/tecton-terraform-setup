@@ -27,7 +27,9 @@
                 "ec2:DescribeNatGateways",
                 "ec2:DescribeSecurityGroups",
                 "ec2:DescribeLaunchTemplates",
-                "ec2:DescribeLaunchTemplateVersions"
+                "ec2:DescribeLaunchTemplateVersions",
+                "ec2:DescribeRouteTables",
+                "ec2:DescribeNetworkAcls"
             ],
             "Resource": "*"
         },
