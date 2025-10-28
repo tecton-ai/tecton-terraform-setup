@@ -129,6 +129,8 @@
             "Resource": [
                 "arn:aws:rds:*:${ACCOUNT_ID}:db:tecton-${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:subgrp:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:db:${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:subgrp:${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:og:default*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*"
             ]
@@ -175,6 +177,16 @@
                 "ec2:DescribeVpcClassicLink",
                 "ec2:DescribeVpcClassicLinkDnsSupport",
                 "ec2:DescribeVpcAttribute"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Sid": "SatelliteReadServiceDiscovery",
+            "Action": [
+                "servicediscovery:GetNamespace",
+                "servicediscovery:GetService",
+                "servicediscovery:GetServiceAttributes"
             ],
             "Effect": "Allow",
             "Resource": "*"
