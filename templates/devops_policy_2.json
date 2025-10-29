@@ -186,7 +186,8 @@
             "Action": [
                 "servicediscovery:GetNamespace",
                 "servicediscovery:GetService",
-                "servicediscovery:GetServiceAttributes"
+                "servicediscovery:GetServiceAttributes",
+                "servicediscovery:ListTagsForResource"
             ],
             "Effect": "Allow",
             "Resource": "*"
