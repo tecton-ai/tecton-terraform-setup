@@ -1,5 +1,25 @@
 locals {
-  use_kms_key = var.kms_key_arn != null || var.offline_store_kms_key_arn != null || var.online_store_kms_key_arn != null
+  use_kms_key = var.kms_key_arn != null || var.offline_store_kms_key_arn != null || var.online_store_kms_key_arn != null || length(var.kms_key_arns) > 0 || length(var.offline_store_kms_key_arns) > 0 || length(var.online_store_kms_key_arns) > 0
+
+  # Compute merged KMS key ARN lists for online store
+  # Priority: online_store_kms_key_arn > kms_key_arn, then merge with lists
+  online_store_kms_key_arns_merged = distinct(compact(concat(
+    # Add the single value (online_store_kms_key_arn takes priority over kms_key_arn)
+    var.online_store_kms_key_arn != null ? [var.online_store_kms_key_arn] : (var.kms_key_arn != null ? [var.kms_key_arn] : []),
+    # Add the list values
+    var.online_store_kms_key_arns,
+    var.kms_key_arns
+  )))
+
+  # Compute merged KMS key ARN lists for offline store
+  # Priority: offline_store_kms_key_arn > kms_key_arn, then merge with lists
+  offline_store_kms_key_arns_merged = distinct(compact(concat(
+    # Add the single value (offline_store_kms_key_arn takes priority over kms_key_arn)
+    var.offline_store_kms_key_arn != null ? [var.offline_store_kms_key_arn] : (var.kms_key_arn != null ? [var.kms_key_arn] : []),
+    # Add the list values
+    var.offline_store_kms_key_arns,
+    var.kms_key_arns
+  )))
 }
 
 # rift-compute-manager role, used by orchestrator for creating/managing EC2 instances running rift materialization jobs.
@@ -69,10 +89,10 @@ resource "aws_iam_instance_profile" "rift_compute" {
 resource "aws_iam_policy" "rift_dynamodb_access" {
   name = "tecton-rift-dynamodb-access"
   policy = templatefile("${path.module}/../templates/rift_dynamodb_access_policy.json", {
-    ACCOUNT_ID   = local.account_id,
-    CLUSTER_NAME = var.cluster_name,
-    USE_KMS_KEY  = local.use_kms_key,
-    KMS_KEY_ARN  = var.online_store_kms_key_arn != null ? var.online_store_kms_key_arn : var.kms_key_arn
+    ACCOUNT_ID    = local.account_id,
+    CLUSTER_NAME  = var.cluster_name,
+    USE_KMS_KEY   = local.use_kms_key,
+    KMS_KEY_ARNS  = jsonencode(local.online_store_kms_key_arns_merged)
   })
 }
 
@@ -112,7 +132,7 @@ resource "aws_iam_policy" "offline_store_access" {
     OFFLINE_STORE_KEY_PREFIX = var.offline_store_key_prefix,
     ACCOUNT_ID               = local.account_id,
     USE_KMS_KEY              = local.use_kms_key,
-    KMS_KEY_ARN              = var.offline_store_kms_key_arn != null ? var.offline_store_kms_key_arn : var.kms_key_arn,
+    KMS_KEY_ARNS             = jsonencode(local.offline_store_kms_key_arns_merged),
   })
 }
 

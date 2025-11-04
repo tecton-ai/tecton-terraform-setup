@@ -56,7 +56,7 @@
         "kms:Decrypt",
         "kms:GenerateDataKey"
       ],
-      "Resource": ["${KMS_KEY_ARN}"]
+      "Resource": ${KMS_KEY_ARNS}
     }
     %{ endif ~}
   ]
