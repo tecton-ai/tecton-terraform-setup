@@ -56,7 +56,7 @@
         "kms:Decrypt",
         "kms:GenerateDataKey"
       ],
-      "Resource": ${KMS_KEY_ARNS}
+      "Resource": ${OFFLINE_KMS_KEY_ARNS_MERGED}
     }
     %{ endif ~}
   ]

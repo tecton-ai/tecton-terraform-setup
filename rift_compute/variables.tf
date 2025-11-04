@@ -92,19 +92,19 @@ variable "offline_store_kms_key_arn" {
 
 variable "kms_key_arns" {
   type        = list(string)
-  description = "List of KMS key ARNs used to encrypt online/offline feature store. Will be merged with kms_key_arn if provided."
+  description = "List of KMS key ARNs used to encrypt online/offline feature store. Will be merged with kms_key_arn and with online_store_kms_key_arns and offline_store_kms_key_arns if provided."
   default     = []
 }
 
 variable "online_store_kms_key_arns" {
   type        = list(string)
-  description = "List of KMS key ARNs used to encrypt online feature store. Will be merged with online_store_kms_key_arn if provided."
+  description = "List of KMS key ARNs used to encrypt online feature store. Will be merged with online_store_kms_key_arn and kms_keys_arns if provided."
   default     = []
 }
 
 variable "offline_store_kms_key_arns" {
   type        = list(string)
-  description = "List of KMS key ARNs used to encrypt offline feature store. Will be merged with offline_store_kms_key_arn if provided."
+  description = "List of KMS key ARNs used to encrypt offline feature store. Will be merged with offline_store_kms_key_arn and kms_key_arns if provided."
   default     = []
 }
 

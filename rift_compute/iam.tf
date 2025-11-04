@@ -89,10 +89,10 @@ resource "aws_iam_instance_profile" "rift_compute" {
 resource "aws_iam_policy" "rift_dynamodb_access" {
   name = "tecton-rift-dynamodb-access"
   policy = templatefile("${path.module}/../templates/rift_dynamodb_access_policy.json", {
-    ACCOUNT_ID    = local.account_id,
-    CLUSTER_NAME  = var.cluster_name,
-    USE_KMS_KEY   = local.use_kms_key,
-    KMS_KEY_ARNS  = jsonencode(local.online_store_kms_key_arns_merged)
+    ACCOUNT_ID                 = local.account_id,
+    CLUSTER_NAME               = var.cluster_name,
+    USE_KMS_KEY                = local.use_kms_key,
+    ONLINE_KMS_KEY_ARNS_MERGED = jsonencode(local.online_store_kms_key_arns_merged)
   })
 }
 
@@ -128,11 +128,11 @@ resource "aws_iam_policy" "rift_bootstrap_scripts" {
 resource "aws_iam_policy" "offline_store_access" {
   name = lookup(var.resource_name_overrides, "offline_store_access", "tecton-offline-store-access")
   policy = templatefile("${path.module}/../templates/offline_store_access_policy.json", {
-    OFFLINE_STORE_BUCKET_ARN = var.offline_store_bucket_arn,
-    OFFLINE_STORE_KEY_PREFIX = var.offline_store_key_prefix,
-    ACCOUNT_ID               = local.account_id,
-    USE_KMS_KEY              = local.use_kms_key,
-    KMS_KEY_ARNS             = jsonencode(local.offline_store_kms_key_arns_merged),
+    OFFLINE_STORE_BUCKET_ARN    = var.offline_store_bucket_arn,
+    OFFLINE_STORE_KEY_PREFIX    = var.offline_store_key_prefix,
+    ACCOUNT_ID                  = local.account_id,
+    USE_KMS_KEY                 = local.use_kms_key,
+    OFFLINE_KMS_KEY_ARNS_MERGED = jsonencode(local.offline_store_kms_key_arns_merged),
   })
 }
 
