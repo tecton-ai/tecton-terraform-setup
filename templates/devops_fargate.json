@@ -22,6 +22,7 @@
             "Sid": "CreateFargateRole",
             "Effect": "Allow",
             "Action": [
+                "iam:GetRole",
                 "iam:PassRole",
                 "iam:CreateRole",
                 "iam:DescribeRole",
