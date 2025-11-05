@@ -36,7 +36,8 @@
             "Sid": "FargateListRole",
             "Effect": "Allow",
             "Action": [
-                "iam:ListRolePolicies"
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies"
             ],
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*",
