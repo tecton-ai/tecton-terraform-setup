@@ -28,9 +28,11 @@ locals {
     ["arn:aws:s3:::tecton-${var.deployment_name}"],
     var.additional_s3_buckets,
   )
-  s3_objects              = formatlist("%s/*", local.s3_buckets)
-  data_validation_enabled = var.fargate_enabled && var.data_validation_on_fargate_enabled
+  s3_objects                  = formatlist("%s/*", local.s3_buckets)
+  data_validation_enabled     = var.fargate_enabled && var.data_validation_on_fargate_enabled
   enable_offline_store_reader = var.enable_rift
+  dynamodb_table_pattern      = var.dynamodb_table_pattern != null ? var.dynamodb_table_pattern : format("tecton-%s*", var.deployment_name)
+
 }
 
 # Fargate [Common : Databricks and EMR]
@@ -41,10 +43,12 @@ resource "aws_iam_policy" "eks_fargate_node_policy" {
   policy = templatefile(
     "${path.module}/../templates/fargate_eks_role.json",
     {
-      ACCOUNT_ID          = var.account_id
-      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-      DEPLOYMENT_NAME     = var.deployment_name
-      REGION              = var.region
+      ACCOUNT_ID             = var.account_id
+      ASSUMING_ACCOUNT_ID    = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME        = var.deployment_name
+      REGION                 = var.region
+      S3_OBJECTS             = jsonencode(local.s3_objects)
+      DYNAMODB_TABLE_PATTERN = local.dynamodb_table_pattern
     }
   )
   tags = local.tags
@@ -60,11 +64,11 @@ resource "aws_iam_policy" "eks_asg_management_policy" {
   policy = templatefile(
     "${path.module}/../templates/eks_asg_management.json",
     {
-      ACCOUNT_ID          = var.account_id
-      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-      DEPLOYMENT_NAME     = var.deployment_name
+      ACCOUNT_ID             = var.account_id
+      ASSUMING_ACCOUNT_ID    = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME        = var.deployment_name
       DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
-      REGION              = var.region
+      REGION                 = var.region
     }
   )
   tags = local.tags
@@ -185,9 +189,9 @@ data "aws_iam_policy_document" "secrets_management_policy_document" {
 }
 
 resource "aws_iam_policy" "secrets_management_policy" {
-  name   = "tecton-${var.deployment_name}-secret-management"
+  name        = "tecton-${var.deployment_name}-secret-management"
   description = "IAM policy for secrets manager"
-  policy = data.aws_iam_policy_document.secrets_management_policy_document.json
+  policy      = data.aws_iam_policy_document.secrets_management_policy_document.json
 }
 
 resource "aws_iam_role_policy_attachment" "secrets_management_policy_attachment" {
@@ -199,7 +203,7 @@ resource "aws_iam_role_policy_attachment" "secrets_management_policy_attachment"
 # Tag environments
 resource "aws_ecr_repository" "tecton_custom_environments" {
   count = var.enable_custom_environments ? 1 : 0
-  name = "${var.deployment_name}-custom-environments"
+  name  = "${var.deployment_name}-custom-environments"
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -223,14 +227,14 @@ data "aws_iam_policy_document" "environment_management_policy_document" {
 }
 
 resource "aws_iam_policy" "custom_environments_ecr_repository_policy" {
-  count = var.enable_custom_environments ? 1 : 0
-  name   = "tecton-${var.deployment_name}-environment-management"
+  count       = var.enable_custom_environments ? 1 : 0
+  name        = "tecton-${var.deployment_name}-environment-management"
   description = "IAM policy for custom environment management"
-  policy = data.aws_iam_policy_document.environment_management_policy_document[0].json
+  policy      = data.aws_iam_policy_document.environment_management_policy_document[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "custom_environments_ecr_repository_policy_attachment" {
-  count = var.enable_custom_environments ? 1 : 0
+  count      = var.enable_custom_environments ? 1 : 0
   role       = aws_iam_role.eks_node_role.name
   policy_arn = aws_iam_policy.custom_environments_ecr_repository_policy[0].arn
 }
@@ -443,13 +447,13 @@ resource "aws_iam_policy" "eks_node_policy" {
   policy = var.enable_rift ? templatefile(
     "${path.module}/../templates/eks_policy_with_rift.json",
     {
-      ACCOUNT_ID      = var.account_id,
-      DEPLOYMENT_NAME = var.deployment_name,
-      REGION          = var.region,
+      ACCOUNT_ID               = var.account_id,
+      DEPLOYMENT_NAME          = var.deployment_name,
+      REGION                   = var.region,
       RIFT_COMPUTE_MANAGER_ARN = var.rift_compute_manager_arn,
-      RIFT_ECR_REPOSITORY_ARN = var.rift_ecr_repository_arn
+      RIFT_ECR_REPOSITORY_ARN  = var.rift_ecr_repository_arn
     }
-  ) : templatefile(
+    ) : templatefile(
     "${path.module}/../templates/eks_policy.json",
     {
       ACCOUNT_ID      = var.account_id,

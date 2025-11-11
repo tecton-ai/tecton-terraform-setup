@@ -19,7 +19,7 @@
           "dynamodb:Query",
           "dynamodb:Scan"
         ],
-        "Resource": ["arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/tecton-${DEPLOYMENT_NAME}*"]
+        "Resource": ["arn:aws:dynamodb:${REGION}:${ACCOUNT_ID}:table/${DYNAMODB_TABLE_PATTERN}"]
       },
       {
         "Sid": "ReadWriteTectonS3BucketsPolicies",
@@ -30,9 +30,7 @@
             "s3:PutObject",
             "s3:DeleteObject"
         ],
-        "Resource": [
-            "arn:aws:s3:::tecton-${DEPLOYMENT_NAME}/*"
-        ]
+        "Resource": ${S3_OBJECTS}
       },
       {
         "Sid": "TectonAmazonEC2ContainerRegistryReadOnlyPolicies",
