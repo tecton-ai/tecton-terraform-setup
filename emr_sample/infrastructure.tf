@@ -155,6 +155,23 @@ variable "enable_custom_environments" {
   description = "Whether to enable creation of custom environments. This will create an ecr repo to store environments, and allow eks nodes to store images in that that repo. Default: false."
 }
 
+variable "additional_s3_buckets" {
+  type        = list(string)
+  description = "List of additional s3 buckets to provide access to"
+  default     = []
+}
+
+variable "dynamodb_table_pattern" {
+  type        = string
+  description = "Defines a pattern that identifies which DynamoDB tables the feature server can read"
+  default     = null
+}
+
+variable "satellite_region_short_codes_enabled" {
+  description = "If true, use short codes for region names in resource naming to avoid length limits"
+  type        = bool
+  default     = false
+}
 
 module "eks_subnets" {
   providers = {
@@ -223,28 +240,31 @@ module "roles" {
     # any databricks resources when using `emr_sample`.
     aws.databricks-account = aws
   }
-  count                              = (var.apply_layer > 1) ? 1 : 0
-  source                             = "../roles"
-  deployment_name                    = var.deployment_name
-  enable_eks_ingress_vpc_endpoint    = var.enable_eks_ingress_vpc_endpoint
-  account_id                         = var.account_id
-  tecton_assuming_account_id         = var.tecton_assuming_account_id
-  region                             = var.region
-  satellite_regions                  = var.satellite_regions
-  create_emr_roles                   = true
-  elasticache_enabled                = var.elasticache_enabled
-  external_id                        = random_id.external_id.id
-  fargate_enabled                    = var.fargate_enabled
-  data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
-  vpc_id                             = module.eks_subnets.vpc_id
+  count                                            = (var.apply_layer > 1) ? 1 : 0
+  source                                           = "../roles"
+  deployment_name                                  = var.deployment_name
+  enable_eks_ingress_vpc_endpoint                  = var.enable_eks_ingress_vpc_endpoint
+  account_id                                       = var.account_id
+  tecton_assuming_account_id                       = var.tecton_assuming_account_id
+  region                                           = var.region
+  satellite_regions                                = var.satellite_regions
+  create_emr_roles                                 = true
+  elasticache_enabled                              = var.elasticache_enabled
+  external_id                                      = random_id.external_id.id
+  fargate_enabled                                  = var.fargate_enabled
+  data_validation_on_fargate_enabled               = var.data_validation_on_fargate_enabled
+  vpc_id                                           = module.eks_subnets.vpc_id
   enable_feature_server_as_compute_instance_groups = var.enable_feature_server_as_compute_instance_groups
-  rift_compute_manager_arn           = var.rift_compute_manager_arn
-  enable_rift                        = var.enable_rift
-  rift_ecr_repository_arn            = var.rift_ecr_repository_arn
-  offline_store_bucket_arn           = var.offline_store_bucket_arn
-  offline_store_key_prefix           = var.offline_store_key_prefix
-  offline_store_cmk_arns             = var.offline_store_cmk_arns
-  enable_custom_environments         = var.enable_custom_environments
+  rift_compute_manager_arn                         = var.rift_compute_manager_arn
+  enable_rift                                      = var.enable_rift
+  rift_ecr_repository_arn                          = var.rift_ecr_repository_arn
+  offline_store_bucket_arn                         = var.offline_store_bucket_arn
+  offline_store_key_prefix                         = var.offline_store_key_prefix
+  offline_store_cmk_arns                           = var.offline_store_cmk_arns
+  enable_custom_environments                       = var.enable_custom_environments
+  additional_s3_buckets                            = var.additional_s3_buckets
+  dynamodb_table_pattern                           = var.dynamodb_table_pattern
+  satellite_region_short_codes_enabled             = var.satellite_region_short_codes_enabled
 }
 
 module "notebook_cluster" {
