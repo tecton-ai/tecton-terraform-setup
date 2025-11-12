@@ -7,6 +7,52 @@ locals {
     formatlist("arn:aws:ec2:%s:%s:security-group/*", var.satellite_regions, var.account_id),
     formatlist("arn:aws:ec2:%s:%s:vpc/*", var.satellite_regions, var.account_id)
   ])
+
+  region_short_map = {
+    # US / North America
+    "us-east-1"    = "use1"
+    "us-east-2"    = "use2"
+    "us-west-1"    = "usw1"
+    "us-west-2"    = "usw2"
+    "ca-central-1" = "cac1"
+    "ca-west-1"    = "cac2"
+    "mx-central-1" = "mxc1"
+
+    "af-south-1" = "afs1"
+
+    "ap-east-1"      = "ape1"
+    "ap-east-2"      = "ape2"
+    "ap-northeast-1" = "apn1"
+    "ap-northeast-2" = "apn2"
+    "ap-northeast-3" = "apn3"
+    "ap-south-1"     = "aps1"
+    "ap-south-2"     = "aps2"
+    "ap-southeast-1" = "aps3"
+    "ap-southeast-2" = "aps4"
+    "ap-southeast-3" = "aps5"
+    "ap-southeast-4" = "aps6"
+    "ap-southeast-5" = "aps7"
+    "ap-southeast-6" = "aps8"
+    "ap-southeast-7" = "aps9"
+
+    # Europe
+    "eu-west-1"    = "euw1"
+    "eu-west-2"    = "euw2"
+    "eu-west-3"    = "euw3"
+    "eu-central-1" = "euc1"
+    "eu-central-2" = "euc2"
+    "eu-north-1"   = "eun1"
+    "eu-south-1"   = "eus1"
+    "eu-south-2"   = "eus2"
+
+    # South America
+    "sa-east-1" = "sae1"
+  }
+
+  region_label = {
+    for r in var.satellite_regions :
+    r => var.satellite_region_short_codes_enabled ? lookup(local.region_short_map, r, r) : r
+  }
 }
 
 # EKS MANAGEMENT [Common : Databricks and EMR]
@@ -46,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "eks_management_satellite" {
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_node_satellite" {
   for_each           = toset(var.satellite_regions)
-  name               = "tecton-${var.deployment_name}-${each.value}-eks-worker-role"
+  name               = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-worker-role"
   tags               = local.tags
   assume_role_policy = <<POLICY
 {
@@ -67,7 +113,7 @@ POLICY
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_node_satellite" {
   for_each = toset(var.satellite_regions)
-  name     = "tecton-${var.deployment_name}-${each.value}-eks-worker-policy"
+  name     = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-worker-policy"
   policy = templatefile(
     "${path.module}/../templates/eks_policy.json",
     {
@@ -269,10 +315,12 @@ resource "aws_iam_policy" "eks_fargate_satellite_node" {
   name = "tecton-${var.deployment_name}-${each.value}-eks-fargate-node"
   policy = templatefile("${path.module}/../templates/fargate_eks_role.json",
     {
-      ACCOUNT_ID          = var.account_id
-      ASSUMING_ACCOUNT_ID = var.tecton_assuming_account_id
-      DEPLOYMENT_NAME     = var.deployment_name
-      REGION              = each.value
+      ACCOUNT_ID             = var.account_id
+      ASSUMING_ACCOUNT_ID    = var.tecton_assuming_account_id
+      DEPLOYMENT_NAME        = var.deployment_name
+      REGION                 = each.value
+      S3_OBJECTS             = jsonencode(local.s3_objects)
+      DYNAMODB_TABLE_PATTERN = local.dynamodb_table_pattern
     }
   )
   tags = local.tags

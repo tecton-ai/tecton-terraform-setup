@@ -146,3 +146,15 @@ variable "additional_s3_buckets" {
   description = "List of additional s3 buckets to provide access to"
   default     = []
 }
+
+variable "dynamodb_table_pattern" {
+  type        = string
+  description = "Defines a pattern that identifies which DynamoDB tables the feature server can read"
+  default     = null
+}
+
+variable "satellite_region_short_codes_enabled" {
+  description = "If true, use short codes for region names in resource naming to avoid length limits"
+  type        = bool
+  default     = false
+}
