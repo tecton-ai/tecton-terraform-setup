@@ -92,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "eks_management_satellite" {
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_node_satellite" {
   for_each           = toset(var.satellite_regions)
-  name               = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-worker-role"
+  name               = "tecton-${var.deployment_name}-${each.value}-eks-worker-role"
   tags               = local.tags
   assume_role_policy = <<POLICY
 {
@@ -113,7 +113,7 @@ POLICY
 # EKS NODE [Common : Databricks and EMR]
 resource "aws_iam_policy" "eks_node_satellite" {
   for_each = toset(var.satellite_regions)
-  name     = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-worker-policy"
+  name     = "tecton-${var.deployment_name}-${each.value}-eks-worker-policy"
   policy = templatefile(
     "${path.module}/../templates/eks_policy.json",
     {
@@ -312,7 +312,7 @@ resource "aws_iam_role_policy_attachment" "satellite_devops" {
 resource "aws_iam_policy" "eks_fargate_satellite_node" {
   for_each = var.fargate_enabled ? toset(var.satellite_regions) : toset([])
 
-  name = "tecton-${var.deployment_name}-${each.value}-eks-fargate-node"
+  name = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-fargate-policy"
   policy = templatefile("${path.module}/../templates/fargate_eks_role.json",
     {
       ACCOUNT_ID             = var.account_id
@@ -330,7 +330,7 @@ resource "aws_iam_policy" "eks_fargate_satellite_node" {
 resource "aws_iam_role" "kinesis_firehose_satellite_stream" {
   for_each = toset(var.satellite_regions)
 
-  name               = "tecton-${var.deployment_name}-${each.value}-fargate-kinesis-firehose"
+  name               = "tecton-${var.deployment_name}-${local.region_label[each.value]}-fargate-kinesis-firehose"
   assume_role_policy = data.aws_iam_policy_document.kinesis_firehose_stream[0].json
 }
 
@@ -353,7 +353,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_cross_account_write" {
 # Fargate satellite [Common : Databricks and EMR]
 resource "aws_iam_policy" "fargate_logging_satellite_cross_account" {
   for_each = toset(var.satellite_regions)
-  name     = "tecton-${var.deployment_name}-${each.value}-fargate-cross-account-write"
+  name     = "tecton-${var.deployment_name}-${local.region_label[each.value]}-fargate-cross-account-write"
   policy   = data.aws_iam_policy_document.fargate_satellite_logging_cross_account_write[0].json
 }
 
@@ -368,7 +368,7 @@ resource "aws_iam_role_policy_attachment" "fargate_logging_write" {
 # FARGATE SATELLITE [Common : Databricks and EMR]
 resource "aws_iam_role" "eks_fargate_satellite_pod_execution" {
   for_each           = toset(var.satellite_regions)
-  name               = "tecton-${var.deployment_name}-${each.value}-eks-fargate-pod-execution"
+  name               = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-fargate-pod-execution"
   assume_role_policy = data.aws_iam_policy_document.eks_fargate_assume_role[0].json
 }
 
@@ -382,7 +382,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
     ]
     effect = "Allow"
     resources = [
-      "arn:aws:firehose:${each.value}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-${each.value}-fargate-log-delivery-stream"
+      "arn:aws:firehose:${each.value}:${var.account_id}:deliverystream/tecton-${var.deployment_name}-${local.region_label[each.value]}-fargate-log-delivery-stream"
     ]
   }
 }
@@ -390,7 +390,7 @@ data "aws_iam_policy_document" "fargate_satellite_logging_policy" {
 # FARGATE SATELLITE [Common : Databricks and EMR]
 resource "aws_iam_policy" "fargate_satellite_logging" {
   for_each = toset(var.satellite_regions)
-  name     = "tecton-${var.deployment_name}-${each.value}-fargate-satellite-logging"
+  name     = "tecton-${var.deployment_name}-${local.region_label[each.value]}-fargate-satellite-logging"
   policy   = data.aws_iam_policy_document.fargate_satellite_logging_policy[each.value].json
 }
 
