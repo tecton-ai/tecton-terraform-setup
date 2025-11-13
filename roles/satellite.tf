@@ -312,7 +312,7 @@ resource "aws_iam_role_policy_attachment" "satellite_devops" {
 resource "aws_iam_policy" "eks_fargate_satellite_node" {
   for_each = var.fargate_enabled ? toset(var.satellite_regions) : toset([])
 
-  name = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-fargate-policy"
+  name = "tecton-${var.deployment_name}-${local.region_label[each.value]}-eks-fargate-node"
   policy = templatefile("${path.module}/../templates/fargate_eks_role.json",
     {
       ACCOUNT_ID             = var.account_id
