@@ -240,7 +240,7 @@ resource "aws_iam_policy" "s3_batch_replication" {
 # EKS [Common : Databricks and EMR]
 resource "aws_iam_policy" "satellite_ca" {
   count = local.is_satellite_regions_enabled ? 1 : 0
-  name  = "tecton-satellite-ca-policy"
+  name  = var.is_shared_account ? "tecton-${var.deployment_name}-satellite-ca-policy" : "tecton-satellite-ca-policy"
   policy = templatefile("${path.module}/../templates/satellite_ca_policy.json",
     {
       ACCOUNT_ID      = var.account_id
