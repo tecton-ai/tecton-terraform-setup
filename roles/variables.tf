@@ -158,3 +158,9 @@ variable "satellite_region_short_codes_enabled" {
   type        = bool
   default     = false
 }
+
+variable "shared_account" {
+  description = "If true, ensure unique names exist in a single AWS account"
+  type        = bool
+  default     = false
+}
