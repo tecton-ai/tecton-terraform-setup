@@ -26,3 +26,9 @@ variable "eks_subnet_cidr_prefix" {
     error_message = "Subnet must have enough space: the smallest acceptable prefix is /18."
   }
 }
+
+variable "eks_vpc_enable_dns_hostnames" {
+  type        = bool
+  description = "Whether or not the VPC has DNS hostname support"
+  default     = false
+}

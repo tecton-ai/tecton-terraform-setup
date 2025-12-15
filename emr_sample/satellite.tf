@@ -1,7 +1,7 @@
 locals {
   # only one satellite region supported in this example. Others may be added if required. Contact Tecton support for more information.
-  is_this_satellite_region_enabled = length(var.satellite_regions) > 0 
-  satellite_region = local.is_this_satellite_region_enabled ? var.satellite_regions[0] : var.region
+  is_this_satellite_region_enabled = length(var.satellite_regions) > 0
+  satellite_region                 = local.is_this_satellite_region_enabled ? var.satellite_regions[0] : var.region
 }
 
 provider "aws" {
@@ -22,8 +22,9 @@ module "eks_satellite_subnets" {
   deployment_name = var.deployment_name
   region          = local.satellite_region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
-  availability_zone_count = 3
-  eks_subnet_cidr_prefix  = "10.64.0.0/16"
+  availability_zone_count      = 3
+  eks_subnet_cidr_prefix       = "10.64.0.0/16"
+  eks_vpc_enable_dns_hostnames = var.eks_vpc_enable_dns_hostnames
 }
 
 module "eks_satellite_security_groups" {
@@ -60,7 +61,7 @@ output "satellite_public_subnet_ids" {
 
 output "satellite_security_group_ids" {
   value = local.is_this_satellite_region_enabled ? [
-    module.eks_satellite_security_groups[0].eks_security_group_id, 
+    module.eks_satellite_security_groups[0].eks_security_group_id,
     module.eks_satellite_security_groups[0].eks_worker_security_group_id,
     module.eks_satellite_security_groups[0].rds_security_group_id
   ] : []
