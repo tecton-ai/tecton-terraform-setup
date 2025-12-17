@@ -3,8 +3,9 @@ data "aws_availability_zones" "available" {
 
 # Create a default VPC if the `vpc_id` is not passed in.
 resource "aws_vpc" "eks_vpc" {
-  count      = var.eks_vpc_id == null ? 1 : 0
-  cidr_block = var.eks_subnet_cidr_prefix
+  count                = var.eks_vpc_id == null ? 1 : 0
+  cidr_block           = var.eks_subnet_cidr_prefix
+  enable_dns_hostnames = var.eks_vpc_enable_dns_hostnames
 }
 
 locals {

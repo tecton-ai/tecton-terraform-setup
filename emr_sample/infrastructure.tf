@@ -155,6 +155,11 @@ variable "enable_custom_environments" {
   description = "Whether to enable creation of custom environments. This will create an ecr repo to store environments, and allow eks nodes to store images in that that repo. Default: false."
 }
 
+variable "eks_vpc_enable_dns_hostnames" {
+  type        = bool
+  description = "Whether or not the VPC has DNS hostname support"
+  default     = false
+}
 
 module "eks_subnets" {
   providers = {
@@ -164,8 +169,9 @@ module "eks_subnets" {
   deployment_name = var.deployment_name
   region          = var.region
   # Please make sure your region has enough AZs: https://aws.amazon.com/about-aws/global-infrastructure/regions_az/
-  availability_zone_count = 3
-  eks_subnet_cidr_prefix  = var.eks_subnet_cidr_prefix
+  availability_zone_count      = 3
+  eks_subnet_cidr_prefix       = var.eks_subnet_cidr_prefix
+  eks_vpc_enable_dns_hostnames = var.eks_vpc_enable_dns_hostnames
 }
 
 module "eks_security_groups" {
@@ -223,28 +229,28 @@ module "roles" {
     # any databricks resources when using `emr_sample`.
     aws.databricks-account = aws
   }
-  count                              = (var.apply_layer > 1) ? 1 : 0
-  source                             = "../roles"
-  deployment_name                    = var.deployment_name
-  enable_eks_ingress_vpc_endpoint    = var.enable_eks_ingress_vpc_endpoint
-  account_id                         = var.account_id
-  tecton_assuming_account_id         = var.tecton_assuming_account_id
-  region                             = var.region
-  satellite_regions                  = var.satellite_regions
-  create_emr_roles                   = true
-  elasticache_enabled                = var.elasticache_enabled
-  external_id                        = random_id.external_id.id
-  fargate_enabled                    = var.fargate_enabled
-  data_validation_on_fargate_enabled = var.data_validation_on_fargate_enabled
-  vpc_id                             = module.eks_subnets.vpc_id
+  count                                            = (var.apply_layer > 1) ? 1 : 0
+  source                                           = "../roles"
+  deployment_name                                  = var.deployment_name
+  enable_eks_ingress_vpc_endpoint                  = var.enable_eks_ingress_vpc_endpoint
+  account_id                                       = var.account_id
+  tecton_assuming_account_id                       = var.tecton_assuming_account_id
+  region                                           = var.region
+  satellite_regions                                = var.satellite_regions
+  create_emr_roles                                 = true
+  elasticache_enabled                              = var.elasticache_enabled
+  external_id                                      = random_id.external_id.id
+  fargate_enabled                                  = var.fargate_enabled
+  data_validation_on_fargate_enabled               = var.data_validation_on_fargate_enabled
+  vpc_id                                           = module.eks_subnets.vpc_id
   enable_feature_server_as_compute_instance_groups = var.enable_feature_server_as_compute_instance_groups
-  rift_compute_manager_arn           = var.rift_compute_manager_arn
-  enable_rift                        = var.enable_rift
-  rift_ecr_repository_arn            = var.rift_ecr_repository_arn
-  offline_store_bucket_arn           = var.offline_store_bucket_arn
-  offline_store_key_prefix           = var.offline_store_key_prefix
-  offline_store_cmk_arns             = var.offline_store_cmk_arns
-  enable_custom_environments         = var.enable_custom_environments
+  rift_compute_manager_arn                         = var.rift_compute_manager_arn
+  enable_rift                                      = var.enable_rift
+  rift_ecr_repository_arn                          = var.rift_ecr_repository_arn
+  offline_store_bucket_arn                         = var.offline_store_bucket_arn
+  offline_store_key_prefix                         = var.offline_store_key_prefix
+  offline_store_cmk_arns                           = var.offline_store_cmk_arns
+  enable_custom_environments                       = var.enable_custom_environments
 }
 
 module "notebook_cluster" {
