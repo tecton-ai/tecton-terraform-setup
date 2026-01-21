@@ -132,6 +132,21 @@
             }
         },
         {
+            "Sid": "AllowAttachedSecurityGroups",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:RunInstances"
+            ],
+            "Resource": [
+                "arn:aws:ec2:*:*:security-group/*"
+            ],
+            "Condition": {
+                "StringLike": {
+                    "aws:ResourceTag/tecton-cluster-name": "${DEPLOYMENT_NAME}*"
+                }
+            }
+        },
+        {
             "Sid": "CreateWithTaggedInstance",
             "Effect": "Allow",
             "Action": [
