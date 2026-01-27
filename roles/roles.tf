@@ -13,9 +13,15 @@ locals {
     local.satellite_feature_server_roles,
     [format("arn:aws:iam::%s:role/%s-fargate-fs", var.account_id, var.deployment_name)],
   )
+  fargate_aws_managed_policies = [
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+  ]
   feature_server_policies = concat(
     [aws_iam_policy.eks_fargate_node_policy[0].arn],
-    [for region in var.satellite_regions : aws_iam_policy.eks_fargate_satellite_node[region].arn]
+    [for region in var.satellite_regions : aws_iam_policy.eks_fargate_satellite_node[region].arn],
+    local.fargate_aws_managed_policies
   )
   data_validation_worker_roles = var.data_validation_on_fargate_enabled ? [
     format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
