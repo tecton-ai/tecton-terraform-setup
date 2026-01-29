@@ -110,6 +110,20 @@
             "Resource": [
                 "arn:aws:iam::${ACCOUNT_ID}:policy/*"
             ]
+        },
+        {
+            "Sid": "ManageSatelliteFargatePolicies",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreatePolicy",
+                "iam:GetPolicy",
+                "iam:DeletePolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:CreatePolicyVersion",
+                "iam:DeletePolicyVersion"
+            ],
+            "Resource": ${SATELLITE_FARGATE_POLICIES}
         }
     ]
 }

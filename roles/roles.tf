@@ -8,6 +8,8 @@ locals {
   )
   all_regions                    = concat(var.satellite_regions, [var.region])
   satellite_feature_server_roles = concat(formatlist("arn:aws:iam::%s:role/tecton-%s-%s-fargate-fs", var.account_id, var.deployment_name, var.satellite_regions), formatlist("arn:aws:iam::%s:role/%s-%s-fargate-fs", var.account_id, var.deployment_name, var.satellite_regions))
+  satellite_kinesis_firehose_roles = formatlist("arn:aws:iam::%s:role/%s-%s_fargate_kinesis_firehose", var.account_id, var.deployment_name, var.satellite_regions)
+  satellite_fargate_cross_account_policies = formatlist("arn:aws:iam::%s:policy/%s-%s-fargate-cross-account-write", var.account_id, var.deployment_name, var.satellite_regions)
   feature_server_roles = concat(
     [format("arn:aws:iam::%s:role/tecton-%s-fargate-fs", var.account_id, var.deployment_name)],
     local.satellite_feature_server_roles,
@@ -116,15 +118,18 @@ resource "aws_iam_policy" "devops_fargate_policy" {
       FARGATE_ROLES = jsonencode(
         concat(
           local.feature_server_roles,
-          local.data_validation_worker_roles
+          local.data_validation_worker_roles,
+          local.satellite_kinesis_firehose_roles
         )
       )
       FARGATE_POLICY_ARNS = jsonencode(
         concat(
           local.feature_server_policies,
-          local.data_validation_worker_policies
+          local.data_validation_worker_policies,
+          local.satellite_fargate_cross_account_policies
         )
       )
+      SATELLITE_FARGATE_POLICIES = jsonencode(local.satellite_fargate_cross_account_policies)
     }
   )
   tags = local.tags
