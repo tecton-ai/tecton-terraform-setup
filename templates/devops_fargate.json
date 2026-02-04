@@ -11,10 +11,22 @@
                 "iam:DetachRolePolicy",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": ${FARGATE_ROLES},
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-*-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*_fargate_*"
+            ],
             "Condition": {
-                "StringEquals": {
-                    "iam:PolicyARN": ${FARGATE_POLICY_ARNS}
+                "StringLike": {
+                    "iam:PolicyARN": [
+                        "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-*",
+                        "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-*",
+                        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+                        "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                        "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+                    ]
                 }
             }
         },
@@ -30,7 +42,13 @@
                 "iam:DeleteRole",
                 "iam:UpdateAssumeRolePolicy"
             ],
-            "Resource": ${FARGATE_ROLES}
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-*-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*_fargate_*"
+            ]
         },
         {
             "Sid": "FargateListRole",
@@ -121,9 +139,15 @@
                 "iam:GetPolicyVersion",
                 "iam:ListPolicyVersions",
                 "iam:CreatePolicyVersion",
-                "iam:DeletePolicyVersion"
+                "iam:DeletePolicyVersion",
+                "iam:TagPolicy"
             ],
-            "Resource": ${SATELLITE_FARGATE_POLICIES}
+            "Resource": [
+                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-*-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-*-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-fargate-*",
+                "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-fargate-*"
+            ]
         }
     ]
 }
