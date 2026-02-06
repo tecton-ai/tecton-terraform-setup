@@ -25,7 +25,8 @@
                         "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-*",
                         "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
                         "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-                        "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+                        "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+                        "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
                     ]
                 }
             }
