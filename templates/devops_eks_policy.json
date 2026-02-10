@@ -138,6 +138,8 @@
                 "ec2:RunInstances"
             ],
             "Resource": [
+                "arn:aws:ec2:*:*:launch-template/*",
+                "arn:aws:ec2:*:*:subnet/*",
                 "arn:aws:ec2:*:*:security-group/*"
             ],
             "Condition": {
