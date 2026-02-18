@@ -61,13 +61,7 @@
                 "iam:AddRoleToInstanceProfile",
                 "iam:RemoveRoleFromInstanceProfile"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*",
-                "arn:aws:iam::${ACCOUNT_ID}:instance-profile/tecton-*",
-                "arn:aws:iam::${ACCOUNT_ID}:instance-profile/${DEPLOYMENT_NAME}-worker-node",
-                "arn:aws:iam::${ACCOUNT_ID}:instance-profile/${DEPLOYMENT_NAME}-spark-node"
-            ]
+            "Resource": ${INSTANCE_PROFILE_MANAGE_RESOURCES}
 
         },
         {

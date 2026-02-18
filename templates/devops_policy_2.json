@@ -62,7 +62,7 @@
                 "secretsmanager:TagResource",
                 "secretsmanager:UnTagResource"
             ],
-            "Resource": "arn:aws:secretsmanager:*:*:secret:tecton-${DEPLOYMENT_NAME}/*"
+            "Resource": ${SECRET_RESOURCES}
         },
         {
             "Sid": "ElasticSearch",
