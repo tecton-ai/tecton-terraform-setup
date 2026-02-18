@@ -155,6 +155,12 @@ variable "enable_custom_environments" {
   description = "Whether to enable creation of custom environments. This will create an ecr repo to store environments, and allow eks nodes to store images in that that repo. Default: false."
 }
 
+variable "additional_deployment_names" {
+  type        = list(string)
+  description = "Additional deployment name prefixes to grant the devops role access to (e.g., legacy deployment names)."
+  default     = []
+}
+
 variable "eks_vpc_enable_dns_hostnames" {
   type        = bool
   description = "Whether or not the VPC has DNS hostname support"
@@ -251,6 +257,7 @@ module "roles" {
   offline_store_key_prefix                         = var.offline_store_key_prefix
   offline_store_cmk_arns                           = var.offline_store_cmk_arns
   enable_custom_environments                       = var.enable_custom_environments
+  additional_deployment_names                      = var.additional_deployment_names
 }
 
 module "notebook_cluster" {
