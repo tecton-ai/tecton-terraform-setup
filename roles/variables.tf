@@ -147,6 +147,12 @@ variable "additional_s3_buckets" {
   default     = []
 }
 
+variable "additional_deployment_names" {
+  type        = list(string)
+  description = "Additional deployment name prefixes to grant the devops role access to (e.g., legacy deployment names)."
+  default     = []
+}
+
 variable "dynamodb_table_pattern" {
   type        = string
   description = "Defines a pattern that identifies which DynamoDB tables the feature server can read"

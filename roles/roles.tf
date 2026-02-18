@@ -13,15 +13,31 @@ locals {
   data_validation_worker_policies = var.data_validation_on_fargate_enabled ? [
     aws_iam_policy.eks_fargate_data_validation_worker[0].arn
   ] : []
+  all_deployment_names = concat([var.deployment_name], var.additional_deployment_names)
   s3_buckets = concat(
     formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
     ["arn:aws:s3:::tecton-${var.deployment_name}"],
+    flatten([for name in var.additional_deployment_names : concat(
+      formatlist("arn:aws:s3:::tecton-%s-%s", name, var.satellite_regions),
+      ["arn:aws:s3:::tecton-${name}"],
+      ["arn:aws:s3:::${name}-*"],
+    )]),
     var.additional_s3_buckets,
   )
   s3_objects                  = formatlist("%s/*", local.s3_buckets)
   data_validation_enabled     = var.fargate_enabled && var.data_validation_on_fargate_enabled
   enable_offline_store_reader = var.enable_rift
   dynamodb_table_pattern      = var.dynamodb_table_pattern != null ? var.dynamodb_table_pattern : format("tecton-%s*", var.deployment_name)
+  instance_profile_manage_resources = concat(
+    [
+      "arn:aws:iam::${var.account_id}:policy/tecton-*",
+      "arn:aws:iam::${var.account_id}:role/tecton-*",
+      "arn:aws:iam::${var.account_id}:instance-profile/tecton-*",
+    ],
+    formatlist("arn:aws:iam::%s:instance-profile/%s-worker-node", var.account_id, local.all_deployment_names),
+    formatlist("arn:aws:iam::%s:instance-profile/%s-spark-node", var.account_id, local.all_deployment_names),
+  )
+  secret_resources = formatlist("arn:aws:secretsmanager:*:*:secret:tecton-%s/*", local.all_deployment_names)
 
 }
 
@@ -231,11 +247,12 @@ resource "aws_iam_policy" "devops_policy_1" {
   policy = templatefile(
     "${path.module}/../templates/devops_policy_1.json",
     {
-      ACCOUNT_ID             = var.account_id
-      DEPLOYMENT_NAME        = var.deployment_name
-      DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
-      S3_BUCKETS             = jsonencode(local.s3_buckets)
-      S3_OBJECTS             = jsonencode(local.s3_objects)
+      ACCOUNT_ID                        = var.account_id
+      DEPLOYMENT_NAME                   = var.deployment_name
+      DEPLOYMENT_NAME_CONCAT            = format("%.24s", "tecton-${var.deployment_name}")
+      S3_BUCKETS                        = jsonencode(local.s3_buckets)
+      S3_OBJECTS                        = jsonencode(local.s3_objects)
+      INSTANCE_PROFILE_MANAGE_RESOURCES = jsonencode(local.instance_profile_manage_resources)
     }
   )
   tags = local.tags
@@ -247,8 +264,9 @@ resource "aws_iam_policy" "devops_policy_2" {
   policy = templatefile(
     "${path.module}/../templates/devops_policy_2.json",
     {
-      ACCOUNT_ID      = var.account_id
-      DEPLOYMENT_NAME = var.deployment_name
+      ACCOUNT_ID       = var.account_id
+      DEPLOYMENT_NAME  = var.deployment_name
+      SECRET_RESOURCES = jsonencode(local.secret_resources)
     }
   )
   tags = local.tags
