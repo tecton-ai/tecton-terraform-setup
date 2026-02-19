@@ -49,22 +49,6 @@
             ]
         },
         {
-            "Sid": "ManageTectonScopedSecrets",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:CreateSecret",
-                "secretsmanager:DeleteSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:GetResourcePolicy",
-                "secretsmanager:TagResource",
-                "secretsmanager:UnTagResource"
-            ],
-            "Resource": ${SECRET_RESOURCES}
-        },
-        {
             "Sid": "ElasticSearch",
             "Action": [
                 "es:CreateDomain",
