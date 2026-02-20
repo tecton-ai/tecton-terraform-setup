@@ -247,12 +247,9 @@ resource "aws_iam_policy" "devops_policy_1" {
   policy = templatefile(
     "${path.module}/../templates/devops_policy_1.json",
     {
-      ACCOUNT_ID                        = var.account_id
-      DEPLOYMENT_NAME                   = var.deployment_name
-      DEPLOYMENT_NAME_CONCAT            = format("%.24s", "tecton-${var.deployment_name}")
-      S3_BUCKETS                        = jsonencode(local.s3_buckets)
-      S3_OBJECTS                        = jsonencode(local.s3_objects)
-      INSTANCE_PROFILE_MANAGE_RESOURCES = jsonencode(local.instance_profile_manage_resources)
+      ACCOUNT_ID             = var.account_id
+      DEPLOYMENT_NAME        = var.deployment_name
+      DEPLOYMENT_NAME_CONCAT = format("%.24s", "tecton-${var.deployment_name}")
     }
   )
   tags = local.tags
@@ -264,9 +261,23 @@ resource "aws_iam_policy" "devops_policy_2" {
   policy = templatefile(
     "${path.module}/../templates/devops_policy_2.json",
     {
-      ACCOUNT_ID       = var.account_id
-      DEPLOYMENT_NAME  = var.deployment_name
-      SECRET_RESOURCES = jsonencode(local.secret_resources)
+      ACCOUNT_ID      = var.account_id
+      DEPLOYMENT_NAME = var.deployment_name
+    }
+  )
+  tags = local.tags
+}
+
+# DEVOPS [Common : Databricks and EMR]
+resource "aws_iam_policy" "devops_policy_3" {
+  name = "tecton-${var.deployment_name}-devops-policy-3"
+  policy = templatefile(
+    "${path.module}/../templates/devops_policy_3.json",
+    {
+      S3_BUCKETS                        = jsonencode(local.s3_buckets)
+      S3_OBJECTS                        = jsonencode(local.s3_objects)
+      INSTANCE_PROFILE_MANAGE_RESOURCES = jsonencode(local.instance_profile_manage_resources)
+      SECRET_RESOURCES                  = jsonencode(local.secret_resources)
     }
   )
   tags = local.tags
@@ -340,6 +351,12 @@ resource "aws_iam_role_policy_attachment" "devops_policy_attachment_1" {
 # DEVOPS [Common : Databricks and EMR]
 resource "aws_iam_role_policy_attachment" "devops_policy_attachment_2" {
   policy_arn = aws_iam_policy.devops_policy_2.arn
+  role       = aws_iam_role.devops_role.name
+}
+
+# DEVOPS [Common : Databricks and EMR]
+resource "aws_iam_role_policy_attachment" "devops_policy_attachment_3" {
+  policy_arn = aws_iam_policy.devops_policy_3.arn
   role       = aws_iam_role.devops_role.name
 }
 
