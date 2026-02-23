@@ -1,19 +1,15 @@
+# General
 locals {
-  tags = { "tecton-accessible:${var.deployment_name}" : "true" }
-  fargate_kinesis_delivery_stream_arn = format(
-    "arn:aws:firehose:%s:%s:deliverystream/tecton-%s-fargate-log-delivery-stream",
-    var.region,
-    var.account_id,
-    var.deployment_name
-  )
-  all_regions = concat(var.satellite_regions, [var.region])
-  data_validation_worker_roles = var.data_validation_on_fargate_enabled ? [
-    format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
-  ] : []
-  data_validation_worker_policies = var.data_validation_on_fargate_enabled ? [
-    aws_iam_policy.eks_fargate_data_validation_worker[0].arn
-  ] : []
-  all_deployment_names = concat([var.deployment_name], var.additional_deployment_names)
+  tags                        = { "tecton-accessible:${var.deployment_name}" : "true" }
+  all_regions                 = concat(var.satellite_regions, [var.region])
+  all_deployment_names        = concat([var.deployment_name], var.additional_deployment_names)
+  data_validation_enabled     = var.fargate_enabled && var.data_validation_on_fargate_enabled
+  enable_offline_store_reader = var.enable_rift
+}
+
+# Storage resources (devops_policy_3.json)
+locals {
+  dynamodb_table_pattern = var.dynamodb_table_pattern != null ? var.dynamodb_table_pattern : format("tecton-%s*", var.deployment_name)
   s3_buckets = concat(
     formatlist("arn:aws:s3:::tecton-%s-%s", var.deployment_name, var.satellite_regions),
     ["arn:aws:s3:::tecton-${var.deployment_name}"],
@@ -24,10 +20,11 @@ locals {
     )]),
     var.additional_s3_buckets,
   )
-  s3_objects                  = formatlist("%s/*", local.s3_buckets)
-  data_validation_enabled     = var.fargate_enabled && var.data_validation_on_fargate_enabled
-  enable_offline_store_reader = var.enable_rift
-  dynamodb_table_pattern      = var.dynamodb_table_pattern != null ? var.dynamodb_table_pattern : format("tecton-%s*", var.deployment_name)
+  s3_objects = formatlist("%s/*", local.s3_buckets)
+}
+
+# Devops policy resources (devops_policy_3.json)
+locals {
   instance_profile_manage_resources = concat(
     [
       "arn:aws:iam::${var.account_id}:policy/tecton-*",
@@ -38,7 +35,66 @@ locals {
     formatlist("arn:aws:iam::%s:instance-profile/%s-spark-node", var.account_id, local.all_deployment_names),
   )
   secret_resources = formatlist("arn:aws:secretsmanager:*:*:secret:tecton-%s/*", local.all_deployment_names)
+}
 
+# Fargate resources (fargate_eks_role.json, data_validation_worker_policy.json)
+locals {
+  fargate_kinesis_delivery_stream_arn = format(
+    "arn:aws:firehose:%s:%s:deliverystream/tecton-%s-fargate-log-delivery-stream",
+    var.region,
+    var.account_id,
+    var.deployment_name
+  )
+  data_validation_worker_roles = var.data_validation_on_fargate_enabled ? [
+    format("arn:aws:iam::%s:role/tecton-%s-fargate-validation", var.account_id, var.deployment_name)
+  ] : []
+  data_validation_worker_policies = var.data_validation_on_fargate_enabled ? [
+    aws_iam_policy.eks_fargate_data_validation_worker[0].arn
+  ] : []
+}
+
+# Devops fargate policy resources (devops_fargate.json)
+# Expanded across all_deployment_names to support migrated deployments (e.g. additional_deployment_names).
+locals {
+  fargate_role_resources = flatten([for name in local.all_deployment_names : [
+    "arn:aws:iam::${var.account_id}:role/tecton-${name}-*-fargate-*",
+    "arn:aws:iam::${var.account_id}:role/${name}-*-fargate-*",
+    "arn:aws:iam::${var.account_id}:role/tecton-${name}-fargate-*",
+    "arn:aws:iam::${var.account_id}:role/${name}-fargate-*",
+    "arn:aws:iam::${var.account_id}:role/${name}-*_fargate_*",
+  ]])
+  fargate_attach_policy_condition = concat(
+    flatten([for name in local.all_deployment_names : [
+      "arn:aws:iam::${var.account_id}:policy/tecton-${name}-*",
+      "arn:aws:iam::${var.account_id}:policy/${name}-*",
+    ]]),
+    [
+      "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+      "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+      "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+      "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy",
+    ],
+  )
+  fargate_list_role_resources = concat(
+    ["arn:aws:iam::${var.account_id}:role/tecton-*"],
+    formatlist("arn:aws:iam::%s:role/%s-*", var.account_id, local.all_deployment_names),
+  )
+  fargate_kinesis_resources = flatten([for name in local.all_deployment_names : [
+    "arn:aws:firehose:*:${var.account_id}:deliverystream/tecton-${name}-fargate-log-delivery-stream*",
+    "arn:aws:firehose:*:${var.account_id}:deliverystream/tecton-${name}-*-fargate-log-delivery-stream*",
+  ]])
+  fargate_profile_resources = flatten([for name in local.all_deployment_names : [
+    "arn:aws:eks:*:${var.account_id}:cluster/tecton-${name}*",
+    "arn:aws:eks:*:${var.account_id}:cluster/${name}*",
+    "arn:aws:eks:*:${var.account_id}:fargateprofile/tecton-${name}*",
+    "arn:aws:eks:*:${var.account_id}:fargateprofile/${name}*",
+  ]])
+  fargate_satellite_policy_resources = flatten([for name in local.all_deployment_names : [
+    "arn:aws:iam::${var.account_id}:policy/tecton-${name}-*-fargate-*",
+    "arn:aws:iam::${var.account_id}:policy/${name}-*-fargate-*",
+    "arn:aws:iam::${var.account_id}:policy/tecton-${name}-fargate-*",
+    "arn:aws:iam::${var.account_id}:policy/${name}-fargate-*",
+  ]])
 }
 
 # Fargate [Common : Databricks and EMR]
@@ -111,8 +167,13 @@ resource "aws_iam_policy" "devops_fargate_policy" {
   policy = templatefile(
     "${path.module}/../templates/devops_fargate.json",
     {
-      ACCOUNT_ID      = var.account_id
-      DEPLOYMENT_NAME = var.deployment_name
+      ACCOUNT_ID                         = var.account_id
+      FARGATE_ROLE_RESOURCES             = jsonencode(local.fargate_role_resources)
+      FARGATE_ATTACH_POLICY_CONDITION    = jsonencode(local.fargate_attach_policy_condition)
+      FARGATE_LIST_ROLE_RESOURCES        = jsonencode(local.fargate_list_role_resources)
+      FARGATE_KINESIS_RESOURCES          = jsonencode(local.fargate_kinesis_resources)
+      FARGATE_PROFILE_RESOURCES          = jsonencode(local.fargate_profile_resources)
+      FARGATE_SATELLITE_POLICY_RESOURCES = jsonencode(local.fargate_satellite_policy_resources)
     }
   )
   tags = local.tags

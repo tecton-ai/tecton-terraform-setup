@@ -11,23 +11,10 @@
                 "iam:DetachRolePolicy",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-*-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*_fargate_*"
-            ],
+            "Resource": ${FARGATE_ROLE_RESOURCES},
             "Condition": {
                 "StringLike": {
-                    "iam:PolicyARN": [
-                        "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-*",
-                        "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-*",
-                        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-                        "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-                        "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
-                        "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-                    ]
+                    "iam:PolicyARN": ${FARGATE_ATTACH_POLICY_CONDITION}
                 }
             }
         },
@@ -43,13 +30,7 @@
                 "iam:DeleteRole",
                 "iam:UpdateAssumeRolePolicy"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-*-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-${DEPLOYMENT_NAME}-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*_fargate_*"
-            ]
+            "Resource": ${FARGATE_ROLE_RESOURCES}
         },
         {
             "Sid": "FargateListRole",
@@ -58,10 +39,7 @@
                 "iam:ListRolePolicies",
                 "iam:ListAttachedRolePolicies"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:role/tecton-*",
-                "arn:aws:iam::${ACCOUNT_ID}:role/${DEPLOYMENT_NAME}-*"
-            ]
+            "Resource": ${FARGATE_LIST_ROLE_RESOURCES}
         },
         {
             "Sid": "KinesisStream",
@@ -74,10 +52,7 @@
                 "firehose:DescribeDeliveryStream",
                 "firehose:ListDeliveryStreams"
             ],
-            "Resource": [
-                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-fargate-log-delivery-stream*",
-                "arn:aws:firehose:*:${ACCOUNT_ID}:deliverystream/tecton-${DEPLOYMENT_NAME}-*-fargate-log-delivery-stream*"
-            ]
+            "Resource": ${FARGATE_KINESIS_RESOURCES}
         },
         {
             "Sid": "FargateProfile",
@@ -88,12 +63,7 @@
                 "eks:DeleteFargateProfile",
                 "eks:TagResource"
             ],
-            "Resource": [
-                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:*:${ACCOUNT_ID}:cluster/${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/tecton-${DEPLOYMENT_NAME}*",
-                "arn:aws:eks:*:${ACCOUNT_ID}:fargateprofile/${DEPLOYMENT_NAME}*"
-            ]
+            "Resource": ${FARGATE_PROFILE_RESOURCES}
         },
         {
             "Sid": "CreateGetTagOIDCProvider",
@@ -143,12 +113,7 @@
                 "iam:DeletePolicyVersion",
                 "iam:TagPolicy"
             ],
-            "Resource": [
-                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-*-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-*-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:policy/tecton-${DEPLOYMENT_NAME}-fargate-*",
-                "arn:aws:iam::${ACCOUNT_ID}:policy/${DEPLOYMENT_NAME}-fargate-*"
-            ]
+            "Resource": ${FARGATE_SATELLITE_POLICY_RESOURCES}
         }
     ]
 }
