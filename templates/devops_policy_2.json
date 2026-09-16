@@ -107,6 +107,7 @@
                 "rds:DescribeDBSubnetGroups",
                 "rds:ModifyDBInstance",
                 "rds:CreateDBInstance",
+                "rds:RebootDBInstance",
                 "rds:ListTagsForResource"
             ],
             "Effect": "Allow",
@@ -116,7 +117,28 @@
                 "arn:aws:rds:*:${ACCOUNT_ID}:db:${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:subgrp:${DEPLOYMENT_NAME}*",
                 "arn:aws:rds:*:${ACCOUNT_ID}:og:default*",
-                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*"
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:default*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:terraform-*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:${DEPLOYMENT_NAME}*"
+            ]
+        },
+        {
+            "Sid": "RdsParameterGroupAccess",
+            "Action": [
+                "rds:CreateDBParameterGroup",
+                "rds:ModifyDBParameterGroup",
+                "rds:DeleteDBParameterGroup",
+                "rds:DescribeDBParameterGroups",
+                "rds:DescribeDBParameters",
+                "rds:AddTagsToResource",
+                "rds:ListTagsForResource"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:terraform-*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:tecton-${DEPLOYMENT_NAME}*",
+                "arn:aws:rds:*:${ACCOUNT_ID}:pg:${DEPLOYMENT_NAME}*"
             ]
         },
         {
